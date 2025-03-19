@@ -158,6 +158,11 @@ export default function FundList() {
         checkboxSelection
         disableRowSelectionOnClick
         slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
         density="standard"
         sx={{
           border: 'none',

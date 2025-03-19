@@ -1,191 +1,154 @@
-// src/app/components/FundListTable.tsx
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+import { Table, Alert, Spin, Typography, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useFunds } from '../../hooks/useFunds';
-import { Table, Alert, Spin, Typography, Tag } from 'antd';
-import type { TableProps, TablePaginationConfig } from 'antd';
 import Link from 'next/link';
+import { Fund } from '@/types/fund';
 
 const { Text } = Typography;
 
-export default function FundListTable() {
+interface FundListTableProps {
+  initialFunds?: Fund[];
+}
+
+type IndexedFund = ReturnType<typeof createIndexedFund>;
+
+const createIndexedFund = (fund: Fund) => {
+  const searchKey = `${fund.code} ${fund.name} ${fund.umbrellaType} ${fund.currentPrice} ${Object.values(fund.priceChanges).join(' ')}`.toLowerCase();
+  
+  return {
+    ...fund,
+    key: fund.code,
+    searchKey,
+  };
+};
+
+export default function FundListTable({ initialFunds = [] }: FundListTableProps) {
   const { funds, loading, error } = useFunds();
-  const [pageSize, setPageSize] = useState(20);
-  const [mounted, setMounted] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => setDebouncedSearch(searchText), 300);
+  //   return () => clearTimeout(timer);
+  // }, [searchText]);
 
-  if (!mounted) return null;
+  const indexedData = useMemo(() => funds.map(createIndexedFund), [funds]);
 
-  const priceFormatter = (value: number) => value?.toFixed(6);
-  const changeRenderer = (value: number) => (
-    <Text style={{ color: value >= 0 ? '#389e0d' : '#cf1322' }}>
-      {value >= 0 ? '+' : ''}{value.toFixed(2)}%
-    </Text>
-  );
+  const filteredData = useMemo(() => {
+    if (!searchText) return indexedData;
+    const searchTerms = searchText.toLowerCase().split(' ');
+    
+    return indexedData.filter(item => 
+      searchTerms.every(term => 
+        item.searchKey.includes(term))
+    );
+  }, [searchText, indexedData]);
 
-  const columns: TableProps['columns'] = [
+  // Updated columns with additional price change periods
+  const columns = useMemo(() => [
     {
       title: 'Code',
       dataIndex: 'code',
-      key: 'code',
       width: 100,
-      sorter: (a, b) => a.code.localeCompare(b.code),
+      sorter: (a: IndexedFund, b: IndexedFund) => a.code.localeCompare(b.code),
     },
     {
       title: 'Fund Name',
       dataIndex: 'name',
-      key: 'name',
       width: 400,
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: (a: IndexedFund, b: IndexedFund) => a.name.localeCompare(b.name),
     },
     {
       title: 'Umbrella Type',
       dataIndex: 'umbrellaType',
-      key: 'umbrellaType',
       width: 200,
-      sorter: (a, b) => a.umbrellaType.localeCompare(b.umbrellaType),
+      sorter: (a: IndexedFund, b: IndexedFund) => a.umbrellaType.localeCompare(b.umbrellaType),
     },
     {
       title: 'Price',
       dataIndex: 'currentPrice',
-      key: 'currentPrice',
       width: 120,
-      render: priceFormatter,
-      sorter: (a, b) => a.currentPrice - b.currentPrice,
+      render: (value: number) => value?.toFixed(6),
+      sorter: (a: IndexedFund, b: IndexedFund) => a.currentPrice - b.currentPrice,
     },
     {
-      title: 'Weekly',
-      dataIndex: 'weeklyChange',
-      key: 'weeklyChange',
+      title: 'Weekly Change',
+      dataIndex: ['priceChanges', 'weekly'],
       width: 120,
-      render: changeRenderer,
-      sorter: (a, b) => a.weeklyChange - b.weeklyChange,
+      render: (value: number) => <Text type={value >= 0 ? 'success' : 'danger'}>{value}%</Text>,
+      sorter: (a: IndexedFund, b: IndexedFund) => a.priceChanges.weekly - b.priceChanges.weekly,
+    },
+    // New columns start here
+    {
+      title: 'Monthly Change',
+      dataIndex: ['priceChanges', 'monthly'],
+      width: 120,
+      render: (value: number) => <Text type={value >= 0 ? 'success' : 'danger'}>{value}%</Text>,
+      sorter: (a: IndexedFund, b: IndexedFund) => a.priceChanges.monthly - b.priceChanges.monthly,
     },
     {
-      title: 'Monthly',
-      dataIndex: 'monthlyChange',
-      key: 'monthlyChange',
+      title: '3 Month Change',
+      dataIndex: ['priceChanges', 'threeMonth'],
       width: 120,
-      render: changeRenderer,
-      sorter: (a, b) => a.monthlyChange - b.monthlyChange,
+      render: (value: number) => <Text type={value >= 0 ? 'success' : 'danger'}>{value}%</Text>,
+      sorter: (a: IndexedFund, b: IndexedFund) => a.priceChanges.threeMonth - b.priceChanges.threeMonth,
     },
     {
-      title: '3 Month',
-      dataIndex: 'threeMonthChange',
-      key: 'threeMonthChange',
+      title: '6 Month Change',
+      dataIndex: ['priceChanges', 'sixMonth'],
       width: 120,
-      render: changeRenderer,
-      sorter: (a, b) => a.threeMonthChange - b.threeMonthChange,
+      render: (value: number) => <Text type={value >= 0 ? 'success' : 'danger'}>{value}%</Text>,
+      sorter: (a: IndexedFund, b: IndexedFund) => a.priceChanges.sixMonth - b.priceChanges.sixMonth,
     },
     {
-      title: '6 Month',
-      dataIndex: 'sixMonthChange',
-      key: 'sixMonthChange',
+      title: 'Yearly Change',
+      dataIndex: ['priceChanges', 'yearly'],
       width: 120,
-      render: changeRenderer,
-      sorter: (a, b) => a.sixMonthChange - b.sixMonthChange,
-    },
-    {
-      title: 'Yearly',
-      dataIndex: 'yearlyChange',
-      key: 'yearlyChange',
-      width: 120,
-      render: changeRenderer,
-      sorter: (a, b) => a.yearlyChange - b.yearlyChange,
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: 120,
-      render: (_, record) => (
-        <Link 
-          href={`/funds/${record.code}`}
-          style={{ color: '#1890ff', textDecoration: 'underline' }}
-        >
-          View Details
-        </Link>
-      ),
-    },
-  ];
+      render: (value: number) => <Text type={value >= 0 ? 'success' : 'danger'}>{value}%</Text>,
+      sorter: (a: IndexedFund, b: IndexedFund) => a.priceChanges.yearly - b.priceChanges.yearly,
+    }
+  ], []);
 
-  const data = funds.map(fund => ({
-    key: fund.code,
-    code: fund.code,
-    name: fund.name,
-    umbrellaType: fund.umbrellaType,
-    currentPrice: fund.currentPrice,
-    weeklyChange: fund.priceChanges.weekly,
-    monthlyChange: fund.priceChanges.monthly,
-    threeMonthChange: fund.priceChanges.threeMonth,
-    sixMonthChange: fund.priceChanges.sixMonth,
-    yearlyChange: fund.priceChanges.yearly
-  }));
+  if (loading) return <Spin size="large" className="mx-auto mt-8" />;
 
-  const paginationConfig: TablePaginationConfig = {
-    pageSize: pageSize,
-    pageSizeOptions: ['5', '10', '20', '50'],
-    showSizeChanger: true,
-    onShowSizeChange: (current, size) => setPageSize(size),
-  };
-
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert
-        message="Error loading funds"
-        description={error.message}
-        type="error"
-        showIcon
-        style={{ marginBottom: 16 }}
-      />
-    );
-  }
+  if (error) return (
+    <Alert
+      message="Error loading funds"
+      description={error.message}
+      type="error"
+      showIcon
+      className="m-4"
+    />
+  );
 
   return (
-    <div
-      style={{
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05)',
-        borderRadius: 8,
-        overflow: 'hidden',
-      }}
-    >
+    <div className="p-4">
+      <div className="flex gap-2 mb-4">
+        <Input
+          placeholder="Search funds..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          prefix={<SearchOutlined />}
+          className="max-w-lg"
+          allowClear
+        />
+        <Text className="self-center">
+          Showing {filteredData.length} of {indexedData.length} funds
+        </Text>
+      </div>
+
       <Table
+        dataSource={filteredData}
         columns={columns}
-        dataSource={data}
-        pagination={paginationConfig}
-        scroll={{ x: 'max-content' }}
-        rowSelection={{
-          type: 'checkbox',
-          columnWidth: 48,
-        }}
-        style={{
-          backgroundColor: 'white',
-        }}
-        components={{
-          header: {
-            cell: (props) => (
-              <th
-                {...props}
-                style={{
-                  backgroundColor: '#fafafa',
-                  fontWeight: 600,
-                  fontSize: 14,
-                }}
-              />
-            ),
-          },
-        }}
+        rowKey="code"
+        scroll={{ x: 'max-content', y: 600 }}
+        pagination={false}
+        virtual
+        bordered
+        size="small"
       />
     </div>
   );

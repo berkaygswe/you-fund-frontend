@@ -1,6 +1,7 @@
 // src/app/funds/page.tsx
 import FundList from '@/app/components/FundList';
 import FundListTable from '@/app/components/FundListTable';
+import FundListv2 from '@/app/components/FundListv2';
 import Layout from '@/app/components/Layout';
 import dynamic from 'next/dynamic';
 
@@ -14,6 +15,7 @@ export default function FundsPage() {
       
       <FundList />
       <FundListTable />
+      <FundListv2 />
     </Layout>
   );
 }
