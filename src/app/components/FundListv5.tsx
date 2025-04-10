@@ -39,11 +39,6 @@ import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
 import { useFundsTest } from '@/hooks/useFundsTest';
 import Link from 'next/link';
 
-type IndexedFund = Fund & {
-  key: string;
-  searchKey: string;
-};
-
 // Move outside component to prevent recreation on each render
 const periods = ['weekly', 'monthly', 'threeMonth', 'sixMonth', 'yearly'] as const;
 
@@ -51,14 +46,37 @@ export function FundListv5() {
   // States
   const [isPending, startTransition] = useTransition();
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'code', desc: false } // Default sort
+    //{ id: 'code', desc: false } // Default sort
   ]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [inputValue, setInputValue] = useState('');
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedUmbrellaType, setSelectedUmbrellaType] = useState<FundUmbrellaType | null>(null);
+
+  // Memoize the debounced function so that it doesn't get recreated on every render.
+  const debouncedSetGlobalFilter = useMemo(() =>
+    debounce((value: string) => {
+      // Wrap the state update that triggers the fetch/heavy re-render
+      startTransition(() => {
+        setGlobalFilter(value);
+      });
+    }, 150), [startTransition]); // 1500 ms delay (adjust as needed)
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);        // Update input value immediately
+    debouncedSetGlobalFilter(value); // Trigger debounced filter update
+  }, [debouncedSetGlobalFilter]); // Add debounced function as dependency
+
+  const handleUmbrellaTypeSelect = useCallback((value: FundUmbrellaType | null) => {
+    // Wrap the state update that triggers the fetch/heavy re-render
+    startTransition(() => {
+      setSelectedUmbrellaType(value);
+    });
+  }, [startTransition]); // Add startTransition as a dependency
 
   // Server-side parameters
   // Memoize params so that they only change when one of the dependencies changes
@@ -75,7 +93,6 @@ export function FundListv5() {
   //const { funds, loading, error } = useFunds();
   const { funds, totalCount, totalPages, loading, error } = useFundsTest(params);
   const { umbrellaTypes } = useFundUmbrellaTypes();
-  console.log(funds)
 
   // Add this mapping utility
   const periodToFieldMap: Record<string, string> = {
@@ -148,29 +165,28 @@ export function FundListv5() {
     columns,
     state: {
       sorting,
-      globalFilter,
       pagination
     },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     pageCount: totalPages,
     manualPagination: true,
     manualSorting: true,
+    manualFiltering: true,
   });
 
   // Loading state
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-full max-w-md" />
-        {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-full" />
-        ))}
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="space-y-4">
+  //       <Skeleton className="h-10 w-full max-w-md" />
+  //       {Array.from({ length: 10 }).map((_, i) => (
+  //         <Skeleton key={i} className="h-8 w-full" />
+  //       ))}
+  //     </div>
+  //   );
+  // }
 
   // Error state
   if (error) {
@@ -187,6 +203,8 @@ export function FundListv5() {
         <Input
           placeholder="Search funds..."
           className="max-w-md"
+          value={inputValue}
+          onChange={handleInputChange}
         />
 
         <DropdownMenu>
@@ -198,7 +216,7 @@ export function FundListv5() {
           <DropdownMenuContent>
             {selectedUmbrellaType && (
               <DropdownMenuItem 
-                // onSelect={() => handleUmbrellaTypeSelect(null)}
+                onSelect={() => handleUmbrellaTypeSelect(null)}
                 className="duration-200 justify-center border m-2 cursor-pointer bg-gray-100"
               >
                 <X className="h-4 w-4 mr-2" /> Clear filter
@@ -207,7 +225,7 @@ export function FundListv5() {
             {umbrellaTypes.map(type => (
               <DropdownMenuItem 
                 key={type.id} 
-                //onSelect={() => handleUmbrellaTypeSelect(type)} 
+                onSelect={() => handleUmbrellaTypeSelect(type)} 
                 className={`duration-200 justify-center border m-2 cursor-pointer ${selectedUmbrellaType?.name === type.name ? 'bg-accent' : ''}`}
               >
                 {type.name}
@@ -220,72 +238,79 @@ export function FundListv5() {
           <div className="text-sm text-muted-foreground">Updating...</div>
         )}
       </div>
-
-      <div className="rounded-md border overflow-x-auto">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead 
-                    key={header.id}
-                    onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
-                    className={header.column.getCanSort() ? "cursor-pointer select-none" : ""}
-                    style={{ width: header.column.getSize() }} 
-                  >
-                    {header.isPlaceholder ? null : (
-                       <div className={`flex ${
-                          header.column.id !== 'code' && header.column.id !== 'name' 
-                            ? 'justify-center' 
-                            : ''
-                        }`}>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {header.column.getIsSorted() && (
-                          <span className="ml-1">
-                            {{
-                              asc: <ArrowUp className="ml-2 h-4 w-4" />,
-                              desc: <ArrowDown className="ml-2 h-4 w-4" />,
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+      {loading ? (
+        <div className="p-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} className="h-8 w-full my-2" />
+          ))}
+        </div>
+      ) : ( <>
+        <div className="rounded-md border overflow-x-auto">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead 
+                      key={header.id}
+                      onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                      className={header.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                      style={{ width: header.column.getSize() }} 
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div className={`flex ${
+                            header.column.id !== 'code' && header.column.id !== 'name' 
+                              ? 'justify-center' 
+                              : ''
+                          }`}>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getIsSorted() && (
+                            <span className="ml-1">
+                              {{
+                                asc: <ArrowUp className="ml-2 h-4 w-4" />,
+                                desc: <ArrowDown className="ml-2 h-4 w-4" />,
+                              }[header.column.getIsSorted() as string] ?? null}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <DataTablePagination         
-        table={table}
-        totalItems={totalCount}
-        pageSizeOptions={[10, 20, 50]} />
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DataTablePagination         
+          table={table}
+          totalItems={totalCount}
+          pageSizeOptions={[10, 20, 30]} /></>
+      )}
     </div>
   );
 }
