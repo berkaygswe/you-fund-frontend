@@ -1,7 +1,7 @@
 // src/hooks/useFetchFundPrice.ts
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fundsApi, ApiError } from '../services/api';
 import { FundPrices } from '@/types/fundPrices';
 
@@ -17,10 +17,10 @@ export function useFetchFundGraph(code: string, startDate: string, endDate: stri
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchFundGraph = async () => {
+  const fetchFundGraph = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const data = await fundsApi.getFundGraph(code, startDate, endDate);
       setFundPrice(data);
     } catch (err) {
@@ -28,11 +28,11 @@ export function useFetchFundGraph(code: string, startDate: string, endDate: stri
     } finally {
       setLoading(false);
     }
-  };
+  }, [code, startDate, endDate]);
 
   useEffect(() => {
     fetchFundGraph();
-  }, []);
+  }, [fetchFundGraph]);
 
   return { prices, loading, error, refetch: fetchFundGraph };
 }

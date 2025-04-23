@@ -247,7 +247,7 @@ export function FundListv5() {
       ) : ( <>
         <div className="rounded-md border overflow-x-auto">
           <Table>
-            <TableHeader>
+            <TableHeader className='bg-muted'>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (

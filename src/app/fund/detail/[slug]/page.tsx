@@ -22,29 +22,34 @@ export default function Page() {
     ];
 
     return (
-        <div>
-            <div>
-                <div>{slug}</div>
-                <div>{fund.name}</div>
-                <div className='flex text-sm gap-6'>
-                    {priceChangeLabels.map(({ key, label }) => {
-                        const value = fund.priceChanges[key];
-                        return (
-                            <div key={key} className='flex gap-1'>
-                                <p>{label}</p>
-                                <p className={`flex items-center ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {value >= 0 ? (
-                                        <ArrowUp className="inline h-4 w-4 mr-1" />
-                                    ) : (
-                                        <ArrowDown className="inline h-4 w-4 mr-1" />
-                                    )}{value.toFixed(2)}%
-                                </p>
-                            </div>
-                        );
-                    })}
+        <div className='grid grid-cols-12 gap-4'>
+            <div className='col-span-8'>
+                <div>
+                    <div>{slug}</div>
+                    <div>{fund.name}</div>
+                    <div className='flex text-sm gap-6'>
+                        {priceChangeLabels.map(({ key, label }) => {
+                            const value = fund.priceChanges[key];
+                            return (
+                                <div key={key} className='flex gap-1'>
+                                    <p>{label}</p>
+                                    <p className={`flex items-center ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {value >= 0 ? (
+                                            <ArrowUp className="inline h-4 w-4 mr-1" />
+                                        ) : (
+                                            <ArrowDown className="inline h-4 w-4 mr-1" />
+                                        )}{value.toFixed(2)}%
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
+                <FundDetailGraph code={slug}></FundDetailGraph>
             </div>
-            <FundDetailGraph></FundDetailGraph>
+            <div className='col-span-4'>
+                
+            </div>
         </div>
     );
 }
