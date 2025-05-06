@@ -4,6 +4,8 @@ export interface Fund {
     fundType: string;
     umbrellaType: string;
     currentPrice: number;
+    founderName: string;
+    founderLogoUrl: string;
     priceChanges: {
       weekly: number;
       monthly: number;

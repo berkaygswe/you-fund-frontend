@@ -13,6 +13,7 @@ import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts"
 import { addDays } from "date-fns/addDays";
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
 
 type FundGraphProps = {
     code: string;
@@ -44,10 +45,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
 
     
     const [timeRange, setTimeRange] = useState("1y");
-    const [customRange, setCustomRange] = useState<DateRange | undefined>({
-        from: new Date(2022, 0, 20),
-        to: addDays(new Date(2022, 0, 20), 20),
-      });
+    const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
     // derive ISO dates based on “custom” vs preset
     const startDate =
         timeRange === "custom" && customRange?.from
@@ -86,7 +84,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
 
     return(
         <div className="mt-4">
-            <div className="flex items-center gap-2 justify-between mb-4">
+            <div className="flex items-center gap-2 mb-4">
                 {ranges.map(({ key, label }) => (
                     <Button
                         key={key}
@@ -95,7 +93,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                         className="cursor-pointer"
                         onClick={() => {
                             setTimeRange(key)
-                            setCustomRange(undefined)
+                            //setCustomRange(undefined)
                         }}
                     >
                         {label}
@@ -110,9 +108,12 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                             className="cursor-pointer"
                             onClick={() => setTimeRange("custom")}
                         >
-                        {customRange && customRange.from && customRange.to
-                            ? `${customRange.from.toLocaleDateString()} – ${customRange.to.toLocaleDateString()}`
-                            : "Custom…"}
+                            <CalendarIcon />
+                            {customRange && customRange.from ? (
+                                customRange.to ? (
+                                    `${customRange.from.toLocaleDateString()} – ${customRange.to.toLocaleDateString()}`
+                                    ) : customRange.from.toLocaleDateString()
+                                ) : "Custom…"}
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -121,11 +122,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                             mode="range"
                             selected={customRange}
                             defaultMonth={customRange?.from}
-                            onSelect={(range) => {
-                                if (range?.from && range.to) {
-                                setCustomRange({ from: range.from, to: range.to })
-                                }
-                            }}
+                            onSelect={setCustomRange}
                             numberOfMonths={2}
                         />
                     </PopoverContent>

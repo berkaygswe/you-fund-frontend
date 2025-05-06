@@ -38,6 +38,8 @@ import { Button } from '@/components/ui/button';
 import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
 import { useFundsTest } from '@/hooks/useFundsTest';
 import Link from 'next/link';
+import Image from 'next/image';
+import ImageWrap from './ImageWrap';
 
 // Move outside component to prevent recreation on each render
 const periods = ['weekly', 'monthly', 'threeMonth', 'sixMonth', 'yearly'] as const;
@@ -107,11 +109,32 @@ export function FundListv5() {
   const columns = useMemo<ColumnDef<Fund>[]>(() => [
     {
       accessorKey: 'code',
-      header: 'Kod',
+      header: 'Fon Kodu',
       enableSorting: true,
       size: 70,
       cell: ({ row }) => (
-        <div className="font-medium"><Link href={`/fund/detail/${row.getValue('code')}`}>{row.getValue('code')}</Link></div>
+        <div className="font-medium">
+          <Link className='flex gap-1 items-center' href={`/fund/detail/${row.getValue('code')}`}>
+            {row.original.founderLogoUrl ? (
+                <ImageWrap
+                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/logos/${row.original.founderLogoUrl}`}
+                    width={20}
+                    height={20}
+                    className='rounded-md'
+                    alt="Founder logo"
+                />
+                ) : (
+                <Image
+                    src="/bank.jpg"
+                    width={20}
+                    height={20}
+                    className='rounded-md'
+                    alt="Default logo"
+                />
+            )}
+            {row.getValue('code')}
+          </Link>
+        </div>
       ),
     },
     {
