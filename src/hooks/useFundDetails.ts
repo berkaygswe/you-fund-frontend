@@ -2,18 +2,18 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Fund } from '../types/fund';
 import { fundsApi, ApiError } from '../services/api';
+import { FundDetail } from '@/types/fundDetail';
 
 interface UseFundsResult {
-  fund: Fund;
+  fund: FundDetail;
   loading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
 }
 
 export function useFundDetails(code: string): UseFundsResult {
-  const [fund, setFund] = useState<Fund>({} as Fund);
+  const [fund, setFund] = useState<FundDetail>({} as FundDetail);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 

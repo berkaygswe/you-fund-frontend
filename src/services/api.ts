@@ -2,6 +2,7 @@
 import { FundUmbrellaType } from '@/types/fundUmbrellaType';
 import { Fund } from '../types/fund';
 import { FundPrices } from '@/types/fundPrices';
+import { FundDetail } from '@/types/fundDetail';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -36,8 +37,8 @@ export const fundsApi = {
     return fetchData<Fund[]>('/funds');
   },
   
-  getFundDetails: async (code: string): Promise<Fund> => {
-    return fetchData<Fund>(`/fund/detail/${code}`);
+  getFundDetails: async (code: string): Promise<FundDetail> => {
+    return fetchData<FundDetail>(`/fund/detail/${code}`);
   },
 
   getAllUmbrellaTypes: async (): Promise<FundUmbrellaType[]> => {

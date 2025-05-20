@@ -1,9 +1,11 @@
 "use client";
 
 import FundDetailGraph from '@/app/components/fund-detail/FundDetailGraph';
+import FundInfo from '@/app/components/fund-detail/FundInfo';
+import RiskScale from '@/app/components/fund-detail/Risk';
 import ImageWrap from '@/app/components/ImageWrap';
 import { useFundDetails } from '@/hooks/useFundDetails';
-import { Fund } from '@/types/fund';
+import { FundDetail } from '@/types/fundDetail';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -15,7 +17,7 @@ export default function Page() {
     const { fund, loading, error } = useFundDetails(slug);
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
-    const priceChangeLabels: { key: keyof Fund["priceChanges"]; label: string }[] = [
+    const priceChangeLabels: { key: keyof FundDetail["priceChanges"]; label: string }[] = [
         { key: "weekly", label: "Weekly" },
         { key: "monthly", label: "Monthly" },
         { key: "threeMonth", label: "3M" },
@@ -25,7 +27,7 @@ export default function Page() {
 
     return (
         <div className='grid grid-cols-12 gap-4'>
-            <div className='col-span-8'>
+            <div className='col-span-8 flex flex-col gap-2'>
                 <div className='flex items-center gap-2'>
                     <div>
                     {fund.founderLogoUrl ? (
@@ -72,9 +74,10 @@ export default function Page() {
                     </div>
                 </div>
                 <FundDetailGraph code={slug}></FundDetailGraph>
+                <RiskScale riskLevel={fund.risk}></RiskScale>
             </div>
             <div className='col-span-4'>
-                
+                <FundInfo fund={fund}></FundInfo>
             </div>
         </div>
     );
