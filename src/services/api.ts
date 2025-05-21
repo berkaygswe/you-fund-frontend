@@ -3,6 +3,7 @@ import { FundUmbrellaType } from '@/types/fundUmbrellaType';
 import { Fund } from '../types/fund';
 import { FundPrices } from '@/types/fundPrices';
 import { FundDetail } from '@/types/fundDetail';
+import { AssetGraphComparsion } from '@/types/assetGraphComparison';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -80,6 +81,11 @@ export const fundsApi = {
   getFundGraph: async (code: string, startDate: string, endDate: string): Promise<FundPrices[]> => {
     return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}`);
   },
+
+  getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string): Promise<AssetGraphComparsion[]> => {
+    const codes = encodeURIComponent(assetCodes.join(','));
+    return fetchData<AssetGraphComparsion[]>(`/asset/detail/graph/comparison?assetCodes=${codes}&fromDate=${fromDate}&toDate=${toDate}`)
+  }
   
   // Add more API methods as needed
 };
