@@ -8,13 +8,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useFetchFundGraph } from "@/hooks/useFetchFundPrice";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts"
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Search } from "lucide-react";
 import { useAssetGraphComparsion } from "@/hooks/useAssetGraphComparsion";
 import { AssetGraphComparsion } from "@/types/assetGraphComparison";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { AssetSearchPanel } from "./AssetSearchPanel";
+import { AssetSearchResult } from "@/types/assetSearchResult";
 
 // Colors for different assets in comparison chart
 const COLORS = [
@@ -28,88 +39,162 @@ const COLORS = [
 
 // Component for single fund price chart
 function SingleFundChart({ config, prices, code }: {config: ChartConfig, prices: Array<Object>, code: string}) {
-    console.log(prices)
-    console.log('e');
+
     if (!prices || prices.length === 0) return null;
-  return (
-    <ChartContainer config={config} className="aspect-auto h-[400px] -ms-5 w-full">
-        <AreaChart
-        data={prices}
-        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-        className="h-[400px]"
-        >
-        <defs>
-            <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-            </linearGradient>
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" tickFormatter={(date) => date.slice(5)} axisLine={false} />
-        <YAxis domain={[(dataMin: number) => dataMin * 0.99, 'dataMax']} axisLine={false} tickFormatter={(price) => price.toFixed(2)} />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-        <Area
-            type="natural"
-            dataKey="price"
-            stroke="#8884d8"
-            fillOpacity={0.4}
-            fill="url(#colorPrice)"
-            name={code}
-        />
-        </AreaChart>
-    </ChartContainer>
-  );
+    return (
+        <ChartContainer config={config} className="aspect-auto h-[400px] -ms-5 w-full">
+            <AreaChart
+            data={prices}
+            margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+            className="h-[400px]"
+            >
+            <defs>
+                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" tickFormatter={(date) => {
+                    const d = new Date(date);
+                    return new Intl.DateTimeFormat(undefined, {
+                        day: 'numeric',
+                        month: 'short',
+                    }).format(d);
+                }}
+            axisLine={false} />
+            <YAxis domain={[(dataMin: number) => dataMin * 0.99, 'dataMax']} axisLine={false} tickFormatter={(price) => price.toFixed(2)} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent labelFormatter={(label) => {
+                        const d = new Date(label);
+                        return new Intl.DateTimeFormat(undefined, {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                        }).format(d);
+                    }} />
+                } 
+            />
+            <Area
+                type="natural"
+                dataKey="price"
+                stroke="#8884d8"
+                fillOpacity={0.4}
+                fill="url(#colorPrice)"
+                name={code}
+            />
+            </AreaChart>
+        </ChartContainer>
+    );
+}
+
+function mergeComparisonData(assetComparisonData: AssetGraphComparsion[]) {
+    if (!assetComparisonData || assetComparisonData.length === 0) return [];
+
+    // Get all unique dates
+    const allDates = new Set<string>();
+    assetComparisonData.forEach(asset => {
+        asset.data.forEach(item => allDates.add(item.date));
+    });
+
+    // Sort dates
+    const sortedDates = Array.from(allDates).sort();
+
+    // Create merged data array
+    return sortedDates.map(date => {
+        const dataPoint: any = { date };
+        
+        assetComparisonData.forEach(asset => {
+        const assetDataPoint = asset.data.find(item => item.date === date);
+        dataPoint[asset.name] = assetDataPoint ? assetDataPoint.value : null;
+        });
+        
+        return dataPoint;
+    });
 }
 
 // Component for multi-asset comparison chart
 function ComparisonChart({ config, assetComparisonData }: {config: ChartConfig, assetComparisonData: AssetGraphComparsion[]}) {
-  return (
-    <ChartContainer config={config} className="aspect-auto h-[400px] -ms-5 w-full">
-    <AreaChart
-      data={assetComparisonData[0]?.data || []}
-      margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-      className="h-[400px]"
-    >
-      <defs>
-        {assetComparisonData.map((asset, index) => (
-          <linearGradient 
-            key={`gradient-${asset.name}`} 
-            id={`color-${asset.name}`} 
-            x1="0" y1="0" x2="0" y2="1"
-          >
-            <stop offset="5%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.8}/>
-            <stop offset="95%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0}/>
-          </linearGradient>
-        ))}
-      </defs>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="date" tickFormatter={(date) => date.slice(5)} axisLine={false} />
-      <YAxis 
-        domain={['dataMin', 'dataMax']} 
-        axisLine={false} 
-        tickFormatter={(value) => `${value.toFixed(2)}%`} 
-      />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-      <Legend />
-      {assetComparisonData.map((asset, index) => (
-        <Area
-          key={asset.name}
-          type="natural"
-          dataKey="value"
-          data={asset.data}
-          name={asset.name}
-          stroke={COLORS[index % COLORS.length]}
-          fillOpacity={0.4}
-          fill={`url(#color-${asset.name})`}
+    const mergedData = useMemo(() => mergeComparisonData(assetComparisonData), [assetComparisonData]);
+    return (
+        <ChartContainer config={config} className="aspect-auto h-[400px] -ms-5 w-full">
+        <AreaChart
+        data={mergedData}
+        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+        className="h-[400px]"
+        >
+        <defs>
+            {assetComparisonData.map((asset, index) => (
+            <linearGradient 
+                key={`gradient-${asset.name}`} 
+                id={`color-${asset.name}`} 
+                x1="0" y1="0" x2="0" y2="1"
+            >
+                <stop offset="5%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.8}/>
+                <stop offset="95%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0}/>
+            </linearGradient>
+            ))}
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" tickFormatter={(date) => {
+                const d = new Date(date);
+                return new Intl.DateTimeFormat(undefined, {
+                    day: 'numeric',
+                    month: 'short',
+                }).format(d);
+            }} axisLine={false} 
         />
-      ))}
-    </AreaChart>
-    </ChartContainer>
-  );
-}
+        <YAxis 
+            domain={['dataMin', 'dataMax']} 
+            axisLine={false} 
+            tickFormatter={(value) => `${value.toFixed(2)}%`} 
+        />
+        <ChartTooltip cursor={false} content={    
+                <ChartTooltipContent
+                    formatter={(value, name) => {
+                        if (typeof value === 'number') {
+                            const formatted = `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
+                            const colorClass =
+                                value > 0 ? 'text-green-600' :
+                                value < 0 ? 'text-red-600' :
+                                'text-gray-600';
 
-type FundGraphProps = {
-    code: string;
+                            return (
+                                <span className={`font-mono}`}>
+                                    {name}: <span className={`${colorClass}`}>{formatted}</span>
+                                </span>
+                            );
+                        }
+
+                        return <span>{name}: {String(value)}</span>;
+                    }}
+                    
+                    labelFormatter={(label) => {
+                        const d = new Date(label);
+                        return new Intl.DateTimeFormat(undefined, {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                        }).format(d);
+                    }}
+                />
+            } 
+        />
+        <Legend />
+        {assetComparisonData.map((asset, index) => (
+            <Area
+            key={asset.name}
+            type="natural"
+            dataKey={asset.name}
+            name={asset.name}
+            stroke={COLORS[index % COLORS.length]}
+            fillOpacity={0.4}
+            fill={`url(#color-${asset.name})`}
+            connectNulls={false}
+            />
+        ))}
+        </AreaChart>
+        </ChartContainer>
+    );
 }
 
 const getStartDateFromRange = (range: string) => {
@@ -125,6 +210,9 @@ const getStartDateFromRange = (range: string) => {
         case "3m":
             startDate.setMonth(today.getMonth() - 3);
             break;
+        case "6m":
+            startDate.setMonth(today.getMonth() - 6);
+            break;
         case "1y":
             startDate.setFullYear(today.getFullYear() - 1);
             break;
@@ -134,12 +222,19 @@ const getStartDateFromRange = (range: string) => {
     return startDate.toISOString().slice(0, 10);
 }
 
+type FundGraphProps = {
+    code: string;
+}
+
 export default function FundDetailGraph({ code }: FundGraphProps) {
 
-    
     const [timeRange, setTimeRange] = useState("1y");
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
-    const [assetCodes, setAssetCodes] = useState<Array<string>>([code]);
+    const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
+    const assetCodes = useMemo(() => {
+        return selectedAssets.map(asset => asset.symbol);
+    }, [selectedAssets]); 
+
     // derive ISO dates based on “custom” vs preset
     const startDate =
         timeRange === "custom" && customRange?.from
@@ -151,13 +246,9 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
             ? customRange.to.toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10);
     const { prices, loading, error } = useFetchFundGraph(code, startDate, endDate);
-    const { assetComparisonData } = useAssetGraphComparsion(assetCodes, '2025-01-01', '2025-04-04');
+    const { assetComparisonData } = useAssetGraphComparsion(assetCodes, startDate, endDate);
 
     const isComparisonMode = assetCodes.length > 1 || (assetCodes.length === 1 && assetCodes[0] !== code);
-    
-    useEffect(() => {
-        console.log(assetComparisonData);
-    }, [assetComparisonData]);
 
     const chartConfig = {
         title: {
@@ -180,12 +271,13 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
         { key: "1w", label: "7 days" },
         { key: "1m", label: "30 days" },
         { key: "3m", label: "3 months" },
+        { key: "6m", label: "6 months" },
         { key: "1y", label: "1 year" },
     ]
 
-    const testCodes = [
-        'BGP',
-        'AFT'
+    const popularAssets = [
+        { symbol: 'BGP', name: 'Big Growth Portfolio', type: 'fund', icon_url : '', exchange_icon_url: '' },
+        { symbol: 'AFT', name: 'Alpha Fund Trust', type: 'fund', icon_url : '', exchange_icon_url: '' },
     ]
 
     return(
@@ -199,7 +291,6 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                         className="cursor-pointer"
                         onClick={() => {
                             setTimeRange(key)
-                            //setCustomRange(undefined)
                         }}
                     >
                         {label}
@@ -234,31 +325,6 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                     </PopoverContent>
                 </Popover>
             </div>
-            <ChartContainer config={chartConfig} className="aspect-auto h-[400px] -ms-5 w-full">
-                <AreaChart
-                    data={prices}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-                    className="h-[400px]"
-                >
-                    <defs>
-                        <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-                        </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" tickFormatter={(date) => date.slice(2)} axisLine={false} />
-                    <YAxis domain={[(dataMin: number) => dataMin * 0.99, 'dataMax']} axisLine={false} tickFormatter={(price) => price.toFixed(2)} />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                    <Area
-                        type="natural"
-                        dataKey="price"
-                        stroke="#8884d8"
-                        fillOpacity={0.4}
-                        fill="url(#colorPrice)"
-                    />
-                </AreaChart>
-            </ChartContainer>
 
             {isComparisonMode && assetComparisonData?.length > 1 ? (
                 <ComparisonChart config={chartConfig} assetComparisonData={assetComparisonData} />
@@ -267,23 +333,37 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
             )}
 
             <div className="flex items-center gap-2 mb-4">
-                {testCodes.map((code) => (
+                {popularAssets.map((asset) => (
                     <Button
-                        key={code}
+                        key={asset.symbol}
                         size="sm"
-                        variant={assetCodes.includes(code) ? "default" : "outline"}
-                        className="cursor-pointer"
+                        variant={selectedAssets.some(a => a.symbol === asset.symbol) ? "default" : "outline"}
                         onClick={() => {
-                            setAssetCodes((prev) =>
-                                prev.includes(code)
-                                    ? prev.filter((c) => c !== code) // remove if present
-                                    : [...prev, code] // add if not present
+                            setSelectedAssets((prev) =>
+                                prev.some((a) => a.symbol === asset.symbol)
+                                ? prev.filter((a) => a.symbol !== asset.symbol)
+                                : [...prev, asset]
                             );
                         }}
                     >
-                        {code}
+                        {asset.symbol}
                     </Button>
                 ))}
+
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="cursor-pointer">Compare Assets</Button>
+                    </DialogTrigger>
+                    <DialogContent className="md:max-w-[600px]">
+                        <DialogHeader>
+                            <DialogTitle>Compare Assets</DialogTitle>
+                        </DialogHeader>
+                        <AssetSearchPanel selectedAssets={selectedAssets} setSelectedAssets={setSelectedAssets} currentAssetSymbol={code}/>
+                        <DialogFooter>
+                            <Button>Save changes</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );

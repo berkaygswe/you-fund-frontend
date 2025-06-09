@@ -14,6 +14,7 @@ import {
   ColumnDef,
   flexRender,
   PaginationState,
+  Row,
 } from '@tanstack/react-table';
 import {
   Table,
@@ -165,7 +166,7 @@ export function FundListv5() {
         accessorKey: `priceChanges.${period}`,
         header: `${period.charAt(0).toUpperCase() + period.slice(1)} Change`,
         size: 100,
-        cell: ({ row }) => {
+        cell: ({ row }: { row: Row<Fund> }) => {
           const value = row.original.priceChanges[period];
           return (
             <div className={`text-center font-semibold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>

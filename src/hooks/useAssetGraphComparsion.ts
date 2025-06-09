@@ -8,6 +8,7 @@ export function useAssetGraphComparsion(assetCodes: string[], fromDate: string, 
     const [error, setError] = useState<Error | null>(null);
 
     const fetchComparison = useCallback( async () => {
+        if (assetCodes.length <= 1) return; // Skip fetching
         setLoading(true);
         setError(null);
         try{
@@ -21,8 +22,12 @@ export function useAssetGraphComparsion(assetCodes: string[], fromDate: string, 
     }, [assetCodes, fromDate, toDate]);
 
     useEffect(() => {
-        fetchComparison()
-    }, [fetchComparison]);
+        if (assetCodes.length > 1) {
+            fetchComparison();
+        } else {
+            setData([]); // clear previous comparison data if now not comparing
+        }
+    }, [fetchComparison, assetCodes.length]);
 
     return { assetComparisonData, loading, error, refetch: fetchComparison }
 }
