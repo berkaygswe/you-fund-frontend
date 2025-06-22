@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ChevronUp } from "lucide-react";
 
@@ -19,6 +19,9 @@ type RiskScaleProps = {
 export default function RiskScale({ riskLevel }: RiskScaleProps) {
   return (
     <Card>
+        <CardHeader>
+            <CardTitle>Risk Info</CardTitle>
+        </CardHeader>
         <CardContent>
             {/* Risk Bars */}
             <div className="flex w-full justify-between gap-1">

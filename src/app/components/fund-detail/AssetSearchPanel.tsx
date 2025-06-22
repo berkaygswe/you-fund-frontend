@@ -15,6 +15,12 @@ type AssetSearchPanelProps = {
   currentAssetSymbol: string;
 };
 
+const asset_types = [
+    { name: 'All', type: null },
+    { name: 'Fund', type: 'fund' },
+    { name: 'Commodity', type: 'commodity' },
+]
+
 export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAssetSymbol}: AssetSearchPanelProps) {
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -105,12 +111,19 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
             </div>
 
             <div className="flex items-center gap-2">
-                <Button className="rounded-2xl" size="sm" onClick={() => setType(null)} variant={type === null ? "default" : "outline"}>
-                    All
-                </Button>
-                <Button className="rounded-2xl" size="sm" onClick={() => setType("fund")} variant={type === "fund" ? "default" : "outline"}>
-                    Fon
-                </Button>
+                {asset_types.map((asset_type) => {
+                    return (
+                        <Button
+                            key={asset_type.type}
+                            className="rounded-2xl"
+                            size="sm"
+                            onClick={() => setType(asset_type.type)}
+                            variant={asset_type.type === type ? "default" : "outline"}
+                        >
+                            {asset_type.name}
+                        </Button>
+                    );
+                })}
             </div>
 
             <div>
@@ -185,6 +198,10 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
                                     variant="outline"
                                     size="sm"
                                     onClick={() => {
+                                        if (selectedAssets.length >= 6) {
+                                            alert("You can only compare up to 6 assets at a time.");
+                                            return;
+                                        }
                                         setSelectedAssets((prev) => [...prev, result]);
                                         //setSearchTerm(""); // Clear search after selection
                                     }}

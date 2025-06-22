@@ -1,3 +1,5 @@
+import { PriceChanges } from "./priceChanges";
+
 export interface Fund {
   code: string;
   name: string;
@@ -6,11 +8,5 @@ export interface Fund {
   currentPrice: number;
   founderName: string;
   founderLogoUrl: string;
-  priceChanges: {
-    weekly: number;
-    monthly: number;
-    threeMonth: number;
-    sixMonth: number;
-    yearly: number;
-  };
+  priceChanges: PriceChanges;
 }

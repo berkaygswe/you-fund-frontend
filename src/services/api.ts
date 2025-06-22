@@ -5,6 +5,9 @@ import { FundPrices } from '@/types/fundPrices';
 import { FundDetail } from '@/types/fundDetail';
 import { AssetGraphComparsion } from '@/types/assetGraphComparison';
 import { AssetSearchApiResponse } from '@/types/assetSearchResult';
+import { FundDetailGrowth } from '@/types/fundDetailGrowth';
+import { FundAllocation } from '@/types/fundAllocation';
+import { AssetDetailComparison } from '@/types/assetDetailComparsion';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -100,6 +103,19 @@ export const fundsApi = {
     console.log("API Response:", responseJson);
     
     return responseJson;
+  },
+
+  getFundDetailGrowth: async (code: string): Promise<FundDetailGrowth> => {
+    return fetchData<FundDetailGrowth>(`/fund/detail/fund_growth_detail?code=${code}`);
+  },
+
+  getFundAllocation: async (code: string): Promise<FundAllocation[]> => {
+    return fetchData<FundAllocation[]>(`/fund/detail/allocations/${code}`);
+  },
+
+  getAssetDetailComparison: async (assetCodes: string[], fromDate: string): Promise<AssetDetailComparison[]> => {
+    const codes = encodeURIComponent(assetCodes.join(','));
+    return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetCodes=${codes}&fromDate=${fromDate}`);
   }
   
   // Add more API methods as needed

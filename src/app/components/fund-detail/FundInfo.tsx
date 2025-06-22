@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator";
 
-
 export default function FundInfo({ fund }: { fund: FundDetail }) {
     return (
         <Card>
@@ -18,9 +17,9 @@ export default function FundInfo({ fund }: { fund: FundDetail }) {
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-1 gap-4">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-500">Fund Name</span>
-                        <span className="text-lg font-semibold">{fund.name}</span>
+                    <div className="grid grid-cols-6 items-center justify-between">
+                        <span className="col-span-2 text-sm font-medium text-gray-500">Fund Name</span>
+                        <span className="col-span-4 text-right text-lg font-semibold">{fund.name}</span>
                     </div>
                     <Separator />
                     <div className="flex items-center justify-between">
@@ -49,9 +48,6 @@ export default function FundInfo({ fund }: { fund: FundDetail }) {
                     </div>
                 </div>
             </CardContent>
-            <CardFooter>
-                <p>Card Footer</p>
-            </CardFooter>
         </Card>
     )
 }

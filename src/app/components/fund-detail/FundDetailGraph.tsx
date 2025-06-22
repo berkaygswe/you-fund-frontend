@@ -12,7 +12,7 @@ import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts"
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Search } from "lucide-react";
+import { CalendarIcon, GitCompare, Search } from "lucide-react";
 import { useAssetGraphComparsion } from "@/hooks/useAssetGraphComparsion";
 import { AssetGraphComparsion } from "@/types/assetGraphComparison";
 import {
@@ -29,12 +29,14 @@ import { AssetSearchResult } from "@/types/assetSearchResult";
 
 // Colors for different assets in comparison chart
 const COLORS = [
-  "#8884d8", // Purple (main fund)
-  "#82ca9d", // Green
-  "#ffc658", // Yellow
-  "#ff8042", // Orange
-  "#0088fe", // Blue
-  "#00C49F", // Teal
+    "#8884d8", // Purple (main fund)
+    "#82ca9d", // Green
+    "#ffc658", // Yellow
+    "#ff8042", // Orange
+    "#0088fe", // Blue
+    "#00C49F", // Teal
+    "#d88484", // Soft Red
+    "#a064d8"  // Lavender Purple
 ];
 
 // Component for single fund price chart
@@ -276,13 +278,16 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
     ]
 
     const popularAssets = [
-        { symbol: 'BGP', name: 'Big Growth Portfolio', type: 'fund', icon_url : '', exchange_icon_url: '' },
-        { symbol: 'AFT', name: 'Alpha Fund Trust', type: 'fund', icon_url : '', exchange_icon_url: '' },
+        { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url : '', exchange_icon_url: '' },
+        { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url : '', exchange_icon_url: '' },
+        { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url : '', exchange_icon_url: '' },
+        { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url : '', exchange_icon_url: '' },
+        { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url : '', exchange_icon_url: '' },
     ]
 
     return(
         <div className="mt-4">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
                 {ranges.map(({ key, label }) => (
                     <Button
                         key={key}
@@ -315,7 +320,6 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
                         <Calendar
-                            initialFocus
                             mode="range"
                             selected={customRange}
                             defaultMonth={customRange?.from}
@@ -332,27 +336,35 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                 <SingleFundChart config={chartConfig} prices={prices} code={code} />
             )}
 
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-2 mb-4 mt-4">
                 {popularAssets.map((asset) => (
                     <Button
                         key={asset.symbol}
+                        className="cursor-pointer"
                         size="sm"
                         variant={selectedAssets.some(a => a.symbol === asset.symbol) ? "default" : "outline"}
                         onClick={() => {
+                            const isSelected = selectedAssets.some(a => a.symbol === asset.symbol);
+
+                            if (!isSelected && selectedAssets.length >= 6) {
+                                alert("You can only compare up to 6 assets at a time.");
+                                return;
+                            }
+
                             setSelectedAssets((prev) =>
-                                prev.some((a) => a.symbol === asset.symbol)
+                                isSelected
                                 ? prev.filter((a) => a.symbol !== asset.symbol)
                                 : [...prev, asset]
                             );
                         }}
                     >
-                        {asset.symbol}
+                        {asset.name}
                     </Button>
                 ))}
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="cursor-pointer">Compare Assets</Button>
+                        <Button variant="outline" size="sm" className="cursor-pointer"><GitCompare /> Compare Assets</Button>
                     </DialogTrigger>
                     <DialogContent className="md:max-w-[600px]">
                         <DialogHeader>
