@@ -30,7 +30,6 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
     const {
         searchResults,
         loading: searchLoading,
-        error: searchError,
         fetchNextPage,
         isLastPage
     } = useAssetSearch(debouncedSearchTerm, type, 10);

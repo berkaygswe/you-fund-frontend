@@ -11,8 +11,6 @@ import {
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -27,7 +25,7 @@ const chartConfig = {
 
 export default function FundGrowth({ code }: { code: string }) {
 
-    const { fundGrowth, loading, error } = useFundDetailGrowth(code);
+    const { fundGrowth, loading } = useFundDetailGrowth(code);
 
     const marketCapChart = fundGrowth.marketCap;
     const shareNumberChart = fundGrowth.shareNumber;

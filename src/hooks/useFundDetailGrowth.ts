@@ -1,7 +1,6 @@
 // src/hooks/useFundDetailGrowth.ts
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
 import { fundsApi } from '../services/api';
 import { FundDetailGrowth } from '@/types/fundDetailGrowth';
 import { useApiData } from './useApiData';

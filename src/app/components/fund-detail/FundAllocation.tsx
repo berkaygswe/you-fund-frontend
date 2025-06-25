@@ -2,7 +2,6 @@ import { useFundAllocation } from "@/hooks/useFundAllocation";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
@@ -18,9 +17,7 @@ import { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -32,15 +29,14 @@ const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--cha
 const chartConfig = {} as ChartConfig;
 
 export default function FundAllocation({ code }: { code: string })  {
-    const {fundAllocation, loading, error} = useFundAllocation(code);
+    const {fundAllocation, loading} = useFundAllocation(code);
     const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
     const activeItem = activeIndex !== null ? fundAllocation[activeIndex] : null;
 
     const renderActiveShape = (props: any) => {
         const {
-        cx, cy, innerRadius, outerRadius, startAngle, endAngle,
-        fill, payload, percent
+            cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill
         } = props;
 
         return (

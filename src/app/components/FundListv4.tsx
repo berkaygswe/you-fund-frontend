@@ -7,7 +7,6 @@ import { FundUmbrellaType } from '@/types/fundUmbrellaType';
 import {
   useReactTable,
   getCoreRowModel,
-  getPaginationRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   SortingState,
@@ -31,15 +30,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import debounce from 'lodash.debounce';
-import { DataTablePagination } from './DataTablePagination';
 import { ArrowDown, ArrowUp, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
 import { useVirtualizer } from '@tanstack/react-virtual';
-
-interface FundTableProps {
-  initialFunds?: Fund[];
-}
 
 type IndexedFund = Fund & {
   key: string;
@@ -48,7 +42,7 @@ type IndexedFund = Fund & {
 
 const periods = ['weekly', 'monthly', 'threeMonth', 'sixMonth', 'yearly'] as const;
 
-export function FundListv4({ initialFunds = [] }: FundTableProps) {
+export function FundListv4() {
   const [isPending, startTransition] = useTransition();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');

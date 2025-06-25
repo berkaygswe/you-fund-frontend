@@ -9,16 +9,15 @@ import {
 } from "@/components/ui/popover"
 import { useFetchFundGraph } from "@/hooks/useFetchFundPrice";
 import { useMemo, useState } from "react";
-import { Area, AreaChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, GitCompare, Search } from "lucide-react";
+import { CalendarIcon, GitCompare } from "lucide-react";
 import { useAssetGraphComparsion } from "@/hooks/useAssetGraphComparsion";
 import { AssetGraphComparsion } from "@/types/assetGraphComparison";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -40,7 +39,7 @@ const COLORS = [
 ];
 
 // Component for single fund price chart
-function SingleFundChart({ config, prices, code }: {config: ChartConfig, prices: Array<Object>, code: string}) {
+function SingleFundChart({ config, prices, code }: {config: ChartConfig, prices: Array<object>, code: string}) {
 
     if (!prices || prices.length === 0) return null;
     return (
@@ -89,6 +88,15 @@ function SingleFundChart({ config, prices, code }: {config: ChartConfig, prices:
     );
 }
 
+export interface MergedChartDataPoint {
+  date: string;
+  // This index signature allows for dynamic properties where the key is a string (asset name)
+  // and the value is either a number (the asset's value) or null (if no data for that date/asset).
+  // We also include 'string' as a possible type for `this[key]` to cover the 'date' property itself.
+  [assetName: string]: number | null | string;
+}
+
+
 function mergeComparisonData(assetComparisonData: AssetGraphComparsion[]) {
     if (!assetComparisonData || assetComparisonData.length === 0) return [];
 
@@ -103,7 +111,7 @@ function mergeComparisonData(assetComparisonData: AssetGraphComparsion[]) {
 
     // Create merged data array
     return sortedDates.map(date => {
-        const dataPoint: any = { date };
+        const dataPoint: MergedChartDataPoint = { date };
         
         assetComparisonData.forEach(asset => {
         const assetDataPoint = asset.data.find(item => item.date === date);
@@ -201,7 +209,7 @@ function ComparisonChart({ config, assetComparisonData }: {config: ChartConfig, 
 
 const getStartDateFromRange = (range: string) => {
     const today = new Date();
-    let startDate = new Date(today);
+    const startDate = new Date(today);
     switch (range) {
         case "1w":
             startDate.setDate(today.getDate() - 7);
@@ -247,7 +255,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
         timeRange === "custom" && customRange?.to
             ? customRange.to.toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10);
-    const { prices, loading, error } = useFetchFundGraph(code, startDate, endDate);
+    const { prices } = useFetchFundGraph(code, startDate, endDate);
     const { assetComparisonData } = useAssetGraphComparsion(assetCodes, startDate, endDate);
 
     const isComparisonMode = assetCodes.length > 1 || (assetCodes.length === 1 && assetCodes[0] !== code);

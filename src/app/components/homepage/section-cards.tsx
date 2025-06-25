@@ -2,20 +2,18 @@
 
 import {
     Card,
-    CardAction,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAssetDetailComparsion } from "@/hooks/useAssetDetailComparison";
 import { useFetchFundGraph } from "@/hooks/useFetchFundPrice";
 import { Info, TrendingDown, TrendingUp } from "lucide-react"
 import { useMemo } from "react";
-import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Line, LineChart, XAxis, YAxis } from "recharts";
 
 
 const chartConfig = {
@@ -29,7 +27,7 @@ const chartConfig = {
 export function SectionCards({code}: {code: string}) {
 
     const today = new Date();
-    let sDate = new Date(today);
+    const sDate = new Date(today);
     sDate.setDate(today.getDate() - 7);
     const startDate = sDate.toISOString().slice(0, 10);
 

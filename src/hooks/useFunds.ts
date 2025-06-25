@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { Fund } from '../types/fund';
-import { fundsApi, ApiError } from '../services/api';
+import { fundsApi } from '../services/api';
 
 interface UseFundsResult {
   funds: Fund[];

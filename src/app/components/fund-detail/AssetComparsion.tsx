@@ -14,12 +14,10 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -39,7 +37,7 @@ const ranges = [
 
 const getStartDateFromRange = (range: string) => {
     const today = new Date();
-    let startDate = new Date(today);
+    const startDate = new Date(today);
     switch (range) {
         case "1w":
             startDate.setDate(today.getDate() - 7);
@@ -81,9 +79,8 @@ export default function AssetComparison({code}: {code: string}) {
 
     const startDate = getStartDateFromRange(timeRange);
 
-    const {assetComparisonData, loading, error} = useAssetDetailComparsion(assetCodes, startDate);
+    const {assetComparisonData, loading} = useAssetDetailComparsion(assetCodes, startDate);
 
-    console.log('Asset Comparison Data:', assetComparisonData);
     return (
         <div>
             {loading ? <div></div> : (

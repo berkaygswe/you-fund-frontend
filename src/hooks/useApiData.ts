@@ -8,7 +8,7 @@ interface ApiResponse<T> {
   refetch: () => Promise<void>;
 }
 
-export function useApiData<T>(fetchFn: () => Promise<T>, deps: any[] = []): ApiResponse<T> {
+export function useApiData<T>(fetchFn: () => Promise<T>, deps: ReadonlyArray<unknown> = []): ApiResponse<T> {
   const [data, setData] = useState<T>({} as T);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);

@@ -36,10 +36,6 @@ import { ArrowDown, ArrowUp, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
 
-interface FundTableProps {
-  initialFunds?: Fund[];
-}
-
 type IndexedFund = Fund & {
   key: string;
   searchKey: string;
@@ -48,7 +44,7 @@ type IndexedFund = Fund & {
 // Move outside component to prevent recreation on each render
 const periods = ['weekly', 'monthly', 'threeMonth', 'sixMonth', 'yearly'] as const;
 
-export function FundListv3({ initialFunds = [] }: FundTableProps) {
+export function FundListv3() {
   // States
   const [isPending, startTransition] = useTransition();
   const [sorting, setSorting] = useState<SortingState>([]);

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { FundUmbrellaType } from '../types/fundUmbrellaType';
-import { fundsApi, ApiError } from '../services/api';
+import { fundsApi } from '../services/api';
 
 interface UseFundUmbrellaTypesResult {
   umbrellaTypes: FundUmbrellaType[];

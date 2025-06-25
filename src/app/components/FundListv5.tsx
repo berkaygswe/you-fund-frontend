@@ -1,15 +1,11 @@
 'use client';
 
 import { useMemo, useState, useCallback, useTransition } from 'react';
-import { useFunds } from '../../hooks/useFunds';
 import { Fund } from '@/types/fund';
 import { FundUmbrellaType } from '@/types/fundUmbrellaType';
 import {
   useReactTable,
   getCoreRowModel,
-  getPaginationRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
   SortingState,
   ColumnDef,
   flexRender,
@@ -181,7 +177,7 @@ export function FundListv5() {
         enableSorting: true,
       })
     ),
-  ], []);
+  ], [periods]);
 
   // Create table instance with memoization
   const table = useReactTable({
