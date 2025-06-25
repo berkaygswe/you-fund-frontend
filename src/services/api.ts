@@ -8,6 +8,7 @@ import { AssetSearchApiResponse } from '@/types/assetSearchResult';
 import { FundDetailGrowth } from '@/types/fundDetailGrowth';
 import { FundAllocation } from '@/types/fundAllocation';
 import { AssetDetailComparison } from '@/types/assetDetailComparsion';
+import { AssetTopMovers } from '@/types/assetTopMovers';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -116,7 +117,11 @@ export const fundsApi = {
   getAssetDetailComparison: async (assetCodes: string[], fromDate: string): Promise<AssetDetailComparison[]> => {
     const codes = encodeURIComponent(assetCodes.join(','));
     return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetCodes=${codes}&fromDate=${fromDate}`);
-  }
+  },
+
+  getAssetTopMovers: async (direction: string, currency: string): Promise<AssetTopMovers[]> => {
+    return fetchData<AssetTopMovers[]>(`/asset/top-movers?direction=${direction}&currency=${currency}`);
+  },
   
   // Add more API methods as needed
 };

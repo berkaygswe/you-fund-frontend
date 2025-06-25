@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { useAssetDetailComparsion } from "@/hooks/useAssetDetailComparison";
 import { useMemo, useState } from "react";
@@ -26,14 +28,6 @@ import {
 import { AssetSearchPanel } from "./AssetSearchPanel";
 import { AssetSearchResult } from "@/types/assetSearchResult";
 import { CirclePlus } from "lucide-react";
-
-const popularAssets = [
-    { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url : '', exchange_icon_url: '' },
-]
 
 const ranges = [
     { key: "1w", label: "7 days" },
