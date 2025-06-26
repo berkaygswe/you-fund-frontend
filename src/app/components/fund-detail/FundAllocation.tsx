@@ -12,7 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { Cell, Pie, PieChart, Sector } from "recharts"
+import { Cell, Pie, PieChart, Sector, SectorProps } from "recharts"
 import { useState } from "react";
 import {
   Table,
@@ -34,7 +34,7 @@ export default function FundAllocation({ code }: { code: string })  {
 
     const activeItem = activeIndex !== null ? fundAllocation[activeIndex] : null;
 
-    const renderActiveShape = (props: any) => {
+    const renderActiveShape = (props: SectorProps) => {
         const {
             cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill
         } = props;
@@ -45,7 +45,7 @@ export default function FundAllocation({ code }: { code: string })  {
                     cx={cx}
                     cy={cy}
                     innerRadius={innerRadius}
-                    outerRadius={outerRadius + 5}
+                    outerRadius={outerRadius ? outerRadius + 5 : 5}
                     startAngle={startAngle}
                     endAngle={endAngle}
                     fill={fill}

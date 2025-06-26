@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { fundsApi, ApiError } from '../services/api';
+import { fundsApi } from '../services/api';
 import { FundPrices } from '@/types/fundPrices';
 
 interface UseResult {
