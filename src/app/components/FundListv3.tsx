@@ -13,6 +13,7 @@ import {
   SortingState,
   ColumnDef,
   flexRender,
+  Row,
 } from '@tanstack/react-table';
 import {
   Table,
@@ -116,7 +117,7 @@ export function FundListv3() {
         accessorKey: `priceChanges.${period}`,
         header: `${period.charAt(0).toUpperCase() + period.slice(1)} Change`,
         size: 100,
-        cell: ({ row }) => {
+        cell: ({ row }: { row: Row<IndexedFund> }) => {
           const value = row.original.priceChanges[period];
           return (
             <div className={`text-center font-semibold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -297,7 +298,11 @@ export function FundListv3() {
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination         
+        table={table}
+        totalItems={50}
+        pageSizeOptions={[10, 20, 30]} 
+      />
     </div>
   );
 }
