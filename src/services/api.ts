@@ -83,8 +83,8 @@ export const fundsApi = {
     };
   },
 
-  getFundGraph: async (code: string, startDate: string, endDate: string): Promise<FundPrices[]> => {
-    return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}`);
+  getFundGraph: async (code: string, startDate: string, endDate: string, currency: string): Promise<FundPrices[]> => {
+    return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}&currency=${currency}`);
   },
 
   getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string): Promise<AssetGraphComparsion[]> => {
@@ -114,9 +114,9 @@ export const fundsApi = {
     return fetchData<FundAllocation[]>(`/fund/detail/allocations/${code}`);
   },
 
-  getAssetDetailComparison: async (assetCodes: string[], fromDate: string): Promise<AssetDetailComparison[]> => {
+  getAssetDetailComparison: async (assetCodes: string[], fromDate: string, currency: string): Promise<AssetDetailComparison[]> => {
     const codes = encodeURIComponent(assetCodes.join(','));
-    return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetCodes=${codes}&fromDate=${fromDate}`);
+    return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetCodes=${codes}&fromDate=${fromDate}&currency=${currency}`);
   },
 
   getAssetTopMovers: async (direction: string, currency: string): Promise<AssetTopMovers[]> => {

@@ -26,6 +26,7 @@ import {
 import { AssetSearchPanel } from "./AssetSearchPanel";
 import { AssetSearchResult } from "@/types/assetSearchResult";
 import { CirclePlus } from "lucide-react";
+import { useCurrencyStore } from "@/stores/currency-store";
 
 const ranges = [
     { key: "1w", label: "7 days" },
@@ -64,6 +65,8 @@ const chartConfig = {} as ChartConfig;
 
 export default function AssetComparison({code}: {code: string}) {
 
+    const currency = useCurrencyStore((s) => s.currency)
+
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([
         { symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' },
         { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
@@ -79,7 +82,7 @@ export default function AssetComparison({code}: {code: string}) {
 
     const startDate = getStartDateFromRange(timeRange);
 
-    const {assetComparisonData, loading} = useAssetDetailComparsion(assetCodes, startDate);
+    const {assetComparisonData, loading} = useAssetDetailComparsion(assetCodes, startDate, currency);
 
     return (
         <div>

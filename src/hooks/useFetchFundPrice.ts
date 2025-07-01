@@ -12,7 +12,7 @@ interface UseResult {
   refetch: () => Promise<void>;
 }
 
-export function useFetchFundGraph(code: string, startDate: string, endDate: string): UseResult {
+export function useFetchFundGraph(code: string, startDate: string, endDate: string, currency: string): UseResult {
   const [prices, setFundPrice] = useState<FundPrices[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
@@ -21,14 +21,14 @@ export function useFetchFundGraph(code: string, startDate: string, endDate: stri
     setLoading(true);
     setError(null);
     try {
-      const data = await fundsApi.getFundGraph(code, startDate, endDate);
+      const data = await fundsApi.getFundGraph(code, startDate, endDate, currency);
       setFundPrice(data);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error occurred'));
     } finally {
       setLoading(false);
     }
-  }, [code, startDate, endDate]);
+  }, [code, startDate, endDate, currency]);
 
   useEffect(() => {
     fetchFundGraph();

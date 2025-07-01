@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         port: '8080',
         pathname: '/logos/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        pathname: '/**',
+      },
     ],
   },
 };

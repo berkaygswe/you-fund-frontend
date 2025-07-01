@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog"
 import { AssetSearchPanel } from "./AssetSearchPanel";
 import { AssetSearchResult } from "@/types/assetSearchResult";
+import { useCurrencyStore } from "@/stores/currency-store";
 
 // Colors for different assets in comparison chart
 const COLORS = [
@@ -238,6 +239,8 @@ type FundGraphProps = {
 
 export default function FundDetailGraph({ code }: FundGraphProps) {
 
+    const currency = useCurrencyStore((s) => s.currency)
+
     const [timeRange, setTimeRange] = useState("1y");
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
@@ -255,7 +258,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
         timeRange === "custom" && customRange?.to
             ? customRange.to.toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10);
-    const { prices } = useFetchFundGraph(code, startDate, endDate);
+    const { prices } = useFetchFundGraph(code, startDate, endDate, currency);
     const { assetComparisonData } = useAssetGraphComparsion(assetCodes, startDate, endDate);
 
     const isComparisonMode = assetCodes.length > 1 || (assetCodes.length === 1 && assetCodes[0] !== code);

@@ -17,11 +17,20 @@ import {
 
 import { useAssetTopMovers } from "@/hooks/useAssetTopMovers";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrencyStore } from "@/stores/currency-store";
+import { Flame, Snowflake } from "lucide-react";
+import { useFormatCurrency } from "@/utils/formatCurrency";
+import { useRouter } from 'next/navigation';
+import Link from "next/link";
 
 export default function AssetTopMovers(){
 
-    const { assets: topLosers, loading: topLosersLoading, error: topLosersError } = useAssetTopMovers('ASC', 'TRY');
-    const { assets: topGainers, loading: topGainersLoading, error: topGainersError } = useAssetTopMovers('DESC', 'TRY');
+    const formatCurrency = useFormatCurrency();
+    const currency = useCurrencyStore((s) => s.currency)
+    const router = useRouter();
+
+    const { assets: topLosers, loading: topLosersLoading, error: topLosersError } = useAssetTopMovers('ASC', currency);
+    const { assets: topGainers, loading: topGainersLoading, error: topGainersError } = useAssetTopMovers('DESC', currency);
 
     if (topLosersLoading || topGainersLoading) {
         return (
@@ -55,7 +64,7 @@ export default function AssetTopMovers(){
         <div className="flex flex-col gap-4">
             <Card>
                 <CardHeader>
-                    <CardTitle>Top Gainers</CardTitle>
+                    <CardTitle className="flex gap-2 items-center"><Flame className="text-red-500" /> Top Gainers (24h)</CardTitle>
                 </CardHeader>
                 <CardContent>
                 <Table>
@@ -68,21 +77,36 @@ export default function AssetTopMovers(){
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {topGainers.map((asset) => (
-                            <TableRow key={asset.symbol}>
-                                <TableCell>{asset.symbol}</TableCell>
-                                <TableCell>{asset.name}</TableCell>
-                                <TableCell>{asset.currentClose.toFixed(2)}</TableCell>
-                                <TableCell className={`${asset.percentageChange >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold`}>{asset.percentageChange.toFixed(2)}%</TableCell>
-                            </TableRow>
-                        ))}
+                    {topGainers.map((asset) => {
+                        const isFund = asset.type === 'fund';
+                        return (
+                        <TableRow
+                            key={asset.symbol}
+                            onClick={() => {
+                            if (isFund) router.push(`/fund/detail/${asset.symbol}`);
+                            }}
+                            className={isFund ? 'cursor-pointer hover:bg-gray-100 transition' : ''}
+                        >
+                            <TableCell>{asset.symbol}</TableCell>
+                            <TableCell>{asset.name}</TableCell>
+                            <TableCell className="whitespace-nowrap">
+                                {formatCurrency(Number(asset.currentClose))}
+                            </TableCell>
+                            <TableCell
+                            className={`${asset.percentageChange >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold`}
+                            >
+                            {asset.percentageChange.toFixed(2)}%
+                            </TableCell>
+                        </TableRow>
+                        );
+                    })}
                     </TableBody>
                 </Table>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Top Losers</CardTitle>
+                    <CardTitle className="flex gap-2 items-center"><Snowflake className="text-blue-500" /> Top Losers (24h)</CardTitle>
                 </CardHeader>
                 <CardContent>
                 <Table>
@@ -95,14 +119,29 @@ export default function AssetTopMovers(){
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {topLosers.map((asset) => (
-                            <TableRow key={asset.symbol}>
-                                <TableCell>{asset.symbol}</TableCell>
-                                <TableCell>{asset.name}</TableCell>
-                                <TableCell>{asset.currentClose.toFixed(2)}</TableCell>
-                                <TableCell className={`${asset.percentageChange >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold`}>{asset.percentageChange.toFixed(2)}%</TableCell>
-                            </TableRow>
-                        ))}
+                    {topLosers.map((asset) => {
+                        const isFund = asset.type === 'fund';
+                        return (
+                        <TableRow
+                            key={asset.symbol}
+                            onClick={() => {
+                            if (isFund) router.push(`/fund/detail/${asset.symbol}`);
+                            }}
+                            className={isFund ? 'cursor-pointer hover:bg-gray-100 transition' : ''}
+                        >
+                            <TableCell>{asset.symbol}</TableCell>
+                            <TableCell>{asset.name}</TableCell>
+                            <TableCell className="whitespace-nowrap">
+                                {formatCurrency(Number(asset.currentClose))}
+                            </TableCell>
+                            <TableCell
+                            className={`${asset.percentageChange >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold`}
+                            >
+                            {asset.percentageChange.toFixed(2)}%
+                            </TableCell>
+                        </TableRow>
+                        );
+                    })}
                     </TableBody>
                 </Table>
                 </CardContent>
