@@ -2,7 +2,7 @@
 
 import { useCurrencyStore } from "@/stores/currency-store"
 
-export const getCurrencySymbol = () => {
+export const useCurrencySymbol = () => {
 
     const currency = useCurrencyStore((s) => s.currency);
 

@@ -2,7 +2,7 @@ import { fundsApi } from "@/services/api";
 import { AssetGraphComparsion } from "@/types/assetGraphComparison";
 import { useCallback, useEffect, useState } from "react";
 
-export function useAssetGraphComparsion(assetCodes: string[], fromDate: string, toDate: string){
+export function useAssetGraphComparsion(assetCodes: string[], fromDate: string, toDate: string, currency: string) {
     const [assetComparisonData, setData] = useState<AssetGraphComparsion[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
@@ -12,14 +12,14 @@ export function useAssetGraphComparsion(assetCodes: string[], fromDate: string, 
         setLoading(true);
         setError(null);
         try{
-            const data = await fundsApi.getAssetGraphComparison(assetCodes, fromDate, toDate);
+            const data = await fundsApi.getAssetGraphComparison(assetCodes, fromDate, toDate, currency);
             setData(data);
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Unknown error occurred'));
         } finally {
             setLoading(false);
         }
-    }, [assetCodes, fromDate, toDate]);
+    }, [assetCodes, fromDate, toDate, currency]);
 
     useEffect(() => {
         if (assetCodes.length > 1) {

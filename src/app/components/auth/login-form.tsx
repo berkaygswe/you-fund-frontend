@@ -22,7 +22,7 @@ export function LoginForm({
         password: ''
     });
 
-    const { register, login } = useAuth();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -48,6 +48,11 @@ export function LoginForm({
           Enter your email below to login to your account
         </p>
       </div>
+      {error && (
+        <div className="text-red-500 text-sm text-center">
+          {error}
+        </div>
+      )}
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>

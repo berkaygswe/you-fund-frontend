@@ -1,4 +1,5 @@
 // stores/currency-store.ts
+import { Currency } from '@/types/currency'
 import { getDefaultCurrencyFromLocale } from '@/utils/getDefaultCurrency'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'

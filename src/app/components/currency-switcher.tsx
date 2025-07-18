@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select"
 import { useCurrencyStore} from "@/stores/currency-store"
 import Image from "next/image"
+import { Currency } from "@/types/currency"
 
 const currencies: { code: Currency; symbol: string; countryCode: string }[] = [
   { code: "USD", symbol: "$", countryCode: "us" },

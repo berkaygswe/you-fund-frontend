@@ -1,1 +1,1 @@
-type Currency = "USD" | "TRY"
+export type Currency = "USD" | "TRY"

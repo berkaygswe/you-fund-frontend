@@ -1,7 +1,6 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { authClient } from './lib/auth-client';
 
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get('jwt')?.value;
