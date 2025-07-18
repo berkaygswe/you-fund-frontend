@@ -9,6 +9,7 @@ import { FundDetailGrowth } from '@/types/fundDetailGrowth';
 import { FundAllocation } from '@/types/fundAllocation';
 import { AssetDetailComparison } from '@/types/assetDetailComparsion';
 import { AssetTopMovers } from '@/types/assetTopMovers';
+import { FundTypePerformance } from '@/types/fundTypePerformance';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -87,9 +88,9 @@ export const fundsApi = {
     return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}&currency=${currency}`);
   },
 
-  getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string): Promise<AssetGraphComparsion[]> => {
+  getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string, currency: string): Promise<AssetGraphComparsion[]> => {
     const codes = encodeURIComponent(assetCodes.join(','));
-    return fetchData<AssetGraphComparsion[]>(`/asset/detail/graph/comparison?assetCodes=${codes}&fromDate=${fromDate}&toDate=${toDate}`)
+    return fetchData<AssetGraphComparsion[]>(`/asset/detail/graph/comparison?assetCodes=${codes}&fromDate=${fromDate}&toDate=${toDate}&currency=${currency}`);
   },
 
   getAssetSearch: async (searchTerms: string, type: string | null, page: number = 0, size: number = 10): Promise<AssetSearchApiResponse> => {
@@ -122,6 +123,10 @@ export const fundsApi = {
   getAssetTopMovers: async (direction: string, currency: string): Promise<AssetTopMovers[]> => {
     return fetchData<AssetTopMovers[]>(`/asset/top-movers?direction=${direction}&currency=${currency}`);
   },
+
+  getFundTypePerformance: async (currency: string): Promise<FundTypePerformance[]> => {
+    return fetchData<FundTypePerformance[]>(`/fund-type-performance?currency=${currency}`);
+  }
   
   // Add more API methods as needed
 };

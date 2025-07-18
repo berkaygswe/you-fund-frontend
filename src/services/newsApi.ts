@@ -20,14 +20,19 @@ export type NewsArticle = {
 
 export default async function fetchNews(): Promise<NewsArticle[]> {
   try {
-    const res = await fetch(`https://newsapi.org/v2/top-headlines?category=business&apiKey=${process.env.NEWS_API_KEY}`);
+    // Set revalidate option to 86400 seconds (24 hours)
+    const res = await fetch(`https://newsapi.org/v2/top-headlines?category=business&apiKey=${process.env.NEWS_API_KEY}`, {
+      next: {
+        revalidate: 86400, // Revalidate every 24 hours (60 * 60 * 24)
+      },
+    });
 
     if (!res.ok) {
       throw new Error(`News API error: ${res.status}`);
     }
 
     const data: { articles: NewsApiArticle[] } = await res.json();
-    console.log(data);
+
     return data.articles.map((article) => ({
       title: article.title,
       url: article.url,

@@ -21,7 +21,6 @@ import { useCurrencyStore } from "@/stores/currency-store";
 import { Flame, Snowflake } from "lucide-react";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useRouter } from 'next/navigation';
-import Link from "next/link";
 
 export default function AssetTopMovers(){
 

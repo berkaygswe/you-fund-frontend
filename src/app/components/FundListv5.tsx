@@ -114,7 +114,7 @@ export function FundListv5() {
           <Link className='flex gap-1 items-center' href={`/fund/detail/${row.getValue('code')}`}>
             {row.original.founderLogoUrl ? (
                 <ImageWrap
-                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/logos/${row.original.founderLogoUrl}`}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/fund/${row.original.founderLogoUrl}`}
                     width={20}
                     height={20}
                     className='rounded-md'

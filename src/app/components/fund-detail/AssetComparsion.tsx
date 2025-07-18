@@ -84,9 +84,14 @@ export default function AssetComparison({code}: {code: string}) {
 
     const {assetComparisonData, loading} = useAssetDetailComparsion(assetCodes, startDate, currency);
 
+    // Ensure assetComparisonData is always an array, even if empty or null initially
+    const chartData = useMemo(() => {
+        return Array.isArray(assetComparisonData) ? assetComparisonData : [];
+    }, [assetComparisonData]);
+
     return (
         <div>
-            {loading ? <div></div> : (
+            {loading && chartData.length === 0 ? <div></div> : (
                 <Card>
                     <CardHeader>
                         <CardTitle>Asset Comparison</CardTitle>
@@ -130,7 +135,7 @@ export default function AssetComparison({code}: {code: string}) {
                             </div>
                             <div>
                                 <ChartContainer config={chartConfig} className="-ms-8 max-h-[400px] md:w-full">
-                                    <BarChart accessibilityLayer data={assetComparisonData}>
+                                    <BarChart accessibilityLayer data={chartData}>
                                         <CartesianGrid vertical={false} />
                                         <XAxis
                                             dataKey="name"
@@ -142,7 +147,7 @@ export default function AssetComparison({code}: {code: string}) {
                                             tick={({ x, y, payload }) => {
                                                 const label = payload.value;
                                                 const isTooLong = label.length > 15;
-                                                const item = assetComparisonData.find(d => d.name === label);
+                                                const item = chartData.find(d => d.name === label);
                                                 const display = isTooLong && item ? item.symbol : label;
 
                                                 return (
@@ -178,7 +183,7 @@ export default function AssetComparison({code}: {code: string}) {
                                         />
                                         <YAxis axisLine={false} />
                                         <Bar dataKey="percentChangeFromStart" fill="var(--color-value)" radius={8} >
-                                            {assetComparisonData.map((entry, index) => (
+                                            {chartData.map((entry, index) => (
                                                 <Cell
                                                     key={`cell-${index}`}
                                                     fill={entry.percentChangeFromStart >= 0 ? '#22c55e' : '#ef4444'} // Tailwind green-500 / red-500

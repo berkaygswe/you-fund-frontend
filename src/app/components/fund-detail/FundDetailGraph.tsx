@@ -259,7 +259,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
             ? customRange.to.toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10);
     const { prices } = useFetchFundGraph(code, startDate, endDate, currency);
-    const { assetComparisonData } = useAssetGraphComparsion(assetCodes, startDate, endDate);
+    const { assetComparisonData } = useAssetGraphComparsion(assetCodes, startDate, endDate, currency);
 
     const isComparisonMode = assetCodes.length > 1 || (assetCodes.length === 1 && assetCodes[0] !== code);
 
