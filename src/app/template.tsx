@@ -18,10 +18,10 @@ export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="bg-gray-50">
         <Header />
         <main className="w-full">
-          <div className="m-6">{children}</div>
+          <div className="m-3 md:m-6">{children}</div>
           <div className="mt-10"></div>
         </main>
       </SidebarInset>

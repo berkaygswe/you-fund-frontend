@@ -37,7 +37,7 @@ export function CurrencySwitcher() {
 
   return (
     <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
-      <SelectTrigger className="w-[130px] h-9 px-3 justify-between">
+      <SelectTrigger className="w-[130px] h-9 px-3 justify-between bg-background cursor-pointer hover:bg-accent transition-all">
         {selected && (
           <div className="flex items-center gap-2">
             <Image

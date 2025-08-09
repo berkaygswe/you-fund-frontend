@@ -1,9 +1,9 @@
 'use client';
 
-import LandingV3 from "./components/Landing3";
+import LandingEnhanced from "./components/LandingEnhanced";
 
 export default function Home() {
   return (
-    <LandingV3 />
+    <LandingEnhanced />
   );
 }

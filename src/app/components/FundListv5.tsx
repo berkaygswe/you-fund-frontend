@@ -8,18 +8,9 @@ import {
   getCoreRowModel,
   SortingState,
   ColumnDef,
-  flexRender,
   PaginationState,
   Row,
 } from '@tanstack/react-table';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +20,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import debounce from 'lodash.debounce';
-import { DataTablePagination } from './DataTablePagination';
 import { ArrowDown, ArrowUp, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
@@ -37,6 +27,7 @@ import { useFundsTest } from '@/hooks/useFundsTest';
 import Link from 'next/link';
 import Image from 'next/image';
 import ImageWrap from './ImageWrap';
+import { DataTable } from './DataTable';
 
 // Move outside component to prevent recreation on each render
 const periods = ['weekly', 'monthly', 'threeMonth', 'sixMonth', 'yearly'] as const;
@@ -111,7 +102,7 @@ export function FundListv5() {
       size: 70,
       cell: ({ row }) => (
         <div className="font-medium">
-          <Link className='flex gap-1 items-center' href={`/fund/detail/${row.getValue('code')}`}>
+          <Link className='flex gap-1 justify-center items-center' href={`/fund/detail/${row.getValue('code')}`}>
             {row.original.founderLogoUrl ? (
                 <ImageWrap
                     src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/fund/${row.original.founderLogoUrl}`}
@@ -152,7 +143,7 @@ export function FundListv5() {
       size: 100,
       cell: ({ row }) => (
         <div className="text-center">
-          {Number(row.getValue('currentPrice')).toFixed(6)}
+          {Number(row.getValue('currentPrice')).toFixed(6) + ' ₺'}
         </div>
       ),
     },
@@ -222,7 +213,7 @@ export function FundListv5() {
       <div className="flex items-center gap-4">
         <Input
           placeholder="Search funds..."
-          className="max-w-md"
+          className="max-w-md bg-white"
           value={inputValue}
           onChange={handleInputChange}
         />
@@ -265,7 +256,7 @@ export function FundListv5() {
           ))}
         </div>
       ) : ( <>
-        <div className="rounded-md border overflow-x-auto">
+        {/* <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader className='bg-muted'>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -329,7 +320,20 @@ export function FundListv5() {
         <DataTablePagination         
           table={table}
           totalItems={totalCount}
-          pageSizeOptions={[10, 20, 30]} /></>
+          pageSizeOptions={[10, 20, 30]} 
+        /> */}
+        <DataTable<Fund>
+          columns={columns}
+          data={funds}
+          sorting={sorting}
+          pagination={pagination}
+          totalCount={totalCount}
+          totalPages={totalPages}
+          loading={loading}
+          setSorting={setSorting}
+          setPagination={setPagination}
+        />
+        </>
       )}
     </div>
   );
