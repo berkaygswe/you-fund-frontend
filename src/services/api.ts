@@ -75,7 +75,7 @@ async function fetchWithRetry(
         (lastError.name === 'AbortError' || lastError instanceof TypeError) &&
         attempt < retries
       ) {
-        await new Promise(res => setTimeout(res, 500 * Math.pow(2, attempt)));
+        await new Promise(res => setTimeout(res, 1500 * Math.pow(2, attempt)));
         continue;
       }
       throw lastError;
@@ -197,7 +197,7 @@ export const fundsApi = {
   },
 
   getAssetDetailComparison: async (assetCodes: string[], fromDate: string, currency: string): Promise<AssetDetailComparison[]> => {
-    const codes = encodeURIComponent(assetCodes.join(','));
+    const codes = encodeURIComponent(assetCodes.filter(Boolean).join(','));
     return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetCodes=${codes}&fromDate=${fromDate}&currency=${currency}`);
   },
 

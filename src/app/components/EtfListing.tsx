@@ -80,23 +80,27 @@ export function EtfListing(){
             size: 70,
             cell: ({ row }) => (
                 <div className="font-medium">
-                    <Link className='flex gap-1 justify-center items-center' href={`/etf/detail/${row.getValue('symbol')}`}>
+                    <Link className='grid grid-cols-2 justify-center items-center' href={`/etf/detail/${row.getValue('symbol')}`}>
                         {row.original.iconUrl ? (
-                            <ImageWrap
-                                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/etf/${row.original.iconUrl}`}
-                                width={20}
-                                height={20}
-                                className='rounded-md'
-                                alt="Founder logo"
-                            />
+                            <div className="flex justify-center"> 
+                                <ImageWrap
+                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/etf/${row.original.iconUrl}`}
+                                    width={20}
+                                    height={20}
+                                    className='rounded-md'
+                                    alt="Founder logo"
+                                />
+                            </div>
                             ) : (
-                            <Image
-                                src="/bank.jpg"
-                                width={20}
-                                height={20}
-                                className='rounded-md'
-                                alt="Default logo"
-                            />
+                            <div className="flex justify-center"> 
+                                <Image
+                                    src="/bank.jpg"
+                                    width={20}
+                                    height={20}
+                                    className='rounded-md'
+                                    alt="Default logo"
+                                />
+                            </div>
                         )}
                         {row.getValue('symbol')}
                     </Link>

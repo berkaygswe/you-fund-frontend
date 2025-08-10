@@ -191,7 +191,7 @@ export default function EtfDetailPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                             <DollarSign className="w-6 h-6 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">{formatCurrency(etfMetadata.aum, true)}</div>
+                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.aum ? formatCurrency(etfMetadata.aum, true) : 'Unknown'}</div>
                         <div className="text-sm text-gray-600 font-medium">AUM</div>
                     </CardContent>
                 </Card>
@@ -201,7 +201,7 @@ export default function EtfDetailPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                             <Zap className="w-6 h-6 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">{formatPercent(etfMetadata.expenseRatio)}</div>
+                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.expenseRatio ? formatPercent(etfMetadata.expenseRatio) : 'Unknown'}</div>
                         <div className="text-sm text-gray-600 font-medium">Expense Ratio</div>
                     </CardContent>
                 </Card>
@@ -211,7 +211,7 @@ export default function EtfDetailPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                             <TrendingUp className="w-6 h-6 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">{formatPercent(etfMetadata.dividendYield)}</div>
+                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.dividendYield ? formatPercent(etfMetadata.dividendYield) : 'Unknown'}</div>
                         <div className="text-sm text-gray-600 font-medium">Dividend Yield</div>
                     </CardContent>
                 </Card>
@@ -221,7 +221,7 @@ export default function EtfDetailPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                             <BarChart3 className="w-6 h-6 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.peRatio}</div>
+                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.peRatio ? etfMetadata.peRatio : 'Unknown'}</div>
                         <div className="text-sm text-gray-600 font-medium">P/E Ratio</div>
                     </CardContent>
                 </Card>
@@ -231,7 +231,7 @@ export default function EtfDetailPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                             <Building2 className="w-6 h-6 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.holdingsCount.toLocaleString()}</div>
+                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.holdingsCount ? etfMetadata.holdingsCount.toLocaleString() : 'Unknown'}</div>
                         <div className="text-sm text-gray-600 font-medium">Holdings</div>
                     </CardContent>
                 </Card>
@@ -241,7 +241,7 @@ export default function EtfDetailPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                             <Calendar className="w-6 h-6 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">{new Date(etfMetadata.inceptionDate).getFullYear()}</div>
+                        <div className="text-2xl font-bold text-gray-900 mb-1">{etfMetadata.holdingsCount ? new Date(etfMetadata.holdingsCount).getFullYear() : 'Unknown'}</div>
                         <div className="text-sm text-gray-600 font-medium">Inception</div>
                     </CardContent>
                 </Card>
@@ -398,21 +398,33 @@ export default function EtfDetailPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-                                    <span className="font-medium">YTD Return</span>
-                                    <span className="font-bold text-green-600 text-lg">+{formatPercent(etfPriceChanges.dailyChangePercent)}</span>
+                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.dailyChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
+                                    <span className="font-medium">Daily Return</span>
+                                    <span className={`font-bold text-lg ${etfPriceChanges.dailyChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        {etfPriceChanges.dailyChangePercent >= 0 ? "+" : "-"}
+                                        {formatPercent(Math.abs(etfPriceChanges.dailyChangePercent))}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-                                    <span className="font-medium">1 Year Return</span>
-                                    <span className="font-bold text-green-600 text-lg">+18.7%</span>
+                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.oneMonthChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
+                                    <span className="font-medium">1 Month Return</span>
+                                    <span className={`font-bold text-lg ${etfPriceChanges.oneMonthChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        {etfPriceChanges.oneMonthChangePercent >= 0 ? "+" : "-"}
+                                        {formatPercent(Math.abs(etfPriceChanges.oneMonthChangePercent))}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-                                    <span className="font-medium">3 Year Return (Annualized)</span>
-                                    <span className="font-bold text-green-600 text-lg">+9.2%</span>
+                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.threeMonthChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
+                                    <span className="font-medium">3 Month Return</span>
+                                    <span className={`font-bold text-lg ${etfPriceChanges.threeMonthChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        {etfPriceChanges.threeMonthChangePercent >= 0 ? "+" : "-"}
+                                        {formatPercent(Math.abs(etfPriceChanges.threeMonthChangePercent))}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-                                    <span className="font-medium">5 Year Return (Annualized)</span>
-                                    <span className="font-bold text-green-600 text-lg">+11.8%</span>
+                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.oneYearChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
+                                    <span className="font-medium">1 Year Return (Annualized)</span>
+                                    <span className={`font-bold text-lg ${etfPriceChanges.oneYearChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        {etfPriceChanges.oneYearChangePercent >= 0 ? "+" : "-"}
+                                        {formatPercent(Math.abs(etfPriceChanges.oneYearChangePercent))}
+                                    </span>
                                 </div>
                             </CardContent>
                         </Card>

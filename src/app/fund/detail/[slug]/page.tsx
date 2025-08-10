@@ -36,7 +36,7 @@ export default function Page() {
                     <div>
                         {fund.founderLogoUrl ? (
                             <ImageWrap
-                                src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/logo/fund/${fund.founderLogoUrl}`}
+                                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/fund/${fund.founderLogoUrl}`}
                                 width={70}
                                 height={70}
                                 className='rounded-md'
