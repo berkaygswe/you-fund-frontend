@@ -1,33 +1,167 @@
+import Link from "next/link"
 import AssetComparison from "../components/fund-detail/AssetComparsion"
 import AssetTopMovers from "../components/homepage/asset-top-movers"
 import FinanceNews from "../components/homepage/finance-news"
 import FundTypePerformance from "../components/homepage/fund-type-performance"
 import { SectionCards } from "../components/homepage/section-cards"
-
-const popularAssets = [
-    { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url : '', exchange_icon_url: '' },
-]
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { TrendingUp, BarChart3, Globe, Clock, Activity, DollarSign, ArrowUpRight } from "lucide-react"
 
 export default function MarketOverview() {
   return (
-    <div className="flex flex-col md:grid md:grid-cols-3 gap-6">
-        <div className="flex flex-col col-span-2 gap-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4">
-                {popularAssets.map((asset) => (
-                    <SectionCards key={asset.symbol} code={asset.symbol} />
-                ))}
-            </div>
-            <AssetComparison code="" />
-            <FinanceNews />
+    <div className="space-y-6">
+      {/* Market Overview Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Market Overview</h1>
+          <p className="text-muted-foreground">
+            Rich market data, trends, and financial insights
+          </p>
         </div>
-        <div className="flex flex-col gap-4 col-span-1">
-            <AssetTopMovers />
-            <FundTypePerformance />
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Clock className="h-4 w-4" />
+          <span>Last updated: {new Date(Date.now() - 15000 * 60).toLocaleTimeString()}</span>
         </div>
+      </div>
+
+      {/* Quick Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+            <Globe className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,247</div>
+            <p className="text-xs text-muted-foreground">
+              +12% from last month
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Markets</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">24</div>
+            <p className="text-xs text-muted-foreground">
+              +2 new this week
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$2.4B</div>
+            <p className="text-xs text-muted-foreground">
+              +8.2% from yesterday
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Market Sentiment</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Bullish</div>
+            <p className="text-xs text-muted-foreground">
+              65% positive indicators
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Market Cards Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Market Performance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SectionCards />
+            </CardContent>
+          </Card>
+
+          {/* Asset Comparison Section */}
+          <AssetComparison code="" />
+
+          {/* Finance News Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Latest Financial News
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FinanceNews />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Sidebar */}
+        <div className="space-y-6">
+          {/* Market Movers */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ArrowUpRight className="h-5 w-5" />
+                Market Movers
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AssetTopMovers />
+            </CardContent>
+          </Card>
+
+          {/* Fund Performance */}
+          <FundTypePerformance />
+
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>    
+                <Link href="fund">
+                  <button className="w-full flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer">
+                    <span className="text-sm font-medium">View All Funds</span>
+                    <ArrowUpRight className="h-4 w-4" />
+                  </button>
+                </Link>
+              </div>
+              <div>    
+                <Link href="etf">
+                  <button className="w-full flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer">
+                    <span className="text-sm font-medium">View All ETFs</span>
+                    <ArrowUpRight className="h-4 w-4" />
+                  </button>
+                </Link>
+              </div>
+              <button className="w-full flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                <span className="text-sm font-medium">Compare Assets</span>
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+              <button className="w-full flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                <span className="text-sm font-medium">Market Calendar</span>
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }

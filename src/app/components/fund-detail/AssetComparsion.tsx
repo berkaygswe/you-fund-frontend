@@ -11,22 +11,24 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
 } from "@/components/ui/chart"
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog"
 import { AssetSearchPanel } from "./AssetSearchPanel";
 import { AssetSearchResult } from "@/types/assetSearchResult";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, TrendingUp } from "lucide-react";
 import { useCurrencyStore } from "@/stores/currency-store";
+import { Skeleton } from "@/components/ui/skeleton";
+
 
 const ranges = [
     { key: "1w", label: "7 days" },
@@ -63,7 +65,7 @@ const getStartDateFromRange = (range: string) => {
 
 const chartConfig = {} as ChartConfig;
 
-export default function AssetComparison({code}: {code: string}) {
+export default function AssetComparison({ code }: { code: string }) {
 
     const currency = useCurrencyStore((s) => s.currency)
 
@@ -82,121 +84,160 @@ export default function AssetComparison({code}: {code: string}) {
 
     const startDate = getStartDateFromRange(timeRange);
 
-    const {assetComparisonData, loading} = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const { assetComparisonData, loading } = useAssetDetailComparsion(assetCodes, startDate, currency);
 
     // Ensure assetComparisonData is always an array, even if empty or null initially
     const chartData = useMemo(() => {
         return Array.isArray(assetComparisonData) ? assetComparisonData : [];
     }, [assetComparisonData]);
 
+    if (loading) {
+        return (
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-8 w-1/2 mb-2" />
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                                {ranges.map(({ key }) => (
+                                    <Skeleton key={key} className="h-8 w-20" />
+                                ))}
+                            </div>
+                            <Skeleton className="h-8 w-32" />
+                        </div>
+                        <Skeleton className="h-[300px] w-full" />
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
+
+    // Return the empty state if data is not available after loading
+    if (chartData.length === 0) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Asset Comparison</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col items-center justify-center p-8 text-gray-500">
+                        No data available for the selected assets.
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
         <div>
-            {loading && chartData.length === 0 ? <div></div> : (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Asset Comparison</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-col gap-4">
-                            <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    {ranges.map(({ key, label }) => (
-                                        <Button
-                                            key={key}
-                                            variant={timeRange === key ? "default" : "outline"}
-                                            size="sm"
-                                            className="cursor-pointer"
-                                            onClick={() => {
-                                                setTimeRange(key)
-                                            }}
-                                        >
-                                            {label}
-                                        </Button>
-                                    ))}
-                                </div>
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm" className="cursor-pointer"><CirclePlus /> Add Assets</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="md:max-w-[600px]">
-                                        <DialogHeader>
-                                            <DialogTitle>Add Assets</DialogTitle>
-                                        </DialogHeader>
-                                        <AssetSearchPanel
-                                            selectedAssets={selectedAssets}
-                                            setSelectedAssets={setSelectedAssets}
-                                            currentAssetSymbol={code}
-                                        />
-                                        <DialogFooter>
-                                            <Button>Save changes</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Asset Comparison
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                                {ranges.map(({ key, label }) => (
+                                    <Button
+                                        key={key}
+                                        variant={timeRange === key ? "default" : "outline"}
+                                        size="sm"
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            setTimeRange(key)
+                                        }}
+                                    >
+                                        {label}
+                                    </Button>
+                                ))}
                             </div>
-                            <div>
-                                <ChartContainer config={chartConfig} className="-ms-8 max-h-[400px] md:w-full">
-                                    <BarChart accessibilityLayer data={chartData}>
-                                        <CartesianGrid vertical={false} />
-                                        <XAxis
-                                            dataKey="name"
-                                            tickLine={false}
-                                            tickMargin={10}
-                                            axisLine={false}
-                                            interval={0}
-                                            // Custom tick rendering to handle long labels
-                                            tick={({ x, y, payload }) => {
-                                                const label = payload.value;
-                                                const isTooLong = label.length > 15;
-                                                const item = chartData.find(d => d.name === label);
-                                                const display = isTooLong && item ? item.symbol : label;
-
-                                                return (
-                                                    <text
-                                                        x={x}
-                                                        y={y + 10}
-                                                        textAnchor="middle"
-                                                        fontSize={12}
-                                                        fill="#666"
-                                                    >
-                                                        {display}
-                                                    </text>
-                                                );
-                                            }}
-                                        />
-                                        <ChartTooltip
-                                            cursor={false}
-                                            content={({ active, payload }) => {
-                                                if (active && payload && payload.length) {
-                                                    const { name, percentChangeFromStart } = payload[0].payload;
-                                                    return (
-                                                        <div className="bg-white p-2 rounded shadow text-sm border">
-                                                            <div className="font-medium">{name}</div>
-                                                            <div className={percentChangeFromStart >= 0 ? "text-green-600" : "text-red-600"}>
-                                                                {percentChangeFromStart >= 0 ? "+" : ""}
-                                                                {percentChangeFromStart.toFixed(2)}%
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }
-                                                return null;
-                                            }}
-                                        />
-                                        <YAxis axisLine={false} />
-                                        <Bar dataKey="percentChangeFromStart" fill="var(--color-value)" radius={8} >
-                                            {chartData.map((entry, index) => (
-                                                <Cell
-                                                    key={`cell-${index}`}
-                                                    fill={entry.percentChangeFromStart >= 0 ? '#22c55e' : '#ef4444'} // Tailwind green-500 / red-500
-                                                />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ChartContainer>
-                            </div>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm" className="cursor-pointer"><CirclePlus /> Add Assets</Button>
+                                </DialogTrigger>
+                                <DialogContent className="md:max-w-[600px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Add Assets</DialogTitle>
+                                    </DialogHeader>
+                                    <AssetSearchPanel
+                                        selectedAssets={selectedAssets}
+                                        setSelectedAssets={setSelectedAssets}
+                                        currentAssetSymbol={code}
+                                    />
+                                    <DialogFooter>
+                                        <Button>Save changes</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         </div>
-                    </CardContent>
-                </Card>
-            )}
+                        <div>
+                            <ChartContainer config={chartConfig} className="-ms-8 max-h-[400px] md:w-full">
+                                <BarChart accessibilityLayer data={chartData}>
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis
+                                        dataKey="name"
+                                        tickLine={false}
+                                        tickMargin={10}
+                                        axisLine={false}
+                                        interval={0}
+                                        tick={({ x, y, payload }) => {
+                                            const label = payload.value;
+                                            const isTooLong = label.length > 15;
+                                            const item = chartData.find(d => d.name === label);
+                                            const display = isTooLong && item ? item.symbol : label;
+
+                                            return (
+                                                <text
+                                                    x={x}
+                                                    y={y + 10}
+                                                    textAnchor="middle"
+                                                    fontSize={12}
+                                                    fill="#666"
+                                                >
+                                                    {display}
+                                                </text>
+                                            );
+                                        }}
+                                    />
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={({ active, payload }) => {
+                                            if (active && payload && payload.length) {
+                                                const { name, percentChangeFromStart } = payload[0].payload;
+                                                return (
+                                                    <div className="bg-white p-2 rounded shadow text-sm border">
+                                                        <div className="font-medium">{name}</div>
+                                                        <div className={percentChangeFromStart >= 0 ? "text-green-600" : "text-red-600"}>
+                                                            {percentChangeFromStart >= 0 ? "+" : ""}
+                                                            {percentChangeFromStart.toFixed(2)}%
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        }}
+                                    />
+                                    <YAxis axisLine={false} />
+                                    <Bar dataKey="percentChangeFromStart" fill="var(--color-value)" radius={8} >
+                                        {chartData.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={entry.percentChangeFromStart >= 0 ? '#22c55e' : '#ef4444'} // Tailwind green-500 / red-500
+                                            />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ChartContainer>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

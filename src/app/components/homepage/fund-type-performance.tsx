@@ -2,13 +2,12 @@
 
 import { useFundTypePerformance } from "@/hooks/useFundTypePerformance";
 import { useCurrencyStore } from "@/stores/currency-store";
-import { TrendingUp } from "lucide-react"
+import { BarChart3 } from "lucide-react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -45,15 +44,18 @@ export default function FundTypePerformance() {
     return (
         <Card>
         <CardHeader className="items-center">
-            <CardTitle>Radar Chart - Dots</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                TEFAS Fund Type Performance
+            </CardTitle>
             <CardDescription>
-            Showing total visitors for the last 6 months
+                Showing TEFAS funds with average returns in one year
             </CardDescription>
         </CardHeader>
         <CardContent className="pb-0">
             <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square w-full max-h-[200px] md:max-h-[300px]"
+                config={chartConfig}
+                className="mx-auto aspect-square w-full max-h-[200px] md:max-h-[300px]"
             >
             <RadarChart data={sortedData}>
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
@@ -102,6 +104,7 @@ export default function FundTypePerformance() {
             </RadarChart>
             </ChartContainer>
         </CardContent>
+        {/* 
         <CardFooter className="flex-col gap-2 text-sm">
             <div className="flex items-center gap-2 leading-none font-medium">
             Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
@@ -110,6 +113,7 @@ export default function FundTypePerformance() {
             January - June 2024
             </div>
         </CardFooter>
+        */}
         </Card>
     )
 }

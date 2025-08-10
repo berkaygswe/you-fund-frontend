@@ -3,13 +3,17 @@ import { FundUmbrellaType } from '@/types/fundUmbrellaType';
 import { Fund } from '../types/fund';
 import { FundPrices } from '@/types/fundPrices';
 import { FundDetail } from '@/types/fundDetail';
-import { AssetGraphComparsion } from '@/types/assetGraphComparison';
+import { AssetGraphComparison } from '@/types/assetGraphComparison';
 import { AssetSearchApiResponse } from '@/types/assetSearchResult';
 import { FundDetailGrowth } from '@/types/fundDetailGrowth';
 import { FundAllocation } from '@/types/fundAllocation';
 import { AssetDetailComparison } from '@/types/assetDetailComparsion';
 import { AssetTopMovers } from '@/types/assetTopMovers';
 import { FundTypePerformance } from '@/types/fundTypePerformance';
+import { Etf } from '@/types/etf';
+import { EtfMetadata } from '@/types/etfMetada';
+import { EtfPriceChanges } from '@/types/etfPriceChanges';
+import { Currency } from '@/types/currency';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -23,18 +27,96 @@ export class ApiError extends Error {
   }
 }
 
+function fetchWithTimeout(
+  url: string, 
+  options: RequestInit = {}, 
+  timeout = 250000 // 10 seconds default
+): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => {
+    clearTimeout(id);
+  });
+}
+
+// Retry wrapper for transient failures (e.g. network errors)
+async function fetchWithRetry(
+  url: string, 
+  options: RequestInit = {}, 
+  retries = 3,
+  timeout = 10000
+): Promise<Response> {
+  let lastError: any;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetchWithTimeout(url, options, timeout);
+
+      if (!response.ok) {
+        // Retry on 5xx errors
+        if (response.status >= 500 && response.status < 600 && attempt < retries) {
+          lastError = new ApiError(`Server error: ${response.statusText}`, response.status);
+          continue;
+        } else {
+          throw new ApiError(`API error: ${response.statusText}`, response.status);
+        }
+      }
+
+      return response;
+    } catch (error: unknown) {
+      lastError = error;
+      if (
+        error instanceof Error &&
+        (error.name === 'AbortError' || error instanceof TypeError) &&
+        attempt < retries
+      ) {
+        await new Promise(res => setTimeout(res, 500 * Math.pow(2, attempt)));
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw lastError;
+}
+
 async function fetchData<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`);
+  const url = `${API_BASE_URL}${endpoint}`;
+
+  const response = await fetchWithRetry(url);
   
   if (!response.ok) {
-    throw new ApiError(`API error: ${response.statusText}`, response.status);
+      // Attempt to parse the response body as JSON
+      let errorMessage = `API error: ${response.status} ${response.statusText || 'Unknown Error'}`;
+      
+      try {
+          const errorBody = await response.json(); // Read the response body as JSON
+          if (errorBody && errorBody.message) {
+              errorMessage = `API Error: ${errorBody.message}`;
+          } else {
+              // Fallback if the JSON structure is unexpected
+              errorMessage = `API Error: ${response.status} - ${JSON.stringify(errorBody)}`;
+          }
+      } catch (e) {
+          // If the response body is not valid JSON (e.g., plain text, HTML)
+          // You could also try response.text() here if you expect non-JSON error messages
+          errorMessage = `API Error: ${response.status} ${response.statusText || 'Unknown Error'}.`;
+      }
+
+      throw new ApiError(errorMessage, response.status);
   }
-  
+
   return response.json();
 }
 
 interface FundsResponse{
   content: Fund[];
+  totalElements: number;
+  totalPages: number;
+}
+
+interface EtfResponse{
+  content: Etf[];
   totalElements: number;
   totalPages: number;
 }
@@ -69,13 +151,8 @@ export const fundsApi = {
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.size) queryParams.append('size', params.size.toString());
 
-    const response = await fetch(`${API_BASE_URL}/funds?${queryParams.toString()}`);
-
-    if (!response.ok) {
-      throw new ApiError(`API error: ${response.statusText}`, response.status);
-    }
-    
-    const data: FundsResponse = await response.json();
+    const endpoint = `/funds?${queryParams.toString()}`;
+    const data = await fetchData<FundsResponse>(endpoint);
     
     return {
       funds: data.content,
@@ -88,9 +165,9 @@ export const fundsApi = {
     return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}&currency=${currency}`);
   },
 
-  getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string, currency: string): Promise<AssetGraphComparsion[]> => {
+  getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string, currency: string): Promise<AssetGraphComparison[]> => {
     const codes = encodeURIComponent(assetCodes.join(','));
-    return fetchData<AssetGraphComparsion[]>(`/asset/detail/graph/comparison?assetCodes=${codes}&fromDate=${fromDate}&toDate=${toDate}&currency=${currency}`);
+    return fetchData<AssetGraphComparison[]>(`/asset/detail/graph/comparison?assetCodes=${codes}&fromDate=${fromDate}&toDate=${toDate}&currency=${currency}`);
   },
 
   getAssetSearch: async (searchTerms: string, type: string | null, page: number = 0, size: number = 10): Promise<AssetSearchApiResponse> => {
@@ -126,6 +203,44 @@ export const fundsApi = {
 
   getFundTypePerformance: async (currency: string): Promise<FundTypePerformance[]> => {
     return fetchData<FundTypePerformance[]>(`/fund-type-performance?currency=${currency}`);
+  },
+
+  getEtfList: async (params?: {
+    search?: string;
+    umbrellaType?: string;
+    sortBy?: string;
+    sortDirection?: string;
+    page?: number;
+    size?: number;
+    currency: string;
+  }): Promise<{ etfs: Etf[]; totalCount: number, totalPages: number }> => {
+    const queryParams = new URLSearchParams();
+    
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.umbrellaType) queryParams.append('umbrellaType', params.umbrellaType);
+    if (params?.sortBy && params?.sortDirection) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDirection}`);
+    }
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.size) queryParams.append('size', params.size.toString());
+    if (params?.currency) queryParams.append('currency', params.currency);
+
+    const endpoint = `/etfs?${queryParams.toString()}`;
+    const data = await fetchData<EtfResponse>(endpoint);
+    
+    return {
+      etfs: data.content,
+      totalCount: data.totalElements,
+      totalPages: data.totalPages
+    };
+  },
+
+  getEtfMetadata: async (symbol: string): Promise<EtfMetadata> => {
+    return fetchData<EtfMetadata>(`/etf/detail/${symbol}`);
+  },
+
+  getEtfPriceChanges: async (symbol: string, currency: Currency): Promise<EtfPriceChanges> => {
+    return fetchData<EtfPriceChanges>(`/etf/price-changes?symbol=${symbol}&currency=${currency}`)
   }
   
   // Add more API methods as needed

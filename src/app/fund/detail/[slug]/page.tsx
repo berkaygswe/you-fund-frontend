@@ -34,23 +34,23 @@ export default function Page() {
             <div className='flex flex-col md:grid md:grid-cols-3 gap-6'>
                 <div className='flex items-center col-span-2 gap-2'>
                     <div>
-                    {fund.founderLogoUrl ? (
-                        <ImageWrap
-                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/logos/${fund.founderLogoUrl}`}
-                            width={70}
-                            height={70}
-                            className='rounded-md'
-                            alt="Founder logo"
-                        />
-                        ) : (
-                        <Image
-                            src="/window.svg"
-                            width={70}
-                            height={70}
-                            className='rounded-md'
-                            alt="Default logo"
-                        />
-                    )}
+                        {fund.founderLogoUrl ? (
+                            <ImageWrap
+                                src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/logo/fund/${fund.founderLogoUrl}`}
+                                width={70}
+                                height={70}
+                                className='rounded-md'
+                                alt="Founder logo"
+                            />
+                            ) : (
+                            <Image
+                                src="/window.svg"
+                                width={70}
+                                height={70}
+                                className='rounded-md'
+                                alt="Default logo"
+                            />
+                        )}
                     </div>
                     <div>   
                         <div>
@@ -99,7 +99,7 @@ export default function Page() {
             </div>
             <div className='flex flex-col md:grid md:grid-cols-3 gap-6'>
                 <div className='col-span-2 flex flex-col gap-4'>
-                    <FundDetailGraph code={slug}></FundDetailGraph>
+                    <FundDetailGraph chartClassName='-ms-5' code={slug}></FundDetailGraph>
                     <RiskScale riskLevel={fund.risk}></RiskScale>
                     <AssetComparison code={slug}></AssetComparison>
                 </div>

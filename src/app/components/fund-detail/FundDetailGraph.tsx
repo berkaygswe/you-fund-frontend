@@ -12,9 +12,9 @@ import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, GitCompare } from "lucide-react";
-import { useAssetGraphComparsion } from "@/hooks/useAssetGraphComparsion";
-import { AssetGraphComparsion } from "@/types/assetGraphComparison";
+import { BarChart3, CalendarIcon, GitCompare } from "lucide-react";
+
+import { AssetGraphComparison } from "@/types/assetGraphComparison";
 import {
   Dialog,
   DialogContent,
@@ -22,10 +22,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AssetSearchPanel } from "./AssetSearchPanel";
 import { AssetSearchResult } from "@/types/assetSearchResult";
 import { useCurrencyStore } from "@/stores/currency-store";
+import { cn } from "@/lib/utils";
+import { useAssetGraphComparison } from "@/hooks/useAssetGraphComparison";
 
 // Colors for different assets in comparison chart
 const COLORS = [
@@ -40,11 +43,11 @@ const COLORS = [
 ];
 
 // Component for single fund price chart
-function SingleFundChart({ config, prices, code }: {config: ChartConfig, prices: Array<object>, code: string}) {
+function SingleFundChart({ config, prices, code, className }: {config: ChartConfig, prices: Array<object>, code: string, className?: string}) {
 
     if (!prices || prices.length === 0) return null;
     return (
-        <ChartContainer config={config} className="aspect-auto h-[400px] -ms-5 w-full">
+        <ChartContainer config={config} className={`aspect-auto h-[400px] w-full ${className}`}>
             <AreaChart
             data={prices}
             margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
@@ -98,7 +101,7 @@ export interface MergedChartDataPoint {
 }
 
 
-function mergeComparisonData(assetComparisonData: AssetGraphComparsion[]) {
+function mergeComparisonData(assetComparisonData: AssetGraphComparison[]) {
     if (!assetComparisonData || assetComparisonData.length === 0) return [];
 
     // Get all unique dates
@@ -124,10 +127,10 @@ function mergeComparisonData(assetComparisonData: AssetGraphComparsion[]) {
 }
 
 // Component for multi-asset comparison chart
-function ComparisonChart({ config, assetComparisonData }: {config: ChartConfig, assetComparisonData: AssetGraphComparsion[]}) {
+function ComparisonChart({ config, assetComparisonData, className }: {config: ChartConfig, assetComparisonData: AssetGraphComparison[], className?: string}) {
     const mergedData = useMemo(() => mergeComparisonData(assetComparisonData), [assetComparisonData]);
     return (
-        <ChartContainer config={config} className="aspect-auto h-[400px] -ms-5 w-full">
+        <ChartContainer config={config} className={`aspect-auto h-[400px] w-full ${className}`}>
         <AreaChart
         data={mergedData}
         margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
@@ -234,10 +237,12 @@ const getStartDateFromRange = (range: string) => {
 }
 
 type FundGraphProps = {
+    className?: string;
+    chartClassName?: string;
     code: string;
 }
 
-export default function FundDetailGraph({ code }: FundGraphProps) {
+export default function FundDetailGraph({ className, code, chartClassName }: FundGraphProps) {
 
     const currency = useCurrencyStore((s) => s.currency)
 
@@ -259,7 +264,7 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
             ? customRange.to.toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10);
     const { prices } = useFetchFundGraph(code, startDate, endDate, currency);
-    const { assetComparisonData } = useAssetGraphComparsion(assetCodes, startDate, endDate, currency);
+    const { assetComparisonData } = useAssetGraphComparison(assetCodes, startDate, endDate, currency);
 
     const isComparisonMode = assetCodes.length > 1 || (assetCodes.length === 1 && assetCodes[0] !== code);
 
@@ -297,7 +302,15 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
     ]
 
     return(
-        <div className="mt-4">
+        <Card className={cn(className)}>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-blue-600" />
+                    Price History
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                        <div className="mt-4">
             <div className="flex flex-wrap items-center gap-2 mb-4">
                 {ranges.map(({ key, label }) => (
                     <Button
@@ -342,9 +355,9 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
             </div>
 
             {isComparisonMode && assetComparisonData?.length > 1 ? (
-                <ComparisonChart config={chartConfig} assetComparisonData={assetComparisonData} />
+                <ComparisonChart config={chartConfig} assetComparisonData={assetComparisonData} className={chartClassName} />
             ) : (
-                <SingleFundChart config={chartConfig} prices={prices} code={code} />
+                <SingleFundChart config={chartConfig} prices={prices} code={code} className={chartClassName} />
             )}
 
             <div className="flex flex-wrap items-center gap-2 mb-4 mt-4">
@@ -389,5 +402,8 @@ export default function FundDetailGraph({ code }: FundGraphProps) {
                 </Dialog>
             </div>
         </div>
+            </CardContent>
+        </Card>
+
     );
 }

@@ -1,9 +1,9 @@
 import { fundsApi } from "@/services/api";
-import { AssetGraphComparsion } from "@/types/assetGraphComparison";
+import { AssetGraphComparison } from "@/types/assetGraphComparison";
 import { useCallback, useEffect, useState } from "react";
 
-export function useAssetGraphComparsion(assetCodes: string[], fromDate: string, toDate: string, currency: string) {
-    const [assetComparisonData, setData] = useState<AssetGraphComparsion[]>([]);
+export function useAssetGraphComparison(assetCodes: string[], fromDate: string, toDate: string, currency: string) {
+    const [assetComparisonData, setData] = useState<AssetGraphComparison[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
 

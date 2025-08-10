@@ -4,4 +4,5 @@ export interface AssetDetailComparison {
     type: string;
     close: number;
     percentChangeFromStart: number;
+    volume: number;
 }
