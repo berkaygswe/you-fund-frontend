@@ -30,7 +30,7 @@ export class ApiError extends Error {
 function fetchWithTimeout(
   url: string, 
   options: RequestInit = {}, 
-  timeout = 250000 // 10 seconds default
+  timeout = 10000 // 10 seconds default
 ): Promise<Response> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -45,7 +45,7 @@ async function fetchWithRetry(
   url: string, 
   options: RequestInit = {}, 
   retries = 3,
-  timeout = 10000
+  timeout = 100000
 ): Promise<Response> {
   let lastError: Error | ApiError | undefined;
 

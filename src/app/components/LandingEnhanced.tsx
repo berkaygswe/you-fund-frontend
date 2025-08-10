@@ -34,14 +34,15 @@ const features = [
   {
     icon: <BarChart3 className="w-8 h-8" />,
     title: 'Advanced Analytics',
-    description: 'Technical indicators, fundamental analysis, and AI-powered insights to make informed investment decisions.',
+    description: 'Fundamental analysis, comparing different asset classes to make informed investment decisions.',
     color: 'from-purple-500 to-pink-500'
   },
   {
     icon: <PieChart className="w-8 h-8" />,
     title: 'Portfolio Backtesting',
     description: 'Test investment strategies with historical data. Analyze performance, risk metrics, and optimize allocations.',
-    color: 'from-green-500 to-emerald-500'
+    color: 'from-green-500 to-emerald-500',
+    soon: true
   },
   {
     icon: <Wallet className="w-8 h-8" />,
@@ -175,7 +176,7 @@ export default function LandingEnhanced() {
             
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="hover:text-blue-300 transition-colors duration-200">Features</a>
-              <a href="#pricing" className="hover:text-blue-300 transition-colors duration-200">Pricing</a>
+              {/*<a href="#pricing" className="hover:text-blue-300 transition-colors duration-200">Pricing</a>*/}
               <Link href="/login" className="hover:text-blue-300 transition-colors duration-200">
                 Login
               </Link>
@@ -200,7 +201,7 @@ export default function LandingEnhanced() {
           <div className="md:hidden bg-black/95 backdrop-blur-md border-t border-white/10">
             <div className="px-4 py-4 space-y-4">
               <a href="#features" className="block hover:text-blue-300 transition-colors">Features</a>
-              <a href="#pricing" className="block hover:text-blue-300 transition-colors">Pricing</a>
+              {/*<a href="#pricing" className="block hover:text-blue-300 transition-colors">Pricing</a>*/}
               <Link href="/login" className="block hover:text-blue-300 transition-colors">Login</Link>
               <Link href="/signup">
                 <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-6 py-2 rounded-full font-medium transition-all duration-200">
@@ -286,8 +287,16 @@ export default function LandingEnhanced() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <FloatingCard key={index} className="group hover:scale-105 transition-all duration-300">
-                <div className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200`}>
-                  {feature.icon}
+                <div className='mb- flex justify-between'>
+                  <div className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
+                    {feature.icon}
+                  </div>
+                  {feature.soon && (
+                    <div className="inline-flex items-center space-x-2 bg-orange-500/20 rounded-full px-4 py-2 mb-6 border border-orange-500/30">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                        <span className="text-sm text-orange-200">Soon</span>
+                    </div>
+                  )}
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
                 <p className="text-gray-300 leading-relaxed">{feature.description}</p>
