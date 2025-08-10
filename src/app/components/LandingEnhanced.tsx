@@ -15,9 +15,7 @@ import {
   Shield,
   Globe,
   Users,
-  Star,
   ChevronRight,
-  Play,
   Target,
   Activity,
   Sparkles
@@ -65,7 +63,7 @@ const features = [
   }
 ];
 
-const testimonials = [
+/*const testimonials = [
   {
     name: "Ahmet Yılmaz",
     role: "Portfolio Manager",
@@ -90,16 +88,16 @@ const testimonials = [
     rating: 5,
     avatar: "MK"
   }
-];
+];*/
 
-const stats = [
+/*const stats = [
   { value: "10,000+", label: "Assets Tracked", icon: <Globe className="w-5 h-5" /> },
   { value: "50ms", label: "Data Latency", icon: <Zap className="w-5 h-5" /> },
   { value: "15,000+", label: "Active Users", icon: <Users className="w-5 h-5" /> },
   { value: "99.9%", label: "Uptime", icon: <Shield className="w-5 h-5" /> }
-];
+];*/
 
-const pricingPlans = [
+/*const pricingPlans = [
   {
     name: "Free",
     price: "$0",
@@ -146,7 +144,7 @@ const pricingPlans = [
     cta: "Contact Sales",
     popular: false
   }
-];
+];*/
 
 export default function LandingEnhanced() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -12,12 +12,6 @@ import debounce from "lodash.debounce";
 import { DataTable } from "./DataTable";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useCurrencyStore } from "@/stores/currency-store";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 
 // Move outside component to prevent recreation on each render

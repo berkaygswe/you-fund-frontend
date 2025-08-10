@@ -73,7 +73,6 @@ export default function AssetType() {
     const [activeTab, setActiveTab] = useState('stock');
     const assetCodes = useMemo(() => assets.map(asset => asset.symbol), [assets]);
     const {assetComparisonData, loading: comparisonLoading, error: comparisonError} = useAssetDetailComparsion(assetCodes, startDate, currency);
-    console.log('assetComparisonData', assetComparisonData);
 
     // Filter assets based on the activeTab
     const filteredAssets = useMemo(() => {
@@ -116,7 +115,7 @@ export default function AssetType() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {!comparisonLoading && !comparisonError && filteredAssets.map((asset, index) => (
+                {!comparisonLoading && !comparisonError && filteredAssets.map((asset) => (
                     <FloatingCard key={asset.symbol} className="group hover:scale-105 transition-all duration-300">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center space-x-3">

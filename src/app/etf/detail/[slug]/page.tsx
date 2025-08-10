@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Globe, Building2, Calendar, DollarSign, BarChart3, PieChart, Info, ExternalLink, Shield, Zap, Target, ArrowUpRight, ArrowDownRight, Star, Users, Activity } from 'lucide-react';
+import { TrendingUp, Globe, Building2, Calendar, DollarSign, BarChart3, PieChart, Info, ExternalLink, Shield, Zap, Target, ArrowUpRight, ArrowDownRight, Star } from 'lucide-react';
 import { useFormatCurrency } from '@/utils/formatCurrency';
 import { formatPercent } from '@/utils/formatPercent';
 import FundDetailGraph from '@/app/components/fund-detail/FundDetailGraph';

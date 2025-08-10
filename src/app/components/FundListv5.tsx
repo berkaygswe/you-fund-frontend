@@ -4,8 +4,6 @@ import { useMemo, useState, useCallback, useTransition } from 'react';
 import { Fund } from '@/types/fund';
 import { FundUmbrellaType } from '@/types/fundUmbrellaType';
 import {
-  useReactTable,
-  getCoreRowModel,
   SortingState,
   ColumnDef,
   PaginationState,
@@ -171,7 +169,7 @@ export function FundListv5() {
   ], [periods]);
 
   // Create table instance with memoization
-  const table = useReactTable({
+  /*const table = useReactTable({
     data: funds,
     columns,
     state: {
@@ -185,7 +183,7 @@ export function FundListv5() {
     manualPagination: true,
     manualSorting: true,
     manualFiltering: true,
-  });
+  });*/
 
   // Loading state
   // if (loading) {

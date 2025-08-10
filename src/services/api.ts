@@ -47,7 +47,7 @@ async function fetchWithRetry(
   retries = 3,
   timeout = 10000
 ): Promise<Response> {
-  let lastError: any;
+  let lastError: Error | ApiError | undefined;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -65,16 +65,20 @@ async function fetchWithRetry(
 
       return response;
     } catch (error: unknown) {
-      lastError = error;
+      if (error instanceof Error) {
+        lastError = error;
+      } else {
+        lastError = new Error(String(error));
+      }
+
       if (
-        error instanceof Error &&
-        (error.name === 'AbortError' || error instanceof TypeError) &&
+        (lastError.name === 'AbortError' || lastError instanceof TypeError) &&
         attempt < retries
       ) {
         await new Promise(res => setTimeout(res, 500 * Math.pow(2, attempt)));
         continue;
       }
-      throw error;
+      throw lastError;
     }
   }
   throw lastError;
