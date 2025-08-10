@@ -27,6 +27,7 @@
     "@tanstack/react-virtual": "^3.13.4",
     "@types/lodash.debounce": "^4.0.9",
     "@types/react-window": "^1.8.8",
+    "@vercel/speed-insights": "^1.2.0",
     "ag-grid-community": "^33.2.1",
     "ag-grid-react": "^33.2.1",
     "class-variance-authority": "^0.7.1",
