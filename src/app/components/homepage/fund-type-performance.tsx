@@ -17,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { Skeleton } from "@/components/ui/skeleton";
 
 const chartConfig = {
   avgReturn: {
@@ -30,11 +31,43 @@ export default function FundTypePerformance() {
     const { fundTypePerformance, loading, error } = useFundTypePerformance(currency);
     
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <Card>
+                <CardHeader className="items-center">
+                <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    TEFAS Fund Type Performance
+                </CardTitle>
+                <CardDescription>
+                    Showing TEFAS funds with average returns in one year
+                </CardDescription>
+                </CardHeader>
+                <CardContent className="pb-0">
+                <div className="mx-auto aspect-square w-full max-h-[200px] md:max-h-[300px] flex items-center justify-center">
+                    <Skeleton className="h-4/5 w-4/5 rounded-full" />
+                </div>
+                </CardContent>
+            </Card>
+        );
     }
     
     if (error) {
-        return <div>Error: {error.message}</div>;
+        return (
+            <Card>
+                <CardHeader className="items-center">
+                <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    TEFAS Fund Type Performance
+                </CardTitle>
+                <CardDescription>
+                    Showing TEFAS funds with average returns in one year
+                </CardDescription>
+                </CardHeader>
+                <CardContent className="pb-0">
+                    <div>Error: {error.message}</div>
+                </CardContent>
+            </Card>
+        );
     }
 
     const sortedData = [...fundTypePerformance].sort((a, b) =>
