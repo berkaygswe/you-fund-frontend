@@ -9,6 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { getSession } from "@/lib/sessions";
 import { User } from "@/types/auth";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,6 +61,7 @@ export default async function RootLayout({
         <AuthProvider initialUser={initialUser}>
           {children}
           <SpeedInsights />
+          <Analytics />
         </AuthProvider>
       </body>
     </html>
