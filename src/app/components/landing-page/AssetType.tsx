@@ -37,6 +37,21 @@ const assets = [
         symbol: 'QQQ',
     },
     {
+        type: 'cryptocurrency',
+        name: 'Bitcoin',
+        symbol: 'BTC',
+    },
+    {
+        type: 'cryptocurrency',
+        name: 'Ethereum',
+        symbol: 'ETH',
+    },
+    {
+        type: 'cryptocurrency',
+        name: 'Solana',
+        symbol: 'SOL',
+    },
+    {
         type: 'fund',
         name: 'Istanbul Portfolio',
         symbol: 'IIE',
@@ -57,7 +72,7 @@ const assetTypeColors = {
     stock: 'from-blue-500 to-cyan-500',
     etf: 'from-purple-500 to-pink-500',
     fund: 'from-green-500 to-emerald-500',
-    crypto: 'from-orange-500 to-red-500'
+    cryptocurrency: 'from-orange-500 to-red-500'
 };
 
 export default function AssetType() {
@@ -99,7 +114,7 @@ export default function AssetType() {
             </div>
             
             <div className="flex flex-wrap justify-center gap-4 mb-8">
-                {['stock', 'etf', 'crypto', 'fund'].map((type) => (
+                {['stock', 'etf', 'cryptocurrency', 'fund'].map((type) => (
                 <button
                     key={type}
                     onClick={() => setActiveTab(type)}

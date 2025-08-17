@@ -24,8 +24,8 @@ import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
 import { useFundsTest } from '@/hooks/useFundsTest';
 import Link from 'next/link';
 import Image from 'next/image';
-import ImageWrap from './ImageWrap';
-import { DataTable } from './DataTable';
+import ImageWrap from '../../ImageWrap';
+import { DataTable } from '../../DataTable';
 
 // Move outside component to prevent recreation on each render
 const periods = ['weekly', 'monthly', 'threeMonth', 'sixMonth', 'yearly'] as const;

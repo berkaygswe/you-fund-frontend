@@ -159,19 +159,16 @@ export default function EtfDetailPage() {
                                 {formatCurrency(etfPriceChanges.closePrice)}
                             </div>
                             <div className={`flex items-center gap-3 text-xl font-medium ${
-                                etfData.priceChange >= 0 ? "text-green-600" : "text-red-600"
+                                etfPriceChanges.dailyChangePercent >= 0 ? "text-green-600" : "text-red-600"
                             }`}>
-                                {etfData.priceChange >= 0 ? (
+                                {etfPriceChanges.dailyChangePercent >= 0 ? (
                                     <ArrowUpRight className="h-6 w-6" />
                                 ) : (
                                     <ArrowDownRight className="h-6 w-6" />
                                 )}
                                 <span>
-                                    {etfData.priceChange >= 0 ? "+" : ""}{formatCurrency(etfPriceChanges.dailyChangePercent)}
-                                </span>
-                                <span>
-                                    ({etfPriceChanges.dailyChangePercent >= 0 ? "+" : ""}
-                                    {formatPercent(etfPriceChanges.dailyChangePercent)})
+                                    {etfPriceChanges.dailyChangePercent >= 0 ? "+" : ""}
+                                    {formatPercent(etfPriceChanges.dailyChangePercent)}
                                 </span>
                                 <span className="text-gray-500 text-lg">Today</span>
                             </div>

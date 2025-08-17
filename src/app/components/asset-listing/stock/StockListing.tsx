@@ -4,15 +4,15 @@ import { ColumnDef, PaginationState, Row, SortingState } from "@tanstack/react-t
 import Link from "next/link";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import Image from 'next/image';
-import ImageWrap from "./ImageWrap";
-import { useEtfList } from "@/hooks/useEtfList";
+import ImageWrap from "../../ImageWrap";
 import { Etf } from "@/types/etf";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import debounce from "lodash.debounce";
-import { DataTable } from "./DataTable";
+import { DataTable } from "../../DataTable";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useCurrencyStore } from "@/stores/currency-store";
 import { Input } from "@/components/ui/input";
+import { useStockList } from "@/hooks/useStockList";
 
 // Move outside component to prevent recreation on each render
 const periods = ['dailyChangePercent', 'oneMonthChangePercent', 'threeMonthChangePercent', 'oneYearChangePercent'] as const;
@@ -24,7 +24,7 @@ const periodHeaderMap: Record<typeof periods[number], string> = {
     'oneYearChangePercent': '1 Year Return',
 };
 
-export function EtfListing(){
+export function StockListing(){
 
     // States
     const [isPending, startTransition] = useTransition();
@@ -69,18 +69,18 @@ export function EtfListing(){
     
     // Data fetching
     //const { funds, loading, error } = useFunds();
-    const { etfs, totalCount, totalPages, loading, error } = useEtfList(params);
+    const { etfs, totalCount, totalPages, loading, error } = useStockList(params);
 
     // Memoized columns definition
     const columns = useMemo<ColumnDef<Etf>[]>(() => [
         {
             accessorKey: 'symbol',
-            header: 'Etf Code',
+            header: 'Stock Code',
             enableSorting: true,
             size: 70,
             cell: ({ row }) => (
                 <div className="font-medium">
-                    <Link className='grid grid-cols-2 justify-center items-center' href={`/etf/detail/${row.getValue('symbol')}`}>
+                    <div className='grid grid-cols-2 justify-center items-center'>
                         {row.original.iconUrl ? (
                             <div className="flex justify-center"> 
                                 <ImageWrap
@@ -103,15 +103,20 @@ export function EtfListing(){
                             </div>
                         )}
                         {row.getValue('symbol')}
-                    </Link>
+                    </div>
                 </div>
             ),
         },
         {
             accessorKey: 'name',
-            header: 'Fund Name',
+            header: 'Stock Name',
             size: 300,
             enableSorting: true,
+            cell: ({ row }) => (
+                <div className="text-center whitespace-nowrap">
+                    {row.getValue('name')}
+                </div>
+            ),
         },
         {
             accessorKey: 'closePrice',
@@ -129,7 +134,7 @@ export function EtfListing(){
             size: 100,
             cell: ({ row }) => (
                 <div className="text-center whitespace-nowrap">
-                    {formatCurrency(row.getValue('volume'))}
+                    {formatCurrency(row.getValue('volume'), true)}
                 </div>
             ),
         },

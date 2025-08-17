@@ -1,5 +1,5 @@
 // src/app/funds/page.tsx
-import { EtfListing } from '../components/EtfListing';
+import { EtfListing } from '../components/asset-listing/etf/EtfListing';
 
 export default function EtfsPage() {
   return (

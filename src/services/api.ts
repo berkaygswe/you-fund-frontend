@@ -229,6 +229,7 @@ export const fundsApi = {
     if (params?.size) queryParams.append('size', params.size.toString());
     if (params?.currency) queryParams.append('currency', params.currency);
 
+    queryParams.append('type', 'etf');
     const endpoint = `/etfs?${queryParams.toString()}`;
     const data = await fetchData<EtfResponse>(endpoint);
     
@@ -245,7 +246,38 @@ export const fundsApi = {
 
   getEtfPriceChanges: async (symbol: string, currency: Currency): Promise<EtfPriceChanges> => {
     return fetchData<EtfPriceChanges>(`/etf/price-changes?symbol=${symbol}&currency=${currency}`)
-  }
+  },
+
+  getStockList: async (params?: {
+    search?: string;
+    umbrellaType?: string;
+    sortBy?: string;
+    sortDirection?: string;
+    page?: number;
+    size?: number;
+    currency: string;
+  }): Promise<{ etfs: Etf[]; totalCount: number, totalPages: number }> => {
+    const queryParams = new URLSearchParams();
+    
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.umbrellaType) queryParams.append('umbrellaType', params.umbrellaType);
+    if (params?.sortBy && params?.sortDirection) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDirection}`);
+    }
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.size) queryParams.append('size', params.size.toString());
+    if (params?.currency) queryParams.append('currency', params.currency);
+
+    queryParams.append('type', 'stock');
+    const endpoint = `/stocks?${queryParams.toString()}`;
+    const data = await fetchData<EtfResponse>(endpoint);
+    
+    return {
+      etfs: data.content,
+      totalCount: data.totalElements,
+      totalPages: data.totalPages
+    };
+  },
   
   // Add more API methods as needed
 };

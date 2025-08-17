@@ -1,5 +1,5 @@
 // src/app/funds/page.tsx
-import { FundListv5 } from '@/app/components/FundListv5';
+import { FundListv5 } from '@/app/components/asset-listing/fund/FundListv5';
 
 export default function FundsPage() {
   return (

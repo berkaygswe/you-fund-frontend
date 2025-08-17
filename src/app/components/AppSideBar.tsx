@@ -1,4 +1,4 @@
-import { Home, Inbox } from "lucide-react"
+import { Briefcase, Home, List, TrendingUp } from "lucide-react"
  
 import {
   Sidebar,
@@ -22,12 +22,17 @@ const items = [
   {
     title: "Fund Listing",
     url: "/fund",
-    icon: Inbox,
+    icon: List,
   },
   {
     title: "Etf Listing",
     url: "/etf",
-    icon: Inbox,
+    icon: Briefcase,
+  },
+  {
+    title: "US Stocks",
+    url: "/stocks",
+    icon: TrendingUp,
   },
 ]
  

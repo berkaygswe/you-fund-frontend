@@ -6,23 +6,13 @@ import FundTypePerformance from "../components/homepage/fund-type-performance"
 import { SectionCards } from "../components/homepage/section-cards"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, BarChart3, Globe, Clock, Activity, DollarSign, ArrowUpRight } from "lucide-react"
+import PageHeader from "../components/homepage/page-header"
 
 export default function MarketOverview() {
   return (
     <div className="space-y-6">
       {/* Market Overview Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Market Overview</h1>
-          <p className="text-muted-foreground">
-            Rich market data, trends, and financial insights
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          <span>Last updated: {new Date(Date.now() - 15000 * 60).toLocaleTimeString()}</span>
-        </div>
-      </div>
+      <PageHeader />
 
       {/* Quick Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
