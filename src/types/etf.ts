@@ -5,5 +5,5 @@ export interface Etf extends EtfPriceChanges {
   name: string;
   date: string;
   iconUrl: string;
-  closePrice: number;
+  price: number;
 }

@@ -14,7 +14,7 @@ interface CurrencyState {
 export const useCurrencyStore = create<CurrencyState>()(
   persist(
     (set) => ({
-      currency: getDefaultCurrencyFromLocale(), // default currency
+      currency: 'USD', // default currency, persist will rehydrate correct value
       setCurrency: (currency: Currency) => set({ currency }),
       _hasHydrated: false,
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),

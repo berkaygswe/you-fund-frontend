@@ -20,56 +20,73 @@ import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataTablePagination } from './DataTablePagination';
 
-interface DataTableProps<TData>{
-    columns: ColumnDef<TData>[];
-    data: TData[];
-    loading?: boolean;
-    sorting: SortingState;
-    pagination: PaginationState;
-    setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
-    setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
-    totalPages: number;
-    totalCount: number;
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData>[];
+  data: TData[];
+  /** @deprecated Use `isLoading` instead. Kept for backward compatibility. */
+  loading?: boolean;
+  /** True only on initial load — shows full skeleton placeholder */
+  isLoading?: boolean;
+  /** True during background refetch — dims table with overlay */
+  isFetching?: boolean;
+  sorting: SortingState;
+  pagination: PaginationState;
+  setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
+  setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
+  totalPages: number;
+  totalCount: number;
 }
 
 export function DataTable<TData>({
-    columns,
-    data,
-    sorting,
-    pagination,
-    totalCount,
-    totalPages,
-    loading = false,
-    setSorting,
-    setPagination,
+  columns,
+  data,
+  sorting,
+  pagination,
+  totalCount,
+  totalPages,
+  loading,
+  isLoading: isLoadingProp = false,
+  isFetching = false,
+  setSorting,
+  setPagination,
 }: DataTableProps<TData>) {
 
-    // Create table instance with memoization
-    const table = useReactTable({
-        data,
-        columns,
-        state: {
-            sorting,
-            pagination,
-        },
-        onSortingChange: setSorting,
-        onPaginationChange: setPagination,
-        getCoreRowModel: getCoreRowModel(),
-        pageCount: totalPages,
-        manualPagination: true,
-        manualSorting: true,
-        manualFiltering: true,
-    });
+  // Backward compat: old `loading` prop falls back to `isLoading` behavior
+  const isLoading = isLoadingProp || loading || false;
 
-  if (loading) {
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      sorting,
+      pagination,
+    },
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    pageCount: totalPages,
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+  });
+
+  // Full skeleton only on initial load (no data yet)
+  if (isLoading) {
     return (
-      <div className="p-4">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-full my-2" />
-        ))}
+      <div className="space-y-4">
+        <div className="rounded-md border p-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} className="h-8 w-full my-2" />
+          ))}
+        </div>
       </div>
     );
   }
+
+  const { rows } = table.getRowModel();
+  // To prevent layout shift, match the skeleton count to the current number of rows
+  // If no rows exist (initial load or empty state), fall back to page size
+  const skeletonRowCount = rows?.length > 0 ? rows.length : (pagination.pageSize || 10);
 
   return (
     <div className="space-y-4">
@@ -104,8 +121,19 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
+            {isFetching ? (
+              // Skeleton rows during refetch — keeps table structure, no layout shift
+              Array.from({ length: skeletonRowCount }).map((_, rowIdx) => (
+                <TableRow key={`skeleton-${rowIdx}`} className="bg-background">
+                  {columns.map((_, colIdx) => (
+                    <TableCell key={`skeleton-${rowIdx}-${colIdx}`}>
+                      <Skeleton className="h-5 w-full rounded" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : rows?.length ? (
+              rows.map(row => (
                 <TableRow key={row.id} className='bg-background'>
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>

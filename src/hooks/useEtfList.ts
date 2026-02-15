@@ -2,9 +2,8 @@
 
 import { fundsApi } from "@/services/api";
 import { Etf } from "@/types/etf";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-// src/hooks/useFunds.ts
 interface UseEtfsParams {
     search?: string;
     umbrellaType?: string;
@@ -14,39 +13,71 @@ interface UseEtfsParams {
     size?: number;
     currency: string;
 }
-  
+
 interface UseEtfsResult {
     etfs: Etf[];
     totalCount: number;
     totalPages: number;
-    loading: boolean;
+    /** True only on initial load when no data has been fetched yet */
+    isLoading: boolean;
+    /** True when refetching (search, sort, paginate) while previous data is still visible */
+    isFetching: boolean;
     error: Error | null;
+    retry: () => void;
 }
-  
+
 export function useEtfList(params: UseEtfsParams): UseEtfsResult {
-    const [etfs, setFunds] = useState<Etf[]>([]);
+    const [etfs, setEtfs] = useState<Etf[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => {
-        const fetchFunds = async () => {
+    // Track whether initial data has been loaded
+    const hasLoadedOnce = useRef(false);
+    // Track the latest request to avoid race conditions
+    const requestIdRef = useRef(0);
+
+    const fetchEtfs = useCallback(async (fetchParams: UseEtfsParams) => {
+        const currentRequestId = ++requestIdRef.current;
+
+        // Show full skeleton only on first load; show subtle indicator on subsequent fetches
+        if (!hasLoadedOnce.current) {
+            setIsLoading(true);
+        }
+        setIsFetching(true);
+        setError(null);
+
         try {
-            setLoading(true);
-            const { etfs: data, totalCount: count, totalPages: pages } = await fundsApi.getEtfList(params);
-            setFunds(data);
+            const { etfs: data, totalCount: count, totalPages: pages } = await fundsApi.getEtfList(fetchParams);
+
+            // Only apply results if this is still the latest request (prevents race conditions)
+            if (currentRequestId !== requestIdRef.current) return;
+
+            setEtfs(data);
             setTotalCount(count);
             setTotalPages(pages);
+            hasLoadedOnce.current = true;
         } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to fetch funds'));
+            if (currentRequestId !== requestIdRef.current) return;
+            setError(err instanceof Error ? err : new Error('Failed to fetch ETFs'));
         } finally {
-            setLoading(false);
+            if (currentRequestId === requestIdRef.current) {
+                setIsLoading(false);
+                setIsFetching(false);
+            }
         }
-        };
+    }, []);
 
-        fetchFunds();
-    }, [params]);
+    useEffect(() => {
+        fetchEtfs(params);
+    }, [params, fetchEtfs]);
 
-    return { etfs, totalCount, totalPages, loading, error };
+    const retry = useCallback(() => {
+        setError(null);
+        fetchEtfs(params);
+    }, [params, fetchEtfs]);
+
+    return { etfs, totalCount, totalPages, isLoading, isFetching, error, retry };
 }

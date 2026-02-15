@@ -19,7 +19,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/a
 
 export class ApiError extends Error {
   status: number;
-  
+
   constructor(message: string, status: number) {
     super(message);
     this.status = status;
@@ -28,8 +28,8 @@ export class ApiError extends Error {
 }
 
 function fetchWithTimeout(
-  url: string, 
-  options: RequestInit = {}, 
+  url: string,
+  options: RequestInit = {},
   timeout = 10000 // 10 seconds default
 ): Promise<Response> {
   const controller = new AbortController();
@@ -42,8 +42,8 @@ function fetchWithTimeout(
 
 // Retry wrapper for transient failures (e.g. network errors)
 async function fetchWithRetry(
-  url: string, 
-  options: RequestInit = {}, 
+  url: string,
+  options: RequestInit = {},
   retries = 3,
   timeout = 100000
 ): Promise<Response> {
@@ -88,38 +88,17 @@ async function fetchData<T>(endpoint: string): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
 
   const response = await fetchWithRetry(url);
-  
-  if (!response.ok) {
-      // Attempt to parse the response body as JSON
-      let errorMessage = `API error: ${response.status} ${response.statusText || 'Unknown Error'}`;
-      
-      try {
-          const errorBody = await response.json(); // Read the response body as JSON
-          if (errorBody && errorBody.message) {
-              errorMessage = `API Error: ${errorBody.message}`;
-          } else {
-              // Fallback if the JSON structure is unexpected
-              errorMessage = `API Error: ${response.status} - ${JSON.stringify(errorBody)}`;
-          }
-      } catch (e) {
-          // If the response body is not valid JSON (e.g., plain text, HTML)
-          // You could also try response.text() here if you expect non-JSON error messages
-          errorMessage = `API Error: ${response.status} ${response.statusText || 'Unknown Error'}.`;
-      }
-
-      throw new ApiError(errorMessage, response.status);
-  }
 
   return response.json();
 }
 
-interface FundsResponse{
+interface FundsResponse {
   content: Fund[];
   totalElements: number;
   totalPages: number;
 }
 
-interface EtfResponse{
+interface EtfResponse {
   content: Etf[];
   totalElements: number;
   totalPages: number;
@@ -129,7 +108,7 @@ export const fundsApi = {
   getAllFunds: async (): Promise<Fund[]> => {
     return fetchData<Fund[]>('/funds');
   },
-  
+
   getFundDetails: async (code: string): Promise<FundDetail> => {
     return fetchData<FundDetail>(`/fund/detail/${code}`);
   },
@@ -147,17 +126,17 @@ export const fundsApi = {
     size?: number;
   }): Promise<{ funds: Fund[]; totalCount: number, totalPages: number }> => {
     const queryParams = new URLSearchParams();
-    
+
     if (params?.search) queryParams.append('search', params.search);
     if (params?.umbrellaType) queryParams.append('umbrellaType', params.umbrellaType);
     if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params?.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.page != null) queryParams.append('page', params.page.toString());
     if (params?.size) queryParams.append('size', params.size.toString());
 
     const endpoint = `/funds?${queryParams.toString()}`;
     const data = await fetchData<FundsResponse>(endpoint);
-    
+
     return {
       funds: data.content,
       totalCount: data.totalElements,
@@ -184,7 +163,7 @@ export const fundsApi = {
     const responseJson = fetchData<AssetSearchApiResponse>(`/asset/search?${params.toString()}`);
 
     console.log("API Response:", responseJson);
-    
+
     return responseJson;
   },
 
@@ -219,20 +198,20 @@ export const fundsApi = {
     currency: string;
   }): Promise<{ etfs: Etf[]; totalCount: number, totalPages: number }> => {
     const queryParams = new URLSearchParams();
-    
+
     if (params?.search) queryParams.append('search', params.search);
     if (params?.umbrellaType) queryParams.append('umbrellaType', params.umbrellaType);
     if (params?.sortBy && params?.sortDirection) {
       queryParams.append('sort', `${params.sortBy},${params.sortDirection}`);
     }
-    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.page != null) queryParams.append('page', params.page.toString());
     if (params?.size) queryParams.append('size', params.size.toString());
     if (params?.currency) queryParams.append('currency', params.currency);
 
     queryParams.append('type', 'etf');
     const endpoint = `/etfs?${queryParams.toString()}`;
     const data = await fetchData<EtfResponse>(endpoint);
-    
+
     return {
       etfs: data.content,
       totalCount: data.totalElements,
@@ -256,28 +235,28 @@ export const fundsApi = {
     page?: number;
     size?: number;
     currency: string;
-  }): Promise<{ etfs: Etf[]; totalCount: number, totalPages: number }> => {
+  }): Promise<{ stocks: Etf[]; totalCount: number, totalPages: number }> => {
     const queryParams = new URLSearchParams();
-    
+
     if (params?.search) queryParams.append('search', params.search);
     if (params?.umbrellaType) queryParams.append('umbrellaType', params.umbrellaType);
     if (params?.sortBy && params?.sortDirection) {
       queryParams.append('sort', `${params.sortBy},${params.sortDirection}`);
     }
-    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.page != null) queryParams.append('page', params.page.toString());
     if (params?.size) queryParams.append('size', params.size.toString());
     if (params?.currency) queryParams.append('currency', params.currency);
 
     queryParams.append('type', 'stock');
     const endpoint = `/stocks?${queryParams.toString()}`;
     const data = await fetchData<EtfResponse>(endpoint);
-    
+
     return {
-      etfs: data.content,
+      stocks: data.content,
       totalCount: data.totalElements,
       totalPages: data.totalPages
     };
   },
-  
+
   // Add more API methods as needed
 };

@@ -2,14 +2,14 @@
 import { useState, useEffect, useCallback } from "react";
 
 interface ApiResponse<T> {
-  data: T;
+  data: T | null;
   loading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
 }
 
 export function useApiData<T>(fetchFn: () => Promise<T>, deps: ReadonlyArray<unknown> = []): ApiResponse<T> {
-  const [data, setData] = useState<T>({} as T);
+  const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
