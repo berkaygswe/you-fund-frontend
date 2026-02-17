@@ -7,20 +7,20 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Cell, Pie, PieChart, Sector, SectorProps } from "recharts"
 import { useState } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -28,11 +28,11 @@ const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--cha
 
 const chartConfig = {} as ChartConfig;
 
-export default function FundAllocation({ code }: { code: string })  {
-    const {fundAllocation, loading} = useFundAllocation(code);
+export default function FundAllocation({ code }: { code: string }) {
+    const { fundAllocation, loading } = useFundAllocation(code);
     const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
-    const activeItem = activeIndex !== null ? fundAllocation[activeIndex] : null;
+    const activeItem = (activeIndex !== null && fundAllocation) ? fundAllocation[activeIndex] : null;
 
     const renderActiveShape = (props: SectorProps) => {
         const {
@@ -82,20 +82,20 @@ export default function FundAllocation({ code }: { code: string })  {
                 <ChartContainer config={chartConfig} className="max-h-[250px] w-full">
                     <PieChart>
                         <ChartTooltip
-                        content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                            const { name, percentage } = payload[0].payload;
-                            return (
-                                <ChartTooltipContent>
-                                <div className="text-sm font-semibold">{name}</div>
-                                <div className="text-xs text-muted-foreground">
-                                    {percentage.toFixed(2)}%
-                                </div>
-                                </ChartTooltipContent>
-                            );
-                            }
-                            return null;
-                        }}
+                            content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                    const { name, percentage } = payload[0].payload;
+                                    return (
+                                        <ChartTooltipContent>
+                                            <div className="text-sm font-semibold">{name}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {percentage.toFixed(2)}%
+                                            </div>
+                                        </ChartTooltipContent>
+                                    );
+                                }
+                                return null;
+                            }}
                         />
                         <Pie
                             data={fundAllocation}
@@ -109,10 +109,10 @@ export default function FundAllocation({ code }: { code: string })  {
                             activeShape={renderActiveShape}
                             onMouseEnter={(_, index) => setActiveIndex(index)}
                         >
-                            {fundAllocation.map((entry, index) => (
+                            {fundAllocation.map((entry) => (
                                 <Cell
-                                key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
+                                    key={entry.name}
+                                    fill={COLORS[fundAllocation.indexOf(entry) % COLORS.length]}
                                 />
                             ))}
                         </Pie>
@@ -123,7 +123,7 @@ export default function FundAllocation({ code }: { code: string })  {
                     <div className="text-center">
                         <div className="text-sm font-medium">{activeItem.name}</div>
                         <div className="text-xs text-muted-foreground">
-                        {activeItem.percentage.toFixed(2)}%
+                            {activeItem.percentage.toFixed(2)}%
                         </div>
                     </div>
                 )}
@@ -137,8 +137,8 @@ export default function FundAllocation({ code }: { code: string })  {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {fundAllocation.map((allocation, index) => (
-                                <TableRow key={index}>
+                            {fundAllocation.map((allocation) => (
+                                <TableRow key={allocation.name}>
                                     <TableCell>{allocation.name}</TableCell>
                                     <TableCell className="text-right">{allocation.percentage.toFixed(2)}%</TableCell>
                                 </TableRow>

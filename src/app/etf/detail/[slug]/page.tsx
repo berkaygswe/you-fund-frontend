@@ -55,41 +55,56 @@ export default function EtfDetailPage() {
         etfType: 'Equity',
         investmentStrategy: 'Passive Index Tracking',
         topHoldings: [
-        { name: 'Taiwan Semiconductor Manufacturing Co Ltd', weight: 3.2, country: 'Taiwan' },
-        { name: 'ASML Holding NV', weight: 1.8, country: 'Netherlands' },
-        { name: 'Samsung Electronics Co Ltd', weight: 1.6, country: 'South Korea' },
-        { name: 'Nestlé SA', weight: 1.4, country: 'Switzerland' },
-        { name: 'Tencent Holdings Ltd', weight: 1.2, country: 'China' }
+            { name: 'Taiwan Semiconductor Manufacturing Co Ltd', weight: 3.2, country: 'Taiwan' },
+            { name: 'ASML Holding NV', weight: 1.8, country: 'Netherlands' },
+            { name: 'Samsung Electronics Co Ltd', weight: 1.6, country: 'South Korea' },
+            { name: 'Nestlé SA', weight: 1.4, country: 'Switzerland' },
+            { name: 'Tencent Holdings Ltd', weight: 1.2, country: 'China' }
         ],
         sectorAllocation: [
-        { sector: 'Technology', weight: 18.5 },
-        { sector: 'Financials', weight: 16.2 },
-        { sector: 'Industrials', weight: 13.8 },
-        { sector: 'Consumer Discretionary', weight: 12.1 },
-        { sector: 'Health Care', weight: 9.7 },
-        { sector: 'Materials', weight: 8.9 },
-        { sector: 'Consumer Staples', weight: 8.3 },
-        { sector: 'Energy', weight: 5.8 },
-        { sector: 'Communication Services', weight: 4.2 },
-        { sector: 'Utilities', weight: 2.5 }
+            { sector: 'Technology', weight: 18.5 },
+            { sector: 'Financials', weight: 16.2 },
+            { sector: 'Industrials', weight: 13.8 },
+            { sector: 'Consumer Discretionary', weight: 12.1 },
+            { sector: 'Health Care', weight: 9.7 },
+            { sector: 'Materials', weight: 8.9 },
+            { sector: 'Consumer Staples', weight: 8.3 },
+            { sector: 'Energy', weight: 5.8 },
+            { sector: 'Communication Services', weight: 4.2 },
+            { sector: 'Utilities', weight: 2.5 }
         ],
         geographicAllocation: [
-        { region: 'Japan', weight: 22.1 },
-        { region: 'United Kingdom', weight: 9.8 },
-        { region: 'China', weight: 8.7 },
-        { region: 'Canada', weight: 6.9 },
-        { region: 'France', weight: 6.2 },
-        { region: 'Germany', weight: 5.8 },
-        { region: 'India', weight: 4.3 },
-        { region: 'South Korea', weight: 3.9 },
-        { region: 'Other', weight: 32.3 }
+            { region: 'Japan', weight: 22.1 },
+            { region: 'United Kingdom', weight: 9.8 },
+            { region: 'China', weight: 8.7 },
+            { region: 'Canada', weight: 6.9 },
+            { region: 'France', weight: 6.2 },
+            { region: 'Germany', weight: 5.8 },
+            { region: 'India', weight: 4.3 },
+            { region: 'South Korea', weight: 3.9 },
+            { region: 'Other', weight: 32.3 }
         ]
     };
 
-    if(loading || etfPriceChangeLoading){
+    if (loading || etfPriceChangeLoading) {
         return (
-            <div>
-                
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    if (!etfMetadata || !etfPriceChanges) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <Info className="w-8 h-8 text-red-600" />
+                </div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">ETF Data Not Available</h1>
+                <p className="text-gray-600 max-w-md">We couldn't load the details for this ETF. It might be temporarily unavailable or the symbol might be incorrect.</p>
+                <Button className="mt-6" onClick={() => window.location.reload()}>
+                    Try Again
+                </Button>
             </div>
         );
     }
@@ -108,11 +123,11 @@ export default function EtfDetailPage() {
                                 className='rounded-md'
                                 alt="Founder logo"
                             />
-                            ) : (
-                                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-md">
-                                    <BarChart3 className="w-8 h-8 text-white" />
-                                </div>
-                            )
+                        ) : (
+                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-md">
+                                <BarChart3 className="w-8 h-8 text-white" />
+                            </div>
+                        )
                         }
                         <div>
                             <div className="flex items-center gap-3 mb-2">
@@ -132,11 +147,11 @@ export default function EtfDetailPage() {
                         Watchlist
                     </Button>
                 </div>
-                
+
                 <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 mb-4 leading-tight">
                     {etfMetadata.name}
                 </h2>
-                
+
                 <div className="flex flex-wrap gap-2 mb-6">
                     <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                         {etfMetadata.etfType}
@@ -158,9 +173,8 @@ export default function EtfDetailPage() {
                             <div className="text-5xl font-bold text-gray-900 mb-3">
                                 {formatCurrency(etfPriceChanges.closePrice)}
                             </div>
-                            <div className={`flex items-center gap-3 text-xl font-medium ${
-                                etfPriceChanges.dailyChangePercent >= 0 ? "text-green-600" : "text-red-600"
-                            }`}>
+                            <div className={`flex items-center gap-3 text-xl font-medium ${etfPriceChanges.dailyChangePercent >= 0 ? "text-green-600" : "text-red-600"
+                                }`}>
                                 {etfPriceChanges.dailyChangePercent >= 0 ? (
                                     <ArrowUpRight className="h-6 w-6" />
                                 ) : (
@@ -308,19 +322,19 @@ export default function EtfDetailPage() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-4">
-                                        {etfData.geographicAllocation.slice(0, 6).map((region, index) => (
-                                        <div key={index} className="flex items-center justify-between">
-                                            <span className="text-gray-700 font-medium">{region.region}</span>
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-32 h-3 bg-gray-200 rounded-full overflow-hidden">
-                                                    <div 
-                                                    className="h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-300"
-                                                    style={{ width: `${Math.min(region.weight * 3, 100)}%` }}
-                                                    ></div>
+                                        {etfData.geographicAllocation.slice(0, 6).map((region) => (
+                                            <div key={region.region} className="flex items-center justify-between">
+                                                <span className="text-gray-700 font-medium">{region.region}</span>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-32 h-3 bg-gray-200 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-300"
+                                                            style={{ width: `${Math.min(region.weight * 3, 100)}%` }}
+                                                        ></div>
+                                                    </div>
+                                                    <span className="font-bold text-gray-900 min-w-[4rem] text-right">{formatPercent(region.weight)}</span>
                                                 </div>
-                                                <span className="font-bold text-gray-900 min-w-[4rem] text-right">{formatPercent(region.weight)}</span>
                                             </div>
-                                        </div>
                                         ))}
                                     </div>
                                 </CardContent>
@@ -341,8 +355,8 @@ export default function EtfDetailPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {etfMetadata.topHoldings.map((holding, index) => (
-                                    <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:shadow-md transition-all duration-200">
+                                {etfMetadata.topHoldings.map((holding) => (
+                                    <div key={holding.Name} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:shadow-md transition-all duration-200">
                                         <div>
                                             <div className="font-semibold text-gray-900">{holding.Name}</div>
                                         </div>
@@ -364,14 +378,14 @@ export default function EtfDetailPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {etfMetadata.sectorAllocation.sort((a, b) => b.weight - a.weight).map((sector, index) => (
-                                    <div key={index} className="gap-4 grid grid-cols-2 md:flex md:justify-between md:items-center">
+                                {etfMetadata.sectorAllocation.sort((a, b) => b.weight - a.weight).map((sector) => (
+                                    <div key={sector.sector} className="gap-4 grid grid-cols-2 md:flex md:justify-between md:items-center">
                                         <span className="text-gray-700 font-medium">{sector.sector}</span>
                                         <div className="flex items-center gap-4">
                                             <div className="w-32 h-3 bg-gray-200 rounded-full overflow-hidden">
-                                                <div 
-                                                className="h-full bg-gradient-to-r from-purple-400 to-pink-500 rounded-full transition-all duration-300"
-                                                style={{ width: `${sector.weight * 100}%` }}
+                                                <div
+                                                    className="h-full bg-gradient-to-r from-purple-400 to-pink-500 rounded-full transition-all duration-300"
+                                                    style={{ width: `${sector.weight * 100}%` }}
                                                 ></div>
                                             </div>
                                             <span className="font-bold text-gray-900 min-w-[4rem] text-right">{formatPercent(sector.weight * 100)}</span>
@@ -398,29 +412,29 @@ export default function EtfDetailPage() {
                                 <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.dailyChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
                                     <span className="font-medium">Daily Return</span>
                                     <span className={`font-bold text-lg ${etfPriceChanges.dailyChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
-                                        {etfPriceChanges.dailyChangePercent >= 0 ? "+" : "-"}
-                                        {formatPercent(Math.abs(etfPriceChanges.dailyChangePercent))}
+                                        {etfPriceChanges.dailyChangePercent >= 0 ? "+" : ""}
+                                        {formatPercent(etfPriceChanges.dailyChangePercent)}
                                     </span>
                                 </div>
-                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.oneMonthChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
-                                    <span className="font-medium">1 Month Return</span>
-                                    <span className={`font-bold text-lg ${etfPriceChanges.oneMonthChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
-                                        {etfPriceChanges.oneMonthChangePercent >= 0 ? "+" : "-"}
-                                        {formatPercent(Math.abs(etfPriceChanges.oneMonthChangePercent))}
+                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.monthlyChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
+                                    <span className="font-medium">Monthly Return</span>
+                                    <span className={`font-bold text-lg ${etfPriceChanges.monthlyChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        {etfPriceChanges.monthlyChangePercent >= 0 ? "+" : ""}
+                                        {formatPercent(etfPriceChanges.monthlyChangePercent)}
                                     </span>
                                 </div>
-                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.threeMonthChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
-                                    <span className="font-medium">3 Month Return</span>
-                                    <span className={`font-bold text-lg ${etfPriceChanges.threeMonthChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
-                                        {etfPriceChanges.threeMonthChangePercent >= 0 ? "+" : "-"}
-                                        {formatPercent(Math.abs(etfPriceChanges.threeMonthChangePercent))}
+                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.ytdChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
+                                    <span className="font-medium">YTD Return</span>
+                                    <span className={`font-bold text-lg ${etfPriceChanges.ytdChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        {etfPriceChanges.ytdChangePercent >= 0 ? "+" : ""}
+                                        {formatPercent(etfPriceChanges.ytdChangePercent)}
                                     </span>
                                 </div>
-                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.oneYearChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
-                                    <span className="font-medium">1 Year Return (Annualized)</span>
-                                    <span className={`font-bold text-lg ${etfPriceChanges.oneYearChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
-                                        {etfPriceChanges.oneYearChangePercent >= 0 ? "+" : "-"}
-                                        {formatPercent(Math.abs(etfPriceChanges.oneYearChangePercent))}
+                                <div className={`flex justify-between items-center p-4 rounded-lg ${etfPriceChanges.yearlyChangePercent >= 0 ? "bg-green-50" : "bg-red-50"}`}>
+                                    <span className="font-medium">1 Year Return</span>
+                                    <span className={`font-bold text-lg ${etfPriceChanges.yearlyChangePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        {etfPriceChanges.yearlyChangePercent >= 0 ? "+" : ""}
+                                        {formatPercent(etfPriceChanges.yearlyChangePercent)}
                                     </span>
                                 </div>
                             </CardContent>
@@ -487,7 +501,7 @@ export default function EtfDetailPage() {
                                         <div className="font-semibold text-gray-900">{etfMetadata.pbRatio}</div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="pt-4 border-t">
                                     <h4 className="font-semibold mb-4 text-lg">Fund Characteristics</h4>
                                     <div className="flex flex-wrap gap-3">
@@ -519,12 +533,12 @@ export default function EtfDetailPage() {
                                     <div className="font-semibold text-blue-900 text-lg">Fund Prospectus</div>
                                     <div className="text-sm text-blue-700">Download official fund documents</div>
                                 </button>
-                                
+
                                 <button className="w-full p-6 text-left bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:shadow-md transition-all duration-200 hover:scale-105">
                                     <div className="font-semibold text-green-900 text-lg">Annual Report</div>
                                     <div className="text-sm text-green-700">View latest annual report</div>
                                 </button>
-                                
+
                                 <button className="w-full p-6 text-left bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl hover:shadow-md transition-all duration-200 hover:scale-105">
                                     <div className="font-semibold text-purple-900 text-lg">Holdings Report</div>
                                     <div className="text-sm text-purple-700">Complete holdings breakdown</div>

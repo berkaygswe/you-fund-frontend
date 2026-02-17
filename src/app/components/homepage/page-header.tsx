@@ -1,14 +1,18 @@
 "use client";
 
 import { Clock } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => { };
+const getSnapshot = () => new Date(Date.now() - 15 * 60 * 1000).toLocaleTimeString();
+const getServerSnapshot = () => "--:--:--";
 
 export default function PageHeader() {
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLastUpdated(new Date(Date.now() - 15000 * 60).toLocaleTimeString());
-  }, []);
+  const lastUpdated = useSyncExternalStore(
+    emptySubscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -20,7 +24,7 @@ export default function PageHeader() {
       </div>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Clock className="h-4 w-4" />
-        <span>Last updated: {lastUpdated ?? "--:--:--"}</span>
+        <span suppressHydrationWarning>Last updated: {lastUpdated}</span>
       </div>
     </div>
   );

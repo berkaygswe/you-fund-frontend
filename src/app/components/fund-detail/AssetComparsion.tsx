@@ -225,9 +225,9 @@ export default function AssetComparison({ code }: { code: string }) {
                                     />
                                     <YAxis axisLine={false} />
                                     <Bar dataKey="percentChangeFromStart" fill="var(--color-value)" radius={8} >
-                                        {chartData.map((entry, index) => (
+                                        {chartData.map((entry) => (
                                             <Cell
-                                                key={`cell-${index}`}
+                                                key={entry.symbol || entry.name}
                                                 fill={entry.percentChangeFromStart >= 0 ? '#22c55e' : '#ef4444'} // Tailwind green-500 / red-500
                                             />
                                         ))}
