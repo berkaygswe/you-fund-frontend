@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import Image from 'next/image';
 import ImageWrap from "../../ImageWrap";
-import { useEtfList } from "@/hooks/useEtfList";
+import { useCryptoList } from "@/hooks/useCryptoList";
 import { Etf } from "@/types/etf";
 import { ArrowDown, ArrowUp, RefreshCw } from "lucide-react";
 import debounce from "lodash.debounce";
@@ -15,20 +15,18 @@ import { useCurrencyStore } from "@/stores/currency-store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRealtimePrices, PriceUpdate } from '@/hooks/useRealtimePrices';
-import { RealtimeChangeCell, RealtimePriceCell } from './RealtimeCells';
+import { RealtimeChangeCell, RealtimePriceCell } from '../etf/RealtimeCells';
 
 // ─── Cell Wrappers ──────────────────────────────────────────────────────────
-// These read realtime data from a ref to avoid coupling columns to price state.
-// The ref is updated on every render, so cells always show the latest data
-// without forcing the entire column definition (and thus table rows) to recreate.
-// This follows Vercel's `rerender-memo` pattern: push state reads to leaf components.
 
-function PriceCellWrapper({ symbol, value, pricesRef }: {
+function PriceCellWrapper({ symbol, currency, value, pricesRef }: {
     symbol: string;
+    currency: string;
     value: number;
     pricesRef: React.RefObject<Record<string, PriceUpdate>>;
 }) {
-    const rt = pricesRef.current?.[symbol];
+    const wsSymbol = `${symbol}-${currency}`;
+    const rt = pricesRef.current?.[symbol] || pricesRef.current?.[wsSymbol];
     return (
         <div className="text-center whitespace-nowrap">
             <RealtimePriceCell
@@ -40,12 +38,14 @@ function PriceCellWrapper({ symbol, value, pricesRef }: {
     );
 }
 
-function ChangeCellWrapper({ symbol, value, pricesRef }: {
+function ChangeCellWrapper({ symbol, currency, value, pricesRef }: {
     symbol: string;
+    currency: string;
     value: number;
     pricesRef: React.RefObject<Record<string, PriceUpdate>>;
 }) {
-    const rt = pricesRef.current?.[symbol];
+    const wsSymbol = `${symbol}-${currency}`;
+    const rt = pricesRef.current?.[symbol] || pricesRef.current?.[wsSymbol];
     return (
         <RealtimeChangeCell
             value={value}
@@ -54,7 +54,6 @@ function ChangeCellWrapper({ symbol, value, pricesRef }: {
     );
 }
 
-// Move outside component to prevent recreation on each render
 const periods = ['dailyChangePercent', 'monthlyChangePercent', 'yearlyChangePercent', 'ytdChangePercent'] as const;
 
 const periodHeaderMap: Record<typeof periods[number], string> = {
@@ -64,8 +63,7 @@ const periodHeaderMap: Record<typeof periods[number], string> = {
     'ytdChangePercent': 'YTD Return',
 };
 
-export function EtfListing() {
-
+export function CryptoListing() {
     // States
     const [sorting, setSorting] = useState<SortingState>([]);
     const [pagination, setPagination] = useState<PaginationState>({
@@ -78,11 +76,9 @@ export function EtfListing() {
     const formatCurrency = useFormatCurrency()
     const currency = useCurrencyStore((s) => s.currency)
 
-    // Memoize the debounced function so that it doesn't get recreated on every render.
     const debouncedSetGlobalFilter = useMemo(() =>
         debounce((value: string) => {
             setGlobalFilter(value);
-            // Reset to first page when search changes
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
         }, 300), []);
 
@@ -109,16 +105,13 @@ export function EtfListing() {
     }), [globalFilter, sorting, pagination, currency]);
 
     // Data fetching
-    const { etfs, totalCount, totalPages, isLoading, isFetching, error, retry } = useEtfList(params);
+    const { cryptos, totalCount, totalPages, isLoading, isFetching, error, retry } = useCryptoList(params);
 
     // Realtime prices subscription
-    const symbols = useMemo(() => etfs?.map(e => e.symbol) || [], [etfs]);
+    // Generate WS symbols dynamically like BTC-USD if USD is selected
+    const symbols = useMemo(() => cryptos?.map(e => `${e.symbol}-${currency}`) || [], [cryptos, currency]);
     const realtimePrices = useRealtimePrices(symbols, params.currency);
 
-    // Store realtime prices in a ref so column cell renderers can read latest data
-    // without being in the columns useMemo dependency array.
-    // This prevents column identity from changing on every WS tick,
-    // which would remount all table rows (causing image flicker).
     const pricesRef = useRef(realtimePrices);
     pricesRef.current = realtimePrices;
 
@@ -126,20 +119,20 @@ export function EtfListing() {
     const columns = useMemo<ColumnDef<Etf>[]>(() => [
         {
             accessorKey: 'symbol',
-            header: 'Etf Code',
+            header: 'Crypto Code',
             enableSorting: true,
             size: 70,
             cell: ({ row }) => (
                 <div className="font-medium">
-                    <Link className='grid grid-cols-2 justify-center items-center' href={`/etf/detail/${row.getValue('symbol')}`}>
+                    <Link className='grid grid-cols-2 justify-center items-center' href={`/crypto/detail/${row.getValue('symbol')}`}>
                         {row.original.iconUrl ? (
                             <div className="flex justify-center">
                                 <ImageWrap
-                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/etf/${row.original.iconUrl}`}
+                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/crypto/${row.original.iconUrl}`}
                                     width={20}
                                     height={20}
                                     className='rounded-md'
-                                    alt="Founder logo"
+                                    alt="Crypto logo"
                                 />
                             </div>
                         ) : (
@@ -160,7 +153,7 @@ export function EtfListing() {
         },
         {
             accessorKey: 'name',
-            header: 'ETF Name',
+            header: 'Crypto Name',
             size: 300,
             enableSorting: true,
         },
@@ -171,6 +164,7 @@ export function EtfListing() {
             cell: ({ row }) => (
                 <PriceCellWrapper
                     symbol={row.original.symbol}
+                    currency={currency}
                     value={row.getValue('price')}
                     pricesRef={pricesRef}
                 />
@@ -199,10 +193,15 @@ export function EtfListing() {
                         return (
                             <ChangeCellWrapper
                                 symbol={row.original.symbol}
+                                currency={currency}
                                 value={value}
                                 pricesRef={pricesRef}
                             />
                         );
+                    }
+
+                    if (value == null || isNaN(value)) {
+                        return <div className="text-center">-</div>;
                     }
 
                     return (
@@ -218,13 +217,13 @@ export function EtfListing() {
                 enableSorting: true,
             })
         ),
-    ], [formatCurrency]); // Stable: no realtime data in deps → columns identity is preserved → no table remount
+    ], [currency, formatCurrency]);
 
     // Error state with retry
     if (error) {
         return (
             <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center space-y-3">
-                <p className="text-red-700 font-medium">Failed to load ETFs</p>
+                <p className="text-red-700 font-medium">Failed to load Cryptos</p>
                 <p className="text-sm text-red-600">{error.message}</p>
                 <Button
                     variant="outline"
@@ -243,7 +242,7 @@ export function EtfListing() {
         <div className="space-y-4">
             <div className="flex items-center gap-4">
                 <Input
-                    placeholder="Search ETFs..."
+                    placeholder="Search Cryptos..."
                     className="max-w-md bg-white"
                     value={inputValue}
                     onChange={handleInputChange}
@@ -255,7 +254,7 @@ export function EtfListing() {
             </div>
             <DataTable<Etf>
                 columns={columns}
-                data={etfs}
+                data={cryptos}
                 sorting={sorting}
                 pagination={pagination}
                 totalCount={totalCount}

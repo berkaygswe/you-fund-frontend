@@ -22,6 +22,11 @@ export default function NewsImage({ src, alt, className = '' }: NewsImageProps) 
 
   return (
     <div className="relative w-24 h-16 sm:w-32 sm:h-20 rounded-md overflow-hidden bg-muted">
+      {/* 
+        Using standard <img> here because news images come from unpredictable third-party domains.
+        Next.js <Image> component requires all hostnames to be whitelisted in next.config.ts,
+        which is not feasible for dynamic news sources.
+      */}
       <img
         src={src}
         alt={alt}

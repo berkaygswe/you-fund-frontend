@@ -7,6 +7,10 @@ import {
   ColumnDef,
   SortingState,
   PaginationState,
+  ColumnFiltersState,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
 } from '@tanstack/react-table';
 import {
   Table,
@@ -19,6 +23,7 @@ import {
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataTablePagination } from './DataTablePagination';
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[];
@@ -35,6 +40,11 @@ interface DataTableProps<TData> {
   setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
   totalPages: number;
   totalCount: number;
+  clientSide?: boolean;
+  globalFilter?: string;
+  setGlobalFilter?: React.Dispatch<React.SetStateAction<string>>;
+  columnFilters?: ColumnFiltersState;
+  setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
 }
 
 export function DataTable<TData>({
@@ -49,6 +59,11 @@ export function DataTable<TData>({
   isFetching = false,
   setSorting,
   setPagination,
+  clientSide = false,
+  globalFilter,
+  setGlobalFilter,
+  columnFilters,
+  setColumnFilters,
 }: DataTableProps<TData>) {
 
   // Backward compat: old `loading` prop falls back to `isLoading` behavior
@@ -60,14 +75,21 @@ export function DataTable<TData>({
     state: {
       sorting,
       pagination,
+      ...(globalFilter !== undefined && { globalFilter }),
+      ...(columnFilters !== undefined && { columnFilters }),
     },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
+    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    pageCount: totalPages,
-    manualPagination: true,
-    manualSorting: true,
-    manualFiltering: true,
+    getFilteredRowModel: clientSide ? getFilteredRowModel() : undefined,
+    getPaginationRowModel: clientSide ? getPaginationRowModel() : undefined,
+    getSortedRowModel: clientSide ? getSortedRowModel() : undefined,
+    pageCount: clientSide ? undefined : totalPages,
+    manualPagination: !clientSide,
+    manualSorting: !clientSide,
+    manualFiltering: !clientSide,
   });
 
   // Full skeleton only on initial load (no data yet)
@@ -120,24 +142,32 @@ export function DataTable<TData>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {isFetching ? (
-              // Skeleton rows during refetch — keeps table structure, no layout shift
+          <TableBody className="relative">
+            {rows?.length ? (
+              // If we have rows, always show them to prevent layout shift and image flickering.
+              // We just dim them if we are fetching in the background.
+              rows.map(row => (
+                <TableRow
+                  key={row.id}
+                  className={cn(
+                    'bg-background transition-opacity duration-200',
+                    isFetching && 'opacity-70 grayscale-[0.5] pointer-events-none'
+                  )}
+                >
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : isFetching ? (
+              // Skeletons only if there is NO data yet (initial load or empty search)
               Array.from({ length: skeletonRowCount }).map((_, rowIdx) => (
                 <TableRow key={`skeleton-${rowIdx}`} className="bg-background">
                   {columns.map((_, colIdx) => (
                     <TableCell key={`skeleton-${rowIdx}-${colIdx}`}>
                       <Skeleton className="h-5 w-full rounded" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : rows?.length ? (
-              rows.map(row => (
-                <TableRow key={row.id} className='bg-background'>
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -154,7 +184,7 @@ export function DataTable<TData>({
       </div>
       <DataTablePagination
         table={table}
-        totalItems={totalCount}
+        totalItems={clientSide ? table.getFilteredRowModel().rows.length : totalCount}
         pageSizeOptions={[10, 20, 30]}
       />
     </div>

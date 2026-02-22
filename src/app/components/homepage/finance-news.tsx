@@ -10,7 +10,7 @@ export default async function FinanceNews() {
     const now = new Date();
     const publishedDate = new Date(dateString);
     const diffInHours = Math.floor((now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return "Just now";
     if (diffInHours < 24) return `${diffInHours}h ago`;
     const diffInDays = Math.floor(diffInHours / 24);
@@ -46,7 +46,7 @@ export default async function FinanceNews() {
                     {/* Image Section */}
                     <div className="flex-shrink-0">
                       {articles[0].imageUrl ? (
-                        <NewsImage 
+                        <NewsImage
                           src={articles[0].imageUrl}
                           alt={articles[0].title}
                           className="w-32 h-24 sm:w-40 sm:h-28 rounded-lg object-cover"
@@ -57,7 +57,7 @@ export default async function FinanceNews() {
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Content Section */}
                     <div className="flex-1 min-w-0 space-y-3">
                       <div className="flex items-start justify-between gap-3">
@@ -66,7 +66,7 @@ export default async function FinanceNews() {
                         </h3>
                         <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Building2 className="h-3 w-3" />
@@ -92,10 +92,10 @@ export default async function FinanceNews() {
                 {articles.length - 1} more
               </Badge>
             </div>
-            
+
             <div className="space-y-3">
-              {articles.slice(1, 7).map((article, index) => (
-                <article key={index} className="group cursor-pointer">
+              {articles.slice(1, 7).map((article) => (
+                <article key={article.url} className="group cursor-pointer">
                   <a
                     href={article.url}
                     target="_blank"
@@ -106,7 +106,7 @@ export default async function FinanceNews() {
                       {/* Image Section */}
                       <div className="flex-shrink-0">
                         {article.imageUrl ? (
-                          <NewsImage 
+                          <NewsImage
                             src={article.imageUrl}
                             alt={article.title}
                             className="w-20 h-16 rounded-md object-cover"
@@ -117,7 +117,7 @@ export default async function FinanceNews() {
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Content Section */}
                       <div className="flex-1 min-w-0 space-y-2">
                         <div className="flex items-start justify-between gap-3">
@@ -126,7 +126,7 @@ export default async function FinanceNews() {
                           </h4>
                           <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
                         </div>
-                        
+
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Building2 className="h-3 w-3" />

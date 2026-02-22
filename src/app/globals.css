@@ -121,15 +121,74 @@ table {
 }
 
 /* Remove default table spacing */
-th, td {
+th,
+td {
   padding: 0.5rem;
   box-sizing: border-box;
+}
+
+/* Price flash animations - CSS-driven for reliability with high-frequency updates */
+@keyframes flash-green {
+  0% {
+    background-color: oklch(0.85 0.15 145);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flash-red {
+  0% {
+    background-color: oklch(0.85 0.15 25);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+.dark .price-flash-green {
+  animation: flash-green-dark 700ms ease-in-out forwards;
+}
+
+.dark .price-flash-red {
+  animation: flash-red-dark 700ms ease-in-out forwards;
+}
+
+.price-flash-green {
+  animation: flash-green 700ms ease-in-out forwards;
+}
+
+.price-flash-red {
+  animation: flash-red 700ms ease-in-out forwards;
+}
+
+@keyframes flash-green-dark {
+  0% {
+    background-color: oklch(0.35 0.12 145);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flash-red-dark {
+  0% {
+    background-color: oklch(0.35 0.12 25);
+  }
+
+  100% {
+    background-color: transparent;
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

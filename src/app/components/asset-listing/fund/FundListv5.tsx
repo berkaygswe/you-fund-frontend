@@ -1,13 +1,14 @@
 'use client';
 
 import { useMemo, useState, useCallback, useTransition } from 'react';
-import { Fund } from '@/types/fund';
+import { TefasFund } from '@/types/fund';
 import { FundUmbrellaType } from '@/types/fundUmbrellaType';
 import {
   SortingState,
   ColumnDef,
   PaginationState,
   Row,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
 import {
   DropdownMenu,
@@ -21,7 +22,8 @@ import debounce from 'lodash.debounce';
 import { ArrowDown, ArrowUp, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
-import { useFundsTest } from '@/hooks/useFundsTest';
+import { useTefasFunds } from '@/hooks/useTefasFunds';
+import { useCurrencyStore } from "@/stores/currency-store";
 import Link from 'next/link';
 import Image from 'next/image';
 import ImageWrap from '../../ImageWrap';
@@ -43,6 +45,8 @@ export function FundListv5() {
   const [inputValue, setInputValue] = useState('');
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedUmbrellaType, setSelectedUmbrellaType] = useState<FundUmbrellaType | null>(null);
+
+  const currency = useCurrencyStore((s) => s.currency);
 
   // Memoize the debounced function so that it doesn't get recreated on every render.
   const debouncedSetGlobalFilter = useMemo(() =>
@@ -66,20 +70,16 @@ export function FundListv5() {
     });
   }, [startTransition]); // Add startTransition as a dependency
 
-  // Server-side parameters
-  // Memoize params so that they only change when one of the dependencies changes
-  const params = useMemo(() => ({
-    search: globalFilter,
-    umbrellaType: selectedUmbrellaType?.name,
-    sortBy: sorting[0]?.id,
-    sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-    page: pagination.pageIndex,
-    size: pagination.pageSize,
-  }), [globalFilter, selectedUmbrellaType, sorting, pagination]);
-  
+  const columnFilters = useMemo<ColumnFiltersState>(() => {
+    const filters: ColumnFiltersState = [];
+    if (selectedUmbrellaType) {
+      filters.push({ id: 'umbrellaType', value: selectedUmbrellaType.name });
+    }
+    return filters;
+  }, [selectedUmbrellaType]);
+
   // Data fetching
-  //const { funds, loading, error } = useFunds();
-  const { funds, totalCount, totalPages, loading, error } = useFundsTest(params);
+  const { tefasFunds, loading, error } = useTefasFunds(currency);
   const { umbrellaTypes } = useFundUmbrellaTypes();
 
   // Add this mapping utility
@@ -92,7 +92,7 @@ export function FundListv5() {
   };
 
   // Memoized columns definition
-  const columns = useMemo<ColumnDef<Fund>[]>(() => [
+  const columns = useMemo<ColumnDef<TefasFund>[]>(() => [
     {
       accessorKey: 'code',
       header: 'Fon Kodu',
@@ -102,21 +102,21 @@ export function FundListv5() {
         <div className="font-medium">
           <Link className='flex gap-1 justify-center items-center' href={`/fund/detail/${row.getValue('code')}`}>
             {row.original.founderLogoUrl ? (
-                <ImageWrap
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/fund/${row.original.founderLogoUrl}`}
-                    width={20}
-                    height={20}
-                    className='rounded-md'
-                    alt="Founder logo"
-                />
-                ) : (
-                <Image
-                    src="/bank.jpg"
-                    width={20}
-                    height={20}
-                    className='rounded-md'
-                    alt="Default logo"
-                />
+              <ImageWrap
+                src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/fund/${row.original.founderLogoUrl}`}
+                width={20}
+                height={20}
+                className='rounded-md'
+                alt="Founder logo"
+              />
+            ) : (
+              <Image
+                src="/bank.jpg"
+                width={20}
+                height={20}
+                className='rounded-md'
+                alt="Default logo"
+              />
             )}
             {row.getValue('code')}
           </Link>
@@ -147,19 +147,19 @@ export function FundListv5() {
     },
     ...periods.map(
       (period) => ({
-        id: periodToFieldMap[period], 
+        id: periodToFieldMap[period],
         accessorKey: `priceChanges.${period}`,
         header: `${period.charAt(0).toUpperCase() + period.slice(1)} Change`,
         size: 100,
-        cell: ({ row }: { row: Row<Fund> }) => {
+        cell: ({ row }: { row: Row<TefasFund> }) => {
           const value = row.original.priceChanges[period];
           return (
             <div className={`text-center font-semibold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {value >= 0 ? (
-                  <ArrowUp className="inline h-4 w-4 mr-1" />
-                ) : (
-                  <ArrowDown className="inline h-4 w-4 mr-1" />
-                )}{value.toFixed(2)}%
+              {value >= 0 ? (
+                <ArrowUp className="inline h-4 w-4 mr-1" />
+              ) : (
+                <ArrowDown className="inline h-4 w-4 mr-1" />
+              )}{value.toFixed(2)}%
             </div>
           );
         },
@@ -224,7 +224,7 @@ export function FundListv5() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {selectedUmbrellaType && (
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onSelect={() => handleUmbrellaTypeSelect(null)}
                 className="duration-200 justify-center border m-2 cursor-pointer bg-gray-100"
               >
@@ -232,9 +232,9 @@ export function FundListv5() {
               </DropdownMenuItem>
             )}
             {umbrellaTypes.map(type => (
-              <DropdownMenuItem 
-                key={type.id} 
-                onSelect={() => handleUmbrellaTypeSelect(type)} 
+              <DropdownMenuItem
+                key={type.id}
+                onSelect={() => handleUmbrellaTypeSelect(type)}
                 className={`duration-200 justify-center border m-2 cursor-pointer ${selectedUmbrellaType?.name === type.name ? 'bg-accent' : ''}`}
               >
                 {type.name}
@@ -242,7 +242,7 @@ export function FundListv5() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        
+
         {isPending && (
           <div className="text-sm text-muted-foreground">Updating...</div>
         )}
@@ -253,7 +253,7 @@ export function FundListv5() {
             <Skeleton key={i} className="h-8 w-full my-2" />
           ))}
         </div>
-      ) : ( <>
+      ) : (<>
         {/* <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader className='bg-muted'>
@@ -320,18 +320,22 @@ export function FundListv5() {
           totalItems={totalCount}
           pageSizeOptions={[10, 20, 30]} 
         /> */}
-        <DataTable<Fund>
+        <DataTable<TefasFund>
           columns={columns}
-          data={funds}
+          data={tefasFunds}
           sorting={sorting}
           pagination={pagination}
-          totalCount={totalCount}
-          totalPages={totalPages}
+          totalCount={tefasFunds.length}
+          totalPages={0}
           loading={loading}
           setSorting={setSorting}
           setPagination={setPagination}
+          clientSide={true}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          columnFilters={columnFilters}
         />
-        </>
+      </>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 // src/services/api.ts
 import { FundUmbrellaType } from '@/types/fundUmbrellaType';
-import { Fund } from '../types/fund';
+import { TefasFund } from '../types/fund';
 import { FundPrices } from '@/types/fundPrices';
 import { FundDetail } from '@/types/fundDetail';
 import { AssetGraphComparison } from '@/types/assetGraphComparison';
@@ -93,7 +93,7 @@ async function fetchData<T>(endpoint: string): Promise<T> {
 }
 
 interface FundsResponse {
-  content: Fund[];
+  content: TefasFund[];
   totalElements: number;
   totalPages: number;
 }
@@ -105,8 +105,8 @@ interface EtfResponse {
 }
 
 export const fundsApi = {
-  getAllFunds: async (): Promise<Fund[]> => {
-    return fetchData<Fund[]>('/funds');
+  getAllFunds: async (): Promise<TefasFund[]> => {
+    return fetchData<TefasFund[]>('/funds');
   },
 
   getFundDetails: async (code: string): Promise<FundDetail> => {
@@ -117,30 +117,13 @@ export const fundsApi = {
     return fetchData<FundUmbrellaType[]>('/fund-umbrella-types');
   },
 
-  getFundsTest: async (params?: {
-    search?: string;
-    umbrellaType?: string;
-    sortBy?: string;
-    sortDirection?: string;
-    page?: number;
-    size?: number;
-  }): Promise<{ funds: Fund[]; totalCount: number, totalPages: number }> => {
-    const queryParams = new URLSearchParams();
-
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.umbrellaType) queryParams.append('umbrellaType', params.umbrellaType);
-    if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params?.sortDirection) queryParams.append('sortDirection', params.sortDirection);
-    if (params?.page != null) queryParams.append('page', params.page.toString());
-    if (params?.size) queryParams.append('size', params.size.toString());
-
-    const endpoint = `/funds?${queryParams.toString()}`;
-    const data = await fetchData<FundsResponse>(endpoint);
+  getTefasFunds: async (currency: string): Promise<{ tefasFunds: TefasFund[]; totalCount: number, totalPages: number }> => {
+    const data = await fetchData<TefasFund[]>(`/funds?currency=${currency}`);
 
     return {
-      funds: data.content,
-      totalCount: data.totalElements,
-      totalPages: data.totalPages
+      tefasFunds: data,
+      totalCount: data.length,
+      totalPages: 1
     };
   },
 
@@ -253,6 +236,37 @@ export const fundsApi = {
 
     return {
       stocks: data.content,
+      totalCount: data.totalElements,
+      totalPages: data.totalPages
+    };
+  },
+
+  getCryptoList: async (params?: {
+    search?: string;
+    umbrellaType?: string;
+    sortBy?: string;
+    sortDirection?: string;
+    page?: number;
+    size?: number;
+    currency: string;
+  }): Promise<{ cryptos: Etf[]; totalCount: number, totalPages: number }> => {
+    const queryParams = new URLSearchParams();
+
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.umbrellaType) queryParams.append('umbrellaType', params.umbrellaType);
+    if (params?.sortBy && params?.sortDirection) {
+      queryParams.append('sort', `${params.sortBy},${params.sortDirection}`);
+    }
+    if (params?.page != null) queryParams.append('page', params.page.toString());
+    if (params?.size) queryParams.append('size', params.size.toString());
+    if (params?.currency) queryParams.append('currency', params.currency);
+
+    queryParams.append('type', 'crypto');
+    const endpoint = `/crypto?${queryParams.toString()}`;
+    const data = await fetchData<EtfResponse>(endpoint);
+
+    return {
+      cryptos: data.content,
       totalCount: data.totalElements,
       totalPages: data.totalPages
     };

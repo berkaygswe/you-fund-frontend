@@ -1,4 +1,4 @@
-// utils/formatCurrency.ts
+import { useMemo } from 'react';
 import { useCurrencySymbol } from './getCurrencySymbol'
 import { shortenNumberIntl } from './shortenNumberIntl';
 
@@ -6,7 +6,9 @@ import { shortenNumberIntl } from './shortenNumberIntl';
 export const useFormatCurrency = () => {
   const currency = useCurrencySymbol();
 
-  return (price: number, shorten: boolean = false) => {
+  return useMemo(() => (price: number | null | undefined, shorten: boolean = false) => {
+    if (price == null || isNaN(price)) return '-';
+
     // Format the price to two decimal places.
     let formattedPrice: string;
 
@@ -24,5 +26,5 @@ export const useFormatCurrency = () => {
 
     // For all other currencies (like TRY), the symbol comes after the price.
     return `${formattedPrice} ${currency}`;
-  }
+  }, [currency]);
 }

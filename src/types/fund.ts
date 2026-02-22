@@ -1,6 +1,6 @@
 import { PriceChanges } from "./priceChanges";
 
-export interface Fund {
+export interface TefasFund {
   code: string;
   name: string;
   fundType: string;
@@ -10,3 +10,5 @@ export interface Fund {
   founderLogoUrl: string;
   priceChanges: PriceChanges;
 }
+
+export type Fund = TefasFund;
