@@ -11,7 +11,7 @@ interface UseEtfsParams {
     sortDirection?: string;
     page?: number;
     size?: number;
-    currency: string;
+    currency: string | null;
 }
 
 interface UseEtfsResult {
@@ -38,6 +38,19 @@ export function useEtfList(params: UseEtfsParams): UseEtfsResult {
     const hasLoadedOnce = useRef(false);
     // Track the latest request to avoid race conditions
     const requestIdRef = useRef(0);
+    // Track previous currency to detect changes and clear stale data
+    const prevCurrencyRef = useRef(params.currency);
+
+    // Clear stale data immediately when currency changes to prevent
+    // the UI from showing old prices formatted with the new currency symbol.
+    useEffect(() => {
+        if (prevCurrencyRef.current !== params.currency && params.currency) {
+            setEtfs([]);
+            setIsLoading(true);
+            hasLoadedOnce.current = false;
+        }
+        prevCurrencyRef.current = params.currency;
+    }, [params.currency]);
 
     const fetchEtfs = useCallback(async (fetchParams: UseEtfsParams) => {
         const currentRequestId = ++requestIdRef.current;
@@ -71,6 +84,7 @@ export function useEtfList(params: UseEtfsParams): UseEtfsResult {
     }, []);
 
     useEffect(() => {
+        if (!params.currency) return;
         fetchEtfs(params);
     }, [params, fetchEtfs]);
 

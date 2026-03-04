@@ -21,6 +21,7 @@ export default function Page() {
     const { fund, loading, error } = useFundDetails(slug);
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
+    if (!fund) return <p>Fund not found</p>;
     const priceChangeLabels: { key: keyof FundDetail["priceChanges"]; label: string }[] = [
         { key: "weekly", label: "Weekly" },
         { key: "monthly", label: "Monthly" },
@@ -42,7 +43,7 @@ export default function Page() {
                                 className='rounded-md'
                                 alt="Founder logo"
                             />
-                            ) : (
+                        ) : (
                             <Image
                                 src="/window.svg"
                                 width={70}
@@ -52,9 +53,9 @@ export default function Page() {
                             />
                         )}
                     </div>
-                    <div>   
+                    <div>
                         <div>
-                            <span className='text-2xl font-bold mr-2'>{slug}</span> 
+                            <span className='text-2xl font-bold mr-2'>{slug}</span>
                             {fund.founderName}
                         </div>
                         <div>{fund.name}</div>

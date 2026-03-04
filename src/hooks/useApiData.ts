@@ -14,6 +14,7 @@ export function useApiData<T>(fetchFn: () => Promise<T>, deps: ReadonlyArray<unk
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(async () => {
+    setData(null); // Clear stale data immediately to prevent wrong-format display
     setLoading(true);
     setError(null);
     try {

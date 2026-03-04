@@ -1,5 +1,5 @@
-import { Briefcase, Home, List, TrendingUp } from "lucide-react"
- 
+import { Bitcoin, Briefcase, DollarSign, Home, List } from "lucide-react"
+
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
- 
+
 // Menu items.
 const items = [
   {
@@ -32,12 +32,17 @@ const items = [
   {
     title: "US Stocks",
     url: "/stocks",
-    icon: TrendingUp,
+    icon: DollarSign,
+  },
+  {
+    title: "Crypto",
+    url: "/crypto",
+    icon: Bitcoin,
   },
 ]
- 
+
 export function AppSidebar() {
-  
+
   return (
     <Sidebar>
       <SidebarContent>

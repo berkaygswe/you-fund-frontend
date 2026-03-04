@@ -12,12 +12,13 @@ interface UseResult {
   refetch: () => Promise<void>;
 }
 
-export function useFetchFundGraph(code: string, startDate: string, endDate: string, currency: string): UseResult {
+export function useFetchFundGraph(code: string, startDate: string, endDate: string, currency: string | null): UseResult {
   const [prices, setFundPrice] = useState<FundPrices[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchFundGraph = useCallback(async () => {
+    if (!currency) return;
     setLoading(true);
     setError(null);
     try {
@@ -29,6 +30,11 @@ export function useFetchFundGraph(code: string, startDate: string, endDate: stri
       setLoading(false);
     }
   }, [code, startDate, endDate, currency]);
+
+  // Clear stale data when currency changes to prevent wrong-format flicker
+  useEffect(() => {
+    setFundPrice([]);
+  }, [currency]);
 
   useEffect(() => {
     fetchFundGraph();

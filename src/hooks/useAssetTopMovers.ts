@@ -3,9 +3,12 @@ import { fundsApi } from "@/services/api";
 import { useApiData } from "./useApiData";
 import { AssetTopMovers } from "@/types/assetTopMovers";
 
-export function useAssetTopMovers(direction: string, currency: string) {
+export function useAssetTopMovers(direction: 'ASC' | 'DESC', currency: string | null) {
   const { data, loading, error, refetch } = useApiData<AssetTopMovers[]>(
-    () => fundsApi.getAssetTopMovers(direction, currency),
+    async () => {
+      if (!currency) return []; // Add null check for currency
+      return fundsApi.getAssetTopMovers(direction, currency);
+    },
     [direction, currency]
   );
 

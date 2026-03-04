@@ -12,7 +12,7 @@ interface UseEtfsParams {
     sortDirection?: string;
     page?: number;
     size?: number;
-    currency: string;
+    currency: string | null;
 }
 
 interface UseEtfsResult {
@@ -34,8 +34,22 @@ export function useStockList(params: UseEtfsParams): UseEtfsResult {
     const hasLoadedOnce = useRef(false);
     // Track the latest request to avoid race conditions
     const requestIdRef = useRef(0);
+    // Track previous currency to detect changes and clear stale data
+    const prevCurrencyRef = useRef(params.currency);
+
+    // Clear stale data immediately when currency changes to prevent
+    // the UI from showing old prices formatted with the new currency symbol.
+    useEffect(() => {
+        if (prevCurrencyRef.current !== params.currency && params.currency) {
+            setStocks([]);
+            setLoading(true);
+            hasLoadedOnce.current = false;
+        }
+        prevCurrencyRef.current = params.currency;
+    }, [params.currency]);
 
     useEffect(() => {
+        if (!params.currency) return;
         const fetchFunds = async () => {
             const currentRequestId = ++requestIdRef.current;
 

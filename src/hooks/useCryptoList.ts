@@ -11,7 +11,7 @@ interface UseCryptosParams {
     sortDirection?: string;
     page?: number;
     size?: number;
-    currency: string;
+    currency: string | null;
 }
 
 interface UseCryptosResult {
@@ -34,6 +34,19 @@ export function useCryptoList(params: UseCryptosParams): UseCryptosResult {
 
     const hasLoadedOnce = useRef(false);
     const requestIdRef = useRef(0);
+    // Track previous currency to detect changes and clear stale data
+    const prevCurrencyRef = useRef(params.currency);
+
+    // Clear stale data immediately when currency changes to prevent
+    // the UI from showing old prices formatted with the new currency symbol.
+    useEffect(() => {
+        if (prevCurrencyRef.current !== params.currency && params.currency) {
+            setCryptos([]);
+            setIsLoading(true);
+            hasLoadedOnce.current = false;
+        }
+        prevCurrencyRef.current = params.currency;
+    }, [params.currency]);
 
     const fetchCryptos = useCallback(async (fetchParams: UseCryptosParams) => {
         const currentRequestId = ++requestIdRef.current;
@@ -65,6 +78,7 @@ export function useCryptoList(params: UseCryptosParams): UseCryptosResult {
     }, []);
 
     useEffect(() => {
+        if (!params.currency) return;
         fetchCryptos(params);
     }, [params, fetchCryptos]);
 

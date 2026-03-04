@@ -3,9 +3,9 @@
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Calendar } from "@/components/ui/calendar"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover"
 import { useFetchFundGraph } from "@/hooks/useFetchFundPrice";
 import { useMemo, useState } from "react";
@@ -16,17 +16,17 @@ import { BarChart3, CalendarIcon, GitCompare } from "lucide-react";
 
 import { AssetGraphComparison } from "@/types/assetGraphComparison";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AssetSearchPanel } from "./AssetSearchPanel";
 import { AssetSearchResult } from "@/types/assetSearchResult";
-import { useCurrencyStore } from "@/stores/currency-store";
+import { useCurrency } from '@/hooks/useCurrency';
 import { cn } from "@/lib/utils";
 import { useAssetGraphComparison } from "@/hooks/useAssetGraphComparison";
 
@@ -43,61 +43,61 @@ const COLORS = [
 ];
 
 // Component for single fund price chart
-function SingleFundChart({ config, prices, code, className }: {config: ChartConfig, prices: Array<object>, code: string, className?: string}) {
+function SingleFundChart({ config, prices, code, className }: { config: ChartConfig, prices: Array<object>, code: string, className?: string }) {
 
     if (!prices || prices.length === 0) return null;
     return (
         <ChartContainer config={config} className={`aspect-auto h-[400px] w-full ${className}`}>
             <AreaChart
-            data={prices}
-            margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-            className="h-[400px]"
+                data={prices}
+                margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+                className="h-[400px]"
             >
-            <defs>
-                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-                </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" tickFormatter={(date) => {
+                <defs>
+                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                    </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" tickFormatter={(date) => {
                     const d = new Date(date);
                     return new Intl.DateTimeFormat(undefined, {
                         day: 'numeric',
                         month: 'short',
                     }).format(d);
                 }}
-            axisLine={false} />
-            <YAxis domain={[(dataMin: number) => dataMin * 0.99, 'dataMax']} axisLine={false} tickFormatter={(price) => price.toFixed(2)} />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent labelFormatter={(label) => {
-                        const d = new Date(label);
-                        return new Intl.DateTimeFormat(undefined, {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                        }).format(d);
-                    }} />
-                } 
-            />
-            <Area
-                type="natural"
-                dataKey="price"
-                stroke="#8884d8"
-                fillOpacity={0.4}
-                fill="url(#colorPrice)"
-                name={code}
-            />
+                    axisLine={false} />
+                <YAxis domain={[(dataMin: number) => dataMin * 0.99, 'dataMax']} axisLine={false} tickFormatter={(price) => price.toFixed(2)} />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent labelFormatter={(label) => {
+                    const d = new Date(label);
+                    return new Intl.DateTimeFormat(undefined, {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                    }).format(d);
+                }} />
+                }
+                />
+                <Area
+                    type="natural"
+                    dataKey="price"
+                    stroke="#8884d8"
+                    fillOpacity={0.4}
+                    fill="url(#colorPrice)"
+                    name={code}
+                />
             </AreaChart>
         </ChartContainer>
     );
 }
 
 export interface MergedChartDataPoint {
-  date: string;
-  // This index signature allows for dynamic properties where the key is a string (asset name)
-  // and the value is either a number (the asset's value) or null (if no data for that date/asset).
-  // We also include 'string' as a possible type for `this[key]` to cover the 'date' property itself.
-  [assetName: string]: number | null | string;
+    date: string;
+    // This index signature allows for dynamic properties where the key is a string (asset name)
+    // and the value is either a number (the asset's value) or null (if no data for that date/asset).
+    // We also include 'string' as a possible type for `this[key]` to cover the 'date' property itself.
+    [assetName: string]: number | null | string;
 }
 
 
@@ -116,97 +116,97 @@ function mergeComparisonData(assetComparisonData: AssetGraphComparison[]) {
     // Create merged data array
     return sortedDates.map(date => {
         const dataPoint: MergedChartDataPoint = { date };
-        
+
         assetComparisonData.forEach(asset => {
-        const assetDataPoint = asset.data.find(item => item.date === date);
-        dataPoint[asset.name] = assetDataPoint ? assetDataPoint.value : null;
+            const assetDataPoint = asset.data.find(item => item.date === date);
+            dataPoint[asset.name] = assetDataPoint ? assetDataPoint.value : null;
         });
-        
+
         return dataPoint;
     });
 }
 
 // Component for multi-asset comparison chart
-function ComparisonChart({ config, assetComparisonData, className }: {config: ChartConfig, assetComparisonData: AssetGraphComparison[], className?: string}) {
+function ComparisonChart({ config, assetComparisonData, className }: { config: ChartConfig, assetComparisonData: AssetGraphComparison[], className?: string }) {
     const mergedData = useMemo(() => mergeComparisonData(assetComparisonData), [assetComparisonData]);
     return (
         <ChartContainer config={config} className={`aspect-auto h-[400px] w-full ${className}`}>
-        <AreaChart
-        data={mergedData}
-        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-        className="h-[400px]"
-        >
-        <defs>
-            {assetComparisonData.map((asset, index) => (
-            <linearGradient 
-                key={`gradient-${asset.name}`} 
-                id={`color-${asset.name}`} 
-                x1="0" y1="0" x2="0" y2="1"
+            <AreaChart
+                data={mergedData}
+                margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+                className="h-[400px]"
             >
-                <stop offset="5%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.8}/>
-                <stop offset="95%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0}/>
-            </linearGradient>
-            ))}
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" tickFormatter={(date) => {
-                const d = new Date(date);
-                return new Intl.DateTimeFormat(undefined, {
-                    day: 'numeric',
-                    month: 'short',
-                }).format(d);
-            }} axisLine={false} 
-        />
-        <YAxis 
-            domain={['dataMin', 'dataMax']} 
-            axisLine={false} 
-            tickFormatter={(value) => `${value.toFixed(2)}%`} 
-        />
-        <ChartTooltip cursor={false} content={    
-                <ChartTooltipContent
-                    formatter={(value, name) => {
-                        if (typeof value === 'number') {
-                            const formatted = `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
-                            const colorClass =
-                                value > 0 ? 'text-green-600' :
-                                value < 0 ? 'text-red-600' :
-                                'text-gray-600';
-
-                            return (
-                                <span className={`font-mono}`}>
-                                    {name}: <span className={`${colorClass}`}>{formatted}</span>
-                                </span>
-                            );
-                        }
-
-                        return <span>{name}: {String(value)}</span>;
-                    }}
-                    
-                    labelFormatter={(label) => {
-                        const d = new Date(label);
-                        return new Intl.DateTimeFormat(undefined, {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                        }).format(d);
-                    }}
+                <defs>
+                    {assetComparisonData.map((asset, index) => (
+                        <linearGradient
+                            key={`gradient-${asset.name}`}
+                            id={`color-${asset.name}`}
+                            x1="0" y1="0" x2="0" y2="1"
+                        >
+                            <stop offset="5%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.8} />
+                            <stop offset="95%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0} />
+                        </linearGradient>
+                    ))}
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" tickFormatter={(date) => {
+                    const d = new Date(date);
+                    return new Intl.DateTimeFormat(undefined, {
+                        day: 'numeric',
+                        month: 'short',
+                    }).format(d);
+                }} axisLine={false}
                 />
-            } 
-        />
-        <Legend />
-        {assetComparisonData.map((asset, index) => (
-            <Area
-            key={asset.name}
-            type="natural"
-            dataKey={asset.name}
-            name={asset.name}
-            stroke={COLORS[index % COLORS.length]}
-            fillOpacity={0.4}
-            fill={`url(#color-${asset.name})`}
-            connectNulls={false}
-            />
-        ))}
-        </AreaChart>
+                <YAxis
+                    domain={['dataMin', 'dataMax']}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value.toFixed(2)}%`}
+                />
+                <ChartTooltip cursor={false} content={
+                    <ChartTooltipContent
+                        formatter={(value, name) => {
+                            if (typeof value === 'number') {
+                                const formatted = `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
+                                const colorClass =
+                                    value > 0 ? 'text-green-600' :
+                                        value < 0 ? 'text-red-600' :
+                                            'text-gray-600';
+
+                                return (
+                                    <span className={`font-mono}`}>
+                                        {name}: <span className={`${colorClass}`}>{formatted}</span>
+                                    </span>
+                                );
+                            }
+
+                            return <span>{name}: {String(value)}</span>;
+                        }}
+
+                        labelFormatter={(label) => {
+                            const d = new Date(label);
+                            return new Intl.DateTimeFormat(undefined, {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                            }).format(d);
+                        }}
+                    />
+                }
+                />
+                <Legend />
+                {assetComparisonData.map((asset, index) => (
+                    <Area
+                        key={asset.name}
+                        type="natural"
+                        dataKey={asset.name}
+                        name={asset.name}
+                        stroke={COLORS[index % COLORS.length]}
+                        fillOpacity={0.4}
+                        fill={`url(#color-${asset.name})`}
+                        connectNulls={false}
+                    />
+                ))}
+            </AreaChart>
         </ChartContainer>
     );
 }
@@ -244,14 +244,14 @@ type FundGraphProps = {
 
 export default function FundDetailGraph({ className, code, chartClassName }: FundGraphProps) {
 
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     const [timeRange, setTimeRange] = useState("1y");
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
     const assetCodes = useMemo(() => {
         return selectedAssets.map(asset => asset.symbol);
-    }, [selectedAssets]); 
+    }, [selectedAssets]);
 
     // derive ISO dates based on “custom” vs preset
     const startDate =
@@ -273,8 +273,8 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
             label: isComparisonMode ? "Asset Performance Comparison" : "Fund Price History",
         },
         description: {
-            label: isComparisonMode 
-                ? "Comparing performance of selected assets" 
+            label: isComparisonMode
+                ? "Comparing performance of selected assets"
                 : `${code} fund price history`,
         },
         xAxis: {
@@ -294,14 +294,14 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
     ]
 
     const popularAssets = [
-        { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-        { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-        { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url : '', exchange_icon_url: '' },
-        { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url : '', exchange_icon_url: '' },
-        { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url : '', exchange_icon_url: '' },
+        { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+        { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+        { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url: '', exchange_icon_url: '' },
     ]
 
-    return(
+    return (
         <Card className={cn(className)}>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -310,98 +310,98 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                        <div className="mt-4">
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-                {ranges.map(({ key, label }) => (
-                    <Button
-                        key={key}
-                        variant={timeRange === key ? "default" : "outline"}
-                        size="sm"
-                        className="cursor-pointer"
-                        onClick={() => {
-                            setTimeRange(key)
-                        }}
-                    >
-                        {label}
-                    </Button>
-                ))}
+                <div className="mt-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                        {ranges.map(({ key, label }) => (
+                            <Button
+                                key={key}
+                                variant={timeRange === key ? "default" : "outline"}
+                                size="sm"
+                                className="cursor-pointer"
+                                onClick={() => {
+                                    setTimeRange(key)
+                                }}
+                            >
+                                {label}
+                            </Button>
+                        ))}
 
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant={timeRange === "custom" ? "default" : "outline"}
-                            size="sm"
-                            className="cursor-pointer"
-                            onClick={() => setTimeRange("custom")}
-                        >
-                            <CalendarIcon />
-                            {customRange && customRange.from ? (
-                                customRange.to ? (
-                                    `${customRange.from.toLocaleDateString()} – ${customRange.to.toLocaleDateString()}`
-                                    ) : customRange.from.toLocaleDateString()
-                                ) : "Custom…"}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <Calendar
-                            mode="range"
-                            selected={customRange}
-                            defaultMonth={customRange?.from}
-                            onSelect={setCustomRange}
-                            numberOfMonths={2}
-                        />
-                    </PopoverContent>
-                </Popover>
-            </div>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={timeRange === "custom" ? "default" : "outline"}
+                                    size="sm"
+                                    className="cursor-pointer"
+                                    onClick={() => setTimeRange("custom")}
+                                >
+                                    <CalendarIcon />
+                                    {customRange && customRange.from ? (
+                                        customRange.to ? (
+                                            `${customRange.from.toLocaleDateString()} – ${customRange.to.toLocaleDateString()}`
+                                        ) : customRange.from.toLocaleDateString()
+                                    ) : "Custom…"}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="range"
+                                    selected={customRange}
+                                    defaultMonth={customRange?.from}
+                                    onSelect={setCustomRange}
+                                    numberOfMonths={2}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
 
-            {isComparisonMode && assetComparisonData?.length > 1 ? (
-                <ComparisonChart config={chartConfig} assetComparisonData={assetComparisonData} className={chartClassName} />
-            ) : (
-                <SingleFundChart config={chartConfig} prices={prices} code={code} className={chartClassName} />
-            )}
+                    {isComparisonMode && assetComparisonData?.length > 1 ? (
+                        <ComparisonChart config={chartConfig} assetComparisonData={assetComparisonData} className={chartClassName} />
+                    ) : (
+                        <SingleFundChart config={chartConfig} prices={prices} code={code} className={chartClassName} />
+                    )}
 
-            <div className="flex flex-wrap items-center gap-2 mb-4 mt-4">
-                {popularAssets.map((asset) => (
-                    <Button
-                        key={asset.symbol}
-                        className="cursor-pointer"
-                        size="sm"
-                        variant={selectedAssets.some(a => a.symbol === asset.symbol) ? "default" : "outline"}
-                        onClick={() => {
-                            const isSelected = selectedAssets.some(a => a.symbol === asset.symbol);
+                    <div className="flex flex-wrap items-center gap-2 mb-4 mt-4">
+                        {popularAssets.map((asset) => (
+                            <Button
+                                key={asset.symbol}
+                                className="cursor-pointer"
+                                size="sm"
+                                variant={selectedAssets.some(a => a.symbol === asset.symbol) ? "default" : "outline"}
+                                onClick={() => {
+                                    const isSelected = selectedAssets.some(a => a.symbol === asset.symbol);
 
-                            if (!isSelected && selectedAssets.length >= 6) {
-                                alert("You can only compare up to 6 assets at a time.");
-                                return;
-                            }
+                                    if (!isSelected && selectedAssets.length >= 6) {
+                                        alert("You can only compare up to 6 assets at a time.");
+                                        return;
+                                    }
 
-                            setSelectedAssets((prev) =>
-                                isSelected
-                                ? prev.filter((a) => a.symbol !== asset.symbol)
-                                : [...prev, asset]
-                            );
-                        }}
-                    >
-                        {asset.name}
-                    </Button>
-                ))}
+                                    setSelectedAssets((prev) =>
+                                        isSelected
+                                            ? prev.filter((a) => a.symbol !== asset.symbol)
+                                            : [...prev, asset]
+                                    );
+                                }}
+                            >
+                                {asset.name}
+                            </Button>
+                        ))}
 
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="cursor-pointer"><GitCompare /> Compare Assets</Button>
-                    </DialogTrigger>
-                    <DialogContent className="md:max-w-[600px]">
-                        <DialogHeader>
-                            <DialogTitle>Compare Assets</DialogTitle>
-                        </DialogHeader>
-                        <AssetSearchPanel selectedAssets={selectedAssets} setSelectedAssets={setSelectedAssets} currentAssetSymbol={code}/>
-                        <DialogFooter>
-                            <Button>Save changes</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </div>
-        </div>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="cursor-pointer"><GitCompare /> Compare Assets</Button>
+                            </DialogTrigger>
+                            <DialogContent className="md:max-w-[600px]">
+                                <DialogHeader>
+                                    <DialogTitle>Compare Assets</DialogTitle>
+                                </DialogHeader>
+                                <AssetSearchPanel selectedAssets={selectedAssets} setSelectedAssets={setSelectedAssets} currentAssetSymbol={code} />
+                                <DialogFooter>
+                                    <Button>Save changes</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                </div>
             </CardContent>
         </Card>
 

@@ -21,9 +21,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import debounce from 'lodash.debounce';
 import { ArrowDown, ArrowUp, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
+import { useCurrency } from "@/hooks/useCurrency";
 import { useTefasFunds } from '@/hooks/useTefasFunds';
-import { useCurrencyStore } from "@/stores/currency-store";
+import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
 import Link from 'next/link';
 import Image from 'next/image';
 import ImageWrap from '../../ImageWrap';
@@ -46,7 +46,8 @@ export function FundListv5() {
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedUmbrellaType, setSelectedUmbrellaType] = useState<FundUmbrellaType | null>(null);
 
-  const currency = useCurrencyStore((s) => s.currency);
+  const currency = useCurrency();
+
 
   // Memoize the debounced function so that it doesn't get recreated on every render.
   const debouncedSetGlobalFilter = useMemo(() =>

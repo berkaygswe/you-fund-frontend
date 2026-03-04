@@ -2,15 +2,15 @@
 
 import { useAssetTopMovers } from "@/hooks/useAssetTopMovers";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrencyStore } from "@/stores/currency-store";
+import { useCurrency } from "@/hooks/useCurrency";
 import { Flame, Snowflake, TrendingUp, TrendingDown } from "lucide-react";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useRouter } from 'next/navigation';
 
-export default function AssetTopMovers(){
+export default function AssetTopMovers() {
 
     const formatCurrency = useFormatCurrency();
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
     const router = useRouter();
 
     const { assets: topLosers, loading: topLosersLoading, error: topLosersError } = useAssetTopMovers('ASC', currency);
@@ -86,9 +86,8 @@ export default function AssetTopMovers(){
                                 onClick={() => {
                                     if (isFund) router.push(`/fund/detail/${asset.symbol}`);
                                 }}
-                                className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors ${
-                                    isFund ? 'cursor-pointer' : ''
-                                }`}
+                                className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors ${isFund ? 'cursor-pointer' : ''
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-lg">
@@ -129,9 +128,8 @@ export default function AssetTopMovers(){
                                 onClick={() => {
                                     if (isFund) router.push(`/fund/detail/${asset.symbol}`);
                                 }}
-                                className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors ${
-                                    isFund ? 'cursor-pointer' : ''
-                                }`}
+                                className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors ${isFund ? 'cursor-pointer' : ''
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg">

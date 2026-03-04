@@ -5,9 +5,17 @@ import { useApiData } from "./useApiData";
 import { Currency } from "@/types/currency";
 import { EtfPriceChanges } from "@/types/etfPriceChanges";
 
-export function useEtfPriceChanges(symbol: string, currency: Currency) {
+export function useEtfPriceChanges(symbol: string, currency: Currency | null) {
   const { data, loading, error, refetch } = useApiData<EtfPriceChanges>(
-    () => fundsApi.getEtfPriceChanges(symbol, currency),
+    () => {
+      if (!currency) {
+        // If currency is null, return an empty EtfPriceChanges object
+        // or handle as appropriate for your application's null state.
+        // This prevents the API call from being made with a null currency.
+        return Promise.resolve({} as EtfPriceChanges);
+      }
+      return fundsApi.getEtfPriceChanges(symbol, currency);
+    },
     [symbol, currency]
   );
 

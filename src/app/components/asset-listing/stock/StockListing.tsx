@@ -9,8 +9,8 @@ import { Etf } from "@/types/etf";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import debounce from "lodash.debounce";
 import { DataTable } from "../../DataTable";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
-import { useCurrencyStore } from "@/stores/currency-store";
 import { Input } from "@/components/ui/input";
 import { useStockList } from "@/hooks/useStockList";
 
@@ -24,7 +24,7 @@ const periodHeaderMap: Record<typeof periods[number], string> = {
     'oneYearChangePercent': '1 Year Return',
 };
 
-export function StockListing(){
+export function StockListing() {
 
     // States
     const [isPending, startTransition] = useTransition();
@@ -39,15 +39,15 @@ export function StockListing(){
     const [globalFilter, setGlobalFilter] = useState('');
 
     const formatCurrency = useFormatCurrency()
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     // Memoize the debounced function so that it doesn't get recreated on every render.
     const debouncedSetGlobalFilter = useMemo(() =>
         debounce((value: string) => {
-        // Wrap the state update that triggers the fetch/heavy re-render
-        startTransition(() => {
-            setGlobalFilter(value);
-        });
+            // Wrap the state update that triggers the fetch/heavy re-render
+            startTransition(() => {
+                setGlobalFilter(value);
+            });
         }, 150), [startTransition]); // 1500 ms delay (adjust as needed)
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,10 +66,10 @@ export function StockListing(){
         size: pagination.pageSize,
         currency
     }), [globalFilter, sorting, pagination, currency]);
-    
+
     // Data fetching
     //const { funds, loading, error } = useFunds();
-    const { etfs, totalCount, totalPages, loading, error } = useStockList(params);
+    const { stocks, totalCount, totalPages, loading, error } = useStockList(params);
 
     // Memoized columns definition
     const columns = useMemo<ColumnDef<Etf>[]>(() => [
@@ -82,7 +82,7 @@ export function StockListing(){
                 <div className="font-medium">
                     <div className='grid grid-cols-2 justify-center items-center'>
                         {row.original.iconUrl ? (
-                            <div className="flex justify-center"> 
+                            <div className="flex justify-center">
                                 <ImageWrap
                                     src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/etf/${row.original.iconUrl}`}
                                     width={20}
@@ -91,8 +91,8 @@ export function StockListing(){
                                     alt="Founder logo"
                                 />
                             </div>
-                            ) : (
-                            <div className="flex justify-center"> 
+                        ) : (
+                            <div className="flex justify-center">
                                 <Image
                                     src="/bank.jpg"
                                     width={20}
@@ -147,7 +147,7 @@ export function StockListing(){
                 size: 100,
                 cell: ({ row }: { row: Row<Etf> }) => {
                     // Type assertion for row.original to access dynamic keys safely
-                    const value = row.original[period];
+                    const value = (row.original as any)[period];
                     return (
                         <div className={`text-center font-semibold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                             {value >= 0 ? (
@@ -166,9 +166,9 @@ export function StockListing(){
     // Error state
     if (error) {
         return (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            Error loading etfs: {error.message}
-        </div>
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                Error loading etfs: {error.message}
+            </div>
         );
     }
 
@@ -181,22 +181,22 @@ export function StockListing(){
                     value={inputValue}
                     onChange={handleInputChange}
                 />
-                
+
                 {isPending && (
                     <div className="text-sm text-muted-foreground">Updating...</div>
                 )}
             </div>
-                <DataTable<Etf>
-                    columns={columns}
-                    data={etfs}
-                    sorting={sorting}
-                    pagination={pagination}
-                    totalCount={totalCount}
-                    totalPages={totalPages}
-                    loading={loading}
-                    setSorting={setSorting}
-                    setPagination={setPagination}
-                />
+            <DataTable<Etf>
+                columns={columns}
+                data={stocks}
+                sorting={sorting}
+                pagination={pagination}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                loading={loading}
+                setSorting={setSorting}
+                setPagination={setPagination}
+            />
         </div>
     )
 }

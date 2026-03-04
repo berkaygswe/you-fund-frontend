@@ -1,6 +1,7 @@
 import { GalleryVerticalEnd } from "lucide-react"
 import { SignupForm } from "../components/auth/signup-form"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function SignupPage() {
   return (
@@ -21,9 +22,10 @@ export default function SignupPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        <img
+        <Image
           src="/placeholder.svg"
           alt="Image"
+          fill
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

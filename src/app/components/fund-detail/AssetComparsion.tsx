@@ -26,7 +26,7 @@ import {
 import { AssetSearchPanel } from "./AssetSearchPanel";
 import { AssetSearchResult } from "@/types/assetSearchResult";
 import { CirclePlus, TrendingUp } from "lucide-react";
-import { useCurrencyStore } from "@/stores/currency-store";
+import { useCurrency } from "@/hooks/useCurrency";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
@@ -67,7 +67,7 @@ const chartConfig = {} as ChartConfig;
 
 export default function AssetComparison({ code }: { code: string }) {
 
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([
         { symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' },

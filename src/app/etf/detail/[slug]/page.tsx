@@ -12,14 +12,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEtfMetada } from '@/hooks/useEtfMetada';
 import { useParams } from 'next/navigation';
 import { useEtfPriceChanges } from '@/hooks/useEtfPriceChanges';
-import { useCurrencyStore } from '@/stores/currency-store';
+import { useCurrency } from '@/hooks/useCurrency';
 import ImageWrap from '@/app/components/ImageWrap';
 
 export default function EtfDetailPage() {
 
     //const [activeTab, setActiveTab] = useState('overview');
 
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     const params = useParams();
     const slug = params.slug as string;

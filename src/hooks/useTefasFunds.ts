@@ -12,7 +12,7 @@ interface UseTefasFundsResult {
     error: Error | null;
 }
 
-export function useTefasFunds(currency: string): UseTefasFundsResult {
+export function useTefasFunds(currency: string | null | undefined): UseTefasFundsResult {
     const [tefasFunds, setTefasFunds] = useState<TefasFund[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -21,8 +21,21 @@ export function useTefasFunds(currency: string): UseTefasFundsResult {
 
     // Track the latest request to avoid race conditions
     const requestIdRef = useRef(0);
+    // Track previous currency to detect changes and clear stale data
+    const prevCurrencyRef = useRef(currency);
+
+    // Clear stale data immediately when currency changes to prevent
+    // the UI from showing old prices formatted with the new currency symbol.
+    useEffect(() => {
+        if (prevCurrencyRef.current !== currency && currency) {
+            setTefasFunds([]);
+            setLoading(true);
+        }
+        prevCurrencyRef.current = currency;
+    }, [currency]);
 
     useEffect(() => {
+        if (!currency) return;
         const fetchFunds = async () => {
             const currentRequestId = ++requestIdRef.current;
 

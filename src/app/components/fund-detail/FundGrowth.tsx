@@ -3,10 +3,10 @@
 import { useFundDetailGrowth } from "@/hooks/useFundDetailGrowth";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
 } from "@/components/ui/chart"
 import {
     Card,
@@ -27,10 +27,9 @@ export default function FundGrowth({ code }: { code: string }) {
 
     const { fundGrowth, loading } = useFundDetailGrowth(code);
 
-    const marketCapChart = fundGrowth.marketCap;
-    const shareNumberChart = fundGrowth.shareNumber;
-
-    console.log("Fund Growth Data:", fundGrowth);
+    const marketCapChart = fundGrowth?.marketCap || [];
+    const shareNumberChart = fundGrowth?.shareNumber || [];
+    const peopleNumberChart = fundGrowth?.peopleNumber || [];
 
     return (
         <div>
@@ -68,7 +67,7 @@ export default function FundGrowth({ code }: { code: string }) {
                                 </BarChart>
                             </ChartContainer>
                         </div>
-                        <Separator className="my-2"/>
+                        <Separator className="my-2" />
                         <div className="p-1">
                             <div className="text-md font-semibold ml-3 mb-2">
                                 <p>Dolaşımdaki Pay Adedi</p>
@@ -76,6 +75,35 @@ export default function FundGrowth({ code }: { code: string }) {
                             </div>
                             <ChartContainer config={chartConfig} className="max-h-[300px] md:w-full">
                                 <BarChart accessibilityLayer data={shareNumberChart}>
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis
+                                        dataKey="date"
+                                        tickLine={false}
+                                        tickMargin={10}
+                                        axisLine={false}
+                                        tickFormatter={(date) => {
+                                            const d = new Date(date);
+                                            return new Intl.DateTimeFormat(undefined, {
+                                                month: 'short',
+                                            }).format(d);
+                                        }}
+                                    />
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent hideLabel />}
+                                    />
+                                    <Bar dataKey="value" fill="var(--color-value)" radius={8} />
+                                </BarChart>
+                            </ChartContainer>
+                        </div>
+                        <Separator className="my-2" />
+                        <div className="p-1">
+                            <div className="text-md font-semibold ml-3 mb-2">
+                                <p>Fon Katılımcı Sayısı</p>
+                                <p className="text-muted-foreground">{peopleNumberChart.length > 0 ? peopleNumberChart[peopleNumberChart.length - 1].value : "N/A"} adet</p>
+                            </div>
+                            <ChartContainer config={chartConfig} className="max-h-[300px] md:w-full">
+                                <BarChart accessibilityLayer data={peopleNumberChart}>
                                     <CartesianGrid vertical={false} />
                                     <XAxis
                                         dataKey="date"

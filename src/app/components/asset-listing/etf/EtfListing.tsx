@@ -10,8 +10,8 @@ import { Etf } from "@/types/etf";
 import { ArrowDown, ArrowUp, RefreshCw } from "lucide-react";
 import debounce from "lodash.debounce";
 import { DataTable } from "../../DataTable";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
-import { useCurrencyStore } from "@/stores/currency-store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRealtimePrices, PriceUpdate } from '@/hooks/useRealtimePrices';
@@ -76,7 +76,7 @@ export function EtfListing() {
     const [globalFilter, setGlobalFilter] = useState('');
 
     const formatCurrency = useFormatCurrency()
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     // Memoize the debounced function so that it doesn't get recreated on every render.
     const debouncedSetGlobalFilter = useMemo(() =>

@@ -1,10 +1,12 @@
 // utils/getCurrencySymbol.ts
 
-import { useCurrencyStore } from "@/stores/currency-store"
+import { useCurrency } from "@/hooks/useCurrency"
 
 export const useCurrencySymbol = () => {
 
-    const currency = useCurrencyStore((s) => s.currency);
+    const currency = useCurrency();
+
+    if (!currency) return '';
 
     switch (currency) {
         case 'USD':

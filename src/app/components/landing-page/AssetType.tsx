@@ -1,5 +1,5 @@
 import { useAssetDetailComparsion } from "@/hooks/useAssetDetailComparison";
-import { useCurrencyStore } from "@/stores/currency-store";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useMemo, useState } from "react";
 import FloatingCard from "./FloatingCard";
@@ -78,7 +78,7 @@ const assetTypeColors = {
 export default function AssetType() {
 
     const formatCurrency = useFormatCurrency()
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     const today = new Date();
     const sDate = new Date(today);
@@ -87,7 +87,7 @@ export default function AssetType() {
 
     const [activeTab, setActiveTab] = useState('stock');
     const assetCodes = useMemo(() => assets.map(asset => asset.symbol), [assets]);
-    const {assetComparisonData, loading: comparisonLoading, error: comparisonError} = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const { assetComparisonData, loading: comparisonLoading, error: comparisonError } = useAssetDetailComparsion(assetCodes, startDate, currency);
 
     // Filter assets based on the activeTab
     const filteredAssets = useMemo(() => {
@@ -112,23 +112,22 @@ export default function AssetType() {
                 </h2>
                 <p className="text-gray-300">All major asset classes in one powerful platform</p>
             </div>
-            
+
             <div className="flex flex-wrap justify-center gap-4 mb-8">
                 {['stock', 'etf', 'cryptocurrency', 'fund'].map((type) => (
-                <button
-                    key={type}
-                    onClick={() => setActiveTab(type)}
-                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
-                    activeTab === type 
-                        ? `bg-gradient-to-r ${assetTypeColors[type as keyof typeof assetTypeColors]} text-white shadow-lg` 
-                        : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
-                    }`}
-                >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
+                    <button
+                        key={type}
+                        onClick={() => setActiveTab(type)}
+                        className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${activeTab === type
+                                ? `bg-gradient-to-r ${assetTypeColors[type as keyof typeof assetTypeColors]} text-white shadow-lg`
+                                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
+                            }`}
+                    >
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </button>
                 ))}
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {!comparisonLoading && !comparisonError && filteredAssets.map((asset) => (
                     <FloatingCard key={asset.symbol} className="group hover:scale-105 transition-all duration-300">
@@ -161,19 +160,19 @@ export default function AssetType() {
                             {formatCurrency(asset.close)}
                         </div>
                         <div className="text-gray-400 text-sm mb-4">{asset.name}</div>
-                        
+
                         {/* Additional metrics */}
                         {asset.volume !== null && (
                             <div className="space-y-2 pt-4 border-t border-white/10">
                                 <div className="flex justify-between text-xs">
-                                <span className="text-gray-400">Volume</span>
-                                <span className="text-white">{asset.volume.toLocaleString()}</span>
+                                    <span className="text-gray-400">Volume</span>
+                                    <span className="text-white">{asset.volume.toLocaleString()}</span>
                                 </div>
                             </div>
                         )}
                     </FloatingCard>
                 ))}
-                
+
                 {/* Loading state */}
                 {comparisonLoading && (
                     <>
@@ -191,7 +190,7 @@ export default function AssetType() {
                         ))}
                     </>
                 )}
-                
+
                 {/* Error state */}
                 {comparisonError && (
                     <div className="col-span-full text-center py-8">
@@ -199,7 +198,7 @@ export default function AssetType() {
                         <div className="text-gray-400 text-sm">Please try again later</div>
                     </div>
                 )}
-                
+
                 {/* Empty state */}
                 {!comparisonLoading && !comparisonError && filteredAssets.length === 0 && (
                     <div className="col-span-full text-center py-8">

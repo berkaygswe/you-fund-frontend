@@ -117,7 +117,8 @@ export const fundsApi = {
     return fetchData<FundUmbrellaType[]>('/fund-umbrella-types');
   },
 
-  getTefasFunds: async (currency: string): Promise<{ tefasFunds: TefasFund[]; totalCount: number, totalPages: number }> => {
+  getTefasFunds: async (currency: string | null): Promise<{ tefasFunds: TefasFund[]; totalCount: number, totalPages: number }> => {
+    if (!currency) return { tefasFunds: [], totalCount: 0, totalPages: 0 };
     const data = await fetchData<TefasFund[]>(`/funds?currency=${currency}`);
 
     return {
@@ -127,11 +128,13 @@ export const fundsApi = {
     };
   },
 
-  getFundGraph: async (code: string, startDate: string, endDate: string, currency: string): Promise<FundPrices[]> => {
+  getFundGraph: async (code: string, startDate: string, endDate: string, currency: string | null): Promise<FundPrices[]> => {
+    if (!currency) return [];
     return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}&currency=${currency}`);
   },
 
-  getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string, currency: string): Promise<AssetGraphComparison[]> => {
+  getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string, currency: string | null): Promise<AssetGraphComparison[]> => {
+    if (!currency) return [];
     const codes = encodeURIComponent(assetCodes.join(','));
     return fetchData<AssetGraphComparison[]>(`/asset/detail/graph/comparison?assetCodes=${codes}&fromDate=${fromDate}&toDate=${toDate}&currency=${currency}`);
   },
@@ -158,16 +161,19 @@ export const fundsApi = {
     return fetchData<FundAllocation[]>(`/fund/detail/allocations/${code}`);
   },
 
-  getAssetDetailComparison: async (assetCodes: string[], fromDate: string, currency: string): Promise<AssetDetailComparison[]> => {
+  getAssetDetailComparison: async (assetCodes: string[], fromDate: string, currency: string | null): Promise<AssetDetailComparison[]> => {
+    if (!currency) return [];
     const codes = encodeURIComponent(assetCodes.filter(Boolean).join(','));
     return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetCodes=${codes}&fromDate=${fromDate}&currency=${currency}`);
   },
 
-  getAssetTopMovers: async (direction: string, currency: string): Promise<AssetTopMovers[]> => {
+  getAssetTopMovers: async (direction: 'ASC' | 'DESC', currency: string | null): Promise<AssetTopMovers[]> => {
+    if (!currency) return [];
     return fetchData<AssetTopMovers[]>(`/asset/top-movers?direction=${direction}&currency=${currency}`);
   },
 
-  getFundTypePerformance: async (currency: string): Promise<FundTypePerformance[]> => {
+  getFundTypePerformance: async (currency: string | null): Promise<FundTypePerformance[]> => {
+    if (!currency) return [];
     return fetchData<FundTypePerformance[]>(`/fund-type-performance?currency=${currency}`);
   },
 
@@ -178,7 +184,7 @@ export const fundsApi = {
     sortDirection?: string;
     page?: number;
     size?: number;
-    currency: string;
+    currency: string | null;
   }): Promise<{ etfs: Etf[]; totalCount: number, totalPages: number }> => {
     const queryParams = new URLSearchParams();
 
@@ -206,8 +212,9 @@ export const fundsApi = {
     return fetchData<EtfMetadata>(`/etf/detail/${symbol}`);
   },
 
-  getEtfPriceChanges: async (symbol: string, currency: Currency): Promise<EtfPriceChanges> => {
-    return fetchData<EtfPriceChanges>(`/etf/price-changes?symbol=${symbol}&currency=${currency}`)
+  getEtfPriceChanges: async (symbol: string, currency: string | null): Promise<EtfPriceChanges> => {
+    if (!currency) return {} as EtfPriceChanges;
+    return fetchData<EtfPriceChanges>(`/etf/detail/price-changes?symbol=${symbol}&currency=${currency}`);
   },
 
   getStockList: async (params?: {
@@ -217,7 +224,7 @@ export const fundsApi = {
     sortDirection?: string;
     page?: number;
     size?: number;
-    currency: string;
+    currency: string | null;
   }): Promise<{ stocks: Etf[]; totalCount: number, totalPages: number }> => {
     const queryParams = new URLSearchParams();
 
@@ -248,7 +255,7 @@ export const fundsApi = {
     sortDirection?: string;
     page?: number;
     size?: number;
-    currency: string;
+    currency: string | null;
   }): Promise<{ cryptos: Etf[]; totalCount: number, totalPages: number }> => {
     const queryParams = new URLSearchParams();
 

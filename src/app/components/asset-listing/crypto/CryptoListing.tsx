@@ -10,8 +10,8 @@ import { Etf } from "@/types/etf";
 import { ArrowDown, ArrowUp, RefreshCw } from "lucide-react";
 import debounce from "lodash.debounce";
 import { DataTable } from "../../DataTable";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
-import { useCurrencyStore } from "@/stores/currency-store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRealtimePrices, PriceUpdate } from '@/hooks/useRealtimePrices';
@@ -21,7 +21,7 @@ import { RealtimeChangeCell, RealtimePriceCell } from '../etf/RealtimeCells';
 
 function PriceCellWrapper({ symbol, currency, value, pricesRef }: {
     symbol: string;
-    currency: string;
+    currency: string | null;
     value: number;
     pricesRef: React.RefObject<Record<string, PriceUpdate>>;
 }) {
@@ -40,7 +40,7 @@ function PriceCellWrapper({ symbol, currency, value, pricesRef }: {
 
 function ChangeCellWrapper({ symbol, currency, value, pricesRef }: {
     symbol: string;
-    currency: string;
+    currency: string | null;
     value: number;
     pricesRef: React.RefObject<Record<string, PriceUpdate>>;
 }) {
@@ -74,7 +74,7 @@ export function CryptoListing() {
     const [globalFilter, setGlobalFilter] = useState('');
 
     const formatCurrency = useFormatCurrency()
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     const debouncedSetGlobalFilter = useMemo(() =>
         debounce((value: string) => {

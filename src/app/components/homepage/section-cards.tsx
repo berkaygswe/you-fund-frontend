@@ -12,25 +12,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAssetDetailComparsion } from "@/hooks/useAssetDetailComparison";
 import { useAssetGraphComparison } from "@/hooks/useAssetGraphComparison";
 
-import { useCurrencyStore } from "@/stores/currency-store";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { TrendingDown, TrendingUp, Globe, BarChart3, DollarSign } from "lucide-react"
 import { useMemo } from "react";
 import { Line, LineChart, XAxis, YAxis } from "recharts";
 
 const chartConfig = {
-  value: {
-    label: "Value",
-    color: "var(--chart-1)",
-  },
+    value: {
+        label: "Value",
+        color: "var(--chart-1)",
+    },
 } satisfies ChartConfig
 
 const popularAssets = [
-    { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url : '', exchange_icon_url: '' },
-    { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url : '', exchange_icon_url: '' },
+    { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+    { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+    { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url: '', exchange_icon_url: '' },
+    { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url: '', exchange_icon_url: '' },
+    { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url: '', exchange_icon_url: '' },
 ]
 
 const assetIcons = {
@@ -43,7 +43,7 @@ const assetIcons = {
 
 export function SectionCards() {
     const formatCurrency = useFormatCurrency()
-    const currency = useCurrencyStore((s) => s.currency)
+    const currency = useCurrency();
 
     const today = new Date();
     const sDate = new Date(today);
@@ -52,10 +52,10 @@ export function SectionCards() {
 
     const assetCodes = useMemo(() => {
         return popularAssets.map(asset => asset.symbol);
-    }, []); 
+    }, []);
 
     const { assetComparisonData: prices, loading: graphLoading, error: graphError } = useAssetGraphComparison(assetCodes, startDate, today.toISOString().slice(0, 10), currency);
-    const {assetComparisonData, loading: comparisonLoading, error: comparisonError} = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const { assetComparisonData, loading: comparisonLoading, error: comparisonError } = useAssetDetailComparsion(assetCodes, startDate, currency);
 
     // Show skeleton while loading
     if (comparisonLoading || graphLoading) {
@@ -161,8 +161,8 @@ export function SectionCards() {
                                 <div className="w-16 h-12">
                                     <ChartContainer config={chartConfig} className="h-full w-full">
                                         <LineChart data={assetPrices.data}>
-                                            <XAxis dataKey="date" hide /> 
-                                            <YAxis dataKey="value" hide domain={['dataMin', 'dataMax']} /> 
+                                            <XAxis dataKey="date" hide />
+                                            <YAxis dataKey="value" hide domain={['dataMin', 'dataMax']} />
                                             <Line
                                                 dataKey="value"
                                                 type="linear"
