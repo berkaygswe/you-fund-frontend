@@ -248,6 +248,8 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
 
     const [timeRange, setTimeRange] = useState("1y");
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
+    const [pendingRange, setPendingRange] = useState<DateRange | undefined>(undefined);
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
     const assetCodes = useMemo(() => {
         return selectedAssets.map(asset => asset.symbol);
@@ -326,13 +328,17 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
                             </Button>
                         ))}
 
-                        <Popover>
+                        <Popover open={isPopoverOpen} onOpenChange={(open) => {
+                            setIsPopoverOpen(open);
+                            if (open) {
+                                setPendingRange(customRange);
+                            }
+                        }}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant={timeRange === "custom" ? "default" : "outline"}
                                     size="sm"
                                     className="cursor-pointer"
-                                    onClick={() => setTimeRange("custom")}
                                 >
                                     <CalendarIcon />
                                     {customRange && customRange.from ? (
@@ -342,14 +348,37 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
                                     ) : "Custom…"}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Calendar
-                                    mode="range"
-                                    selected={customRange}
-                                    defaultMonth={customRange?.from}
-                                    onSelect={setCustomRange}
-                                    numberOfMonths={2}
-                                />
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <div className="p-4">
+                                    <Calendar
+                                        mode="range"
+                                        selected={pendingRange}
+                                        defaultMonth={pendingRange?.from || customRange?.from}
+                                        onSelect={setPendingRange}
+                                        numberOfMonths={2}
+                                    />
+                                    <div className="flex justify-end gap-2 mt-2 pt-4 border-t">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setIsPopoverOpen(false)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            onClick={() => {
+                                                if (pendingRange) {
+                                                    setCustomRange(pendingRange);
+                                                    setTimeRange("custom");
+                                                }
+                                                setIsPopoverOpen(false);
+                                            }}
+                                        >
+                                            Confirm
+                                        </Button>
+                                    </div>
+                                </div>
                             </PopoverContent>
                         </Popover>
                     </div>

@@ -147,7 +147,7 @@ export function StockListing() {
                 size: 100,
                 cell: ({ row }: { row: Row<Etf> }) => {
                     // Type assertion for row.original to access dynamic keys safely
-                    const value = (row.original as any)[period];
+                    const value = (row.original as unknown as Record<string, number>)[period];
                     return (
                         <div className={`text-center font-semibold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                             {value >= 0 ? (
@@ -161,7 +161,7 @@ export function StockListing() {
                 enableSorting: true,
             })
         ),
-    ], [periods, formatCurrency]);
+    ], [formatCurrency]);
 
     // Error state
     if (error) {

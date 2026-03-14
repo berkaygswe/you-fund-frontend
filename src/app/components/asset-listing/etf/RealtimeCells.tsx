@@ -68,6 +68,7 @@ interface ChangeCellProps {
 }
 
 export function RealtimeChangeCell({ value, realtimeChange }: ChangeCellProps) {
+    const { key: flashKey, direction } = useFlash(realtimeChange, value);
     const displayChange = realtimeChange ?? value;
 
     if (displayChange == null || isNaN(displayChange)) {
@@ -75,9 +76,6 @@ export function RealtimeChangeCell({ value, realtimeChange }: ChangeCellProps) {
     }
 
     const isPositive = displayChange >= 0;
-
-    const { key: flashKey, direction } = useFlash(realtimeChange, value);
-
     const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
 
     return (

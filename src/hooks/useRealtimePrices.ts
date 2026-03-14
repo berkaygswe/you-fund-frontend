@@ -1,108 +1,59 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useWebSocket, PriceUpdate } from '@/providers/WebSocketProvider';
 
-export interface PriceUpdate {
-    symbol: string;
-    price?: number;
-    dailyChangePercent?: number;
-    lastUpdate?: number;
-}
+export type { PriceUpdate } from '@/providers/WebSocketProvider';
 
-interface RealtimeMessage {
-    symbol: string;
-    p: number;      // price
-    d1: number;     // daily change %
-    m1: number;     // 1 month change %
-    y1: number;     // 1 year change %
-    ytd: number;    // YTD change %
-    ts: number;     // timestamp in seconds
-    currency: string;
-}
-
+/**
+ * Subscribes to real-time price updates for the given symbols.
+ *
+ * Uses the shared WebSocket connection from WebSocketProvider.
+ * Multiple components can subscribe to overlapping symbols without
+ * creating duplicate server subscriptions (ref-counted internally).
+ *
+ * Returns only the price updates relevant to the requested symbols.
+ */
 export const useRealtimePrices = (symbols: string[], currency: string | null) => {
-    const [prices, setPrices] = useState<Record<string, PriceUpdate>>({});
-    const wsRef = useRef<WebSocket | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
-    const currencyRef = useRef(currency);
+    const { subscribe, prices } = useWebSocket();
+    const [, forceUpdate] = useState(0);
 
-    // 0. Reset prices and update currencyRef when currency changes
+    // Keep a stable reference to the current symbols string for comparison
+    const symbolsKey = useMemo(() => symbols.join(','), [symbols]);
+
+    // Reset component-level awareness when currency changes
+    const prevCurrencyRef = useRef(currency);
     useEffect(() => {
-        if (!currency) return;
-        setPrices({});
-        currencyRef.current = currency;
+        if (currency && currency !== prevCurrencyRef.current) {
+            prevCurrencyRef.current = currency;
+            forceUpdate((n) => n + 1);
+        }
     }, [currency]);
 
-    // 1. Manage Connection (Only on mount/unmount)
+    // Subscribe/unsubscribe when symbols or currency change
     useEffect(() => {
-        const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/ws/prices`);
-        wsRef.current = ws;
+        if (!currency || symbols.length === 0) return;
 
-        ws.onopen = () => {
-            setIsConnected(true);
-        };
+        const unsubscribe = subscribe(symbols, currency);
+        return unsubscribe;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [symbolsKey, currency, subscribe]);
 
-        ws.onclose = () => {
-            setIsConnected(false);
-        };
+    // Filter the shared price store to only return data for the requested symbols
+    return useMemo(() => {
+        const filtered: Record<string, PriceUpdate> = {};
 
-        ws.onerror = (err) => {
-            console.error("WebSocket Error:", err);
-        };
+        for (const requestedSymbol of symbols) {
+            // requestedSymbol might be "BTC-USD" or just "VOO"
+            const baseSymbol = requestedSymbol.split('-')[0];
+            const p = prices[baseSymbol];
 
-        ws.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                const updates: RealtimeMessage[] = Array.isArray(data) ? data : [data];
-
-                setPrices(prev => {
-                    const next = { ...prev };
-                    let hasChanges = false;
-
-                    updates.forEach((u) => {
-                        if (u.symbol && u.currency === currencyRef.current) {
-                            next[u.symbol] = {
-                                symbol: u.symbol,
-                                price: u.p,
-                                dailyChangePercent: u.d1,
-                                lastUpdate: u.ts * 1000
-                            };
-                            hasChanges = true;
-                        }
-                    });
-
-                    return hasChanges ? next : prev;
-                });
-            } catch (err) {
-                console.error('WebSocket message parse error', err);
+            // If we have a price for this base symbol, AND it matches our current currency
+            if (p && (!currency || p.currency === currency)) {
+                // Key it under the requested symbol so the component can find it easily
+                filtered[requestedSymbol] = p;
             }
-        };
-
-        return () => {
-            ws.close();
-        };
-    }, []);
-
-    // 2. Manage Subscriptions (When symbols/currency/connection changes)
-    useEffect(() => {
-        const ws = wsRef.current;
-
-        if (ws && isConnected && symbols.length > 0 && currency) {
-            ws.send(JSON.stringify({
-                action: 'subscribe',
-                symbols,
-                currency
-            }));
-
-            return () => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({
-                        action: 'unsubscribe',
-                        symbols,
-                        currency
-                    }));
-                }
-            };
         }
-    }, [isConnected, symbols.join(','), currency]);
 
-    return prices;
+        return filtered;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [symbolsKey, prices, currency]);
 };
