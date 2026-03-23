@@ -1,12 +1,21 @@
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fundsApi } from "@/services/api";
 import { AssetDetailComparison } from "@/types/assetDetailComparsion";
-import { useApiData } from "./useApiData";
 
 export function useAssetDetailComparsion(assetCodes: string[], fromDate: string, currency: string | null) {
-    const { data, loading, error, refetch } = useApiData<AssetDetailComparison[]>(
-        () => fundsApi.getAssetDetailComparison(assetCodes, fromDate, currency),
-        [assetCodes, fromDate, currency]
-    );
+    const shouldFetch = assetCodes.length > 0 && currency !== null;
 
-    return { assetComparisonData: data, loading, error, refetch }
+    const { data, error, isLoading, refetch } = useQuery<AssetDetailComparison[]>({
+        queryKey: ['assetDetailComparison', assetCodes.join(','), fromDate, currency],
+        queryFn: () => fundsApi.getAssetDetailComparison(assetCodes, fromDate, currency),
+        enabled: shouldFetch,
+        placeholderData: keepPreviousData,
+    });
+
+    return { 
+        assetComparisonData: data || [], 
+        loading: isLoading, 
+        error: error instanceof Error ? error : (error ? new Error(String(error)) : null), 
+        refetch 
+    };
 }

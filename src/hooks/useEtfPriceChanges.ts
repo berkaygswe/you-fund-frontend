@@ -1,28 +1,23 @@
 // src/hooks/useEtfPriceChanges.ts
 "use client";
+import { useQuery } from '@tanstack/react-query';
 import { fundsApi } from "@/services/api";
-import { useApiData } from "./useApiData";
 import { Currency } from "@/types/currency";
 import { EtfPriceChanges } from "@/types/etfPriceChanges";
 
 export function useEtfPriceChanges(symbol: string, currency: Currency | null) {
-  const { data, loading, error, refetch } = useApiData<EtfPriceChanges>(
-    () => {
-      if (!currency) {
-        // If currency is null, return an empty EtfPriceChanges object
-        // or handle as appropriate for your application's null state.
-        // This prevents the API call from being made with a null currency.
-        return Promise.resolve({} as EtfPriceChanges);
-      }
-      return fundsApi.getEtfPriceChanges(symbol, currency);
-    },
-    [symbol, currency]
-  );
+  const shouldFetch = symbol && currency !== null;
+
+  const { data, error, isLoading, refetch } = useQuery<EtfPriceChanges>({
+    queryKey: ['etfPriceChanges', symbol, currency],
+    queryFn: () => fundsApi.getEtfPriceChanges(symbol, currency),
+    enabled: !!shouldFetch,
+  });
 
   return {
-    etfPriceChanges: data,
-    loading,
-    error,
+    etfPriceChanges: data || ({} as EtfPriceChanges),
+    loading: isLoading,
+    error: error instanceof Error ? error : (error ? new Error(String(error)) : null),
     refetch
   };
 }

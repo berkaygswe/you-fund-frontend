@@ -1,19 +1,20 @@
 // src/hooks/useEtfMetada.ts
 "use client";
+import { useQuery } from '@tanstack/react-query';
 import { fundsApi } from "@/services/api";
-import { useApiData } from "./useApiData";
 import { EtfMetadata } from "@/types/etfMetada";
 
 export function useEtfMetada(symbol: string) {
-  const { data, loading, error, refetch } = useApiData<EtfMetadata>(
-    () => fundsApi.getEtfMetadata(symbol),
-    [symbol]
-  );
+  const { data, error, isLoading, refetch } = useQuery<EtfMetadata>({
+    queryKey: ['etfMetada', symbol],
+    queryFn: () => fundsApi.getEtfMetadata(symbol),
+    enabled: !!symbol,
+  });
 
   return {
-    etfMetadata: data,
-    loading,
-    error,
+    etfMetadata: data || null,
+    loading: isLoading,
+    error: error instanceof Error ? error : (error ? new Error(String(error)) : null),
     refetch
   };
 }

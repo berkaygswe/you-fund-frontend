@@ -319,7 +319,7 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
                                 key={key}
                                 variant={timeRange === key ? "default" : "outline"}
                                 size="sm"
-                                className="cursor-pointer"
+                                className={`cursor-pointer ${timeRange === key ? 'border-transparent border' : ''}`}
                                 onClick={() => {
                                     setTimeRange(key)
                                 }}
@@ -338,7 +338,7 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
                                 <Button
                                     variant={timeRange === "custom" ? "default" : "outline"}
                                     size="sm"
-                                    className="cursor-pointer"
+                                    className={`cursor-pointer ${timeRange === "custom" ? 'border-transparent border' : ''}`}
                                 >
                                     <CalendarIcon />
                                     {customRange && customRange.from ? (
@@ -393,7 +393,7 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
                         {popularAssets.map((asset) => (
                             <Button
                                 key={asset.symbol}
-                                className="cursor-pointer"
+                                className={`cursor-pointer ${selectedAssets.some(a => a.symbol === asset.symbol) ? 'border-transparent border' : ''}`}
                                 size="sm"
                                 variant={selectedAssets.some(a => a.symbol === asset.symbol) ? "default" : "outline"}
                                 onClick={() => {

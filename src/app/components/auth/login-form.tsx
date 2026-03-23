@@ -22,7 +22,7 @@ export function LoginForm({
         password: ''
     });
 
-    const { login } = useAuth();
+    const { login, status } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -30,10 +30,11 @@ export function LoginForm({
       setLoading(true);
 
       try {
-        await login(formData.email, formData.password);
-        router.push('/');
+        await login({ email: formData.email, password: formData.password });
+        router.refresh(); // Important for server-side re-evaluation
+        router.push('/market-overview');
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Registration failed');
+        setError(err instanceof Error ? err.message : 'Login failed');
       } finally {
         setLoading(false);
       }
@@ -70,8 +71,8 @@ export function LoginForm({
           </div>
           <Input id="password" type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} required />
         </div>
-        <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+        <Button type="submit" className="w-full cursor-pointer" disabled={loading || status === 'loading'}>
+            {loading || status === 'loading' ? 'Logging in...' : 'Login'}
         </Button>
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">

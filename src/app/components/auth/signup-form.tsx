@@ -22,7 +22,7 @@ export function SignupForm({
         password: ''
     });
 
-    const { register } = useAuth();
+    const { register, status } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -30,8 +30,9 @@ export function SignupForm({
       setLoading(true);
 
       try {
-        await register(formData.email, formData.password);
-        router.push('/');
+        await register({ email: formData.email, password: formData.password });
+        router.refresh();
+        router.push('/market-overview');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Registration failed');
       } finally {
@@ -70,8 +71,8 @@ export function SignupForm({
           </div>
           <Input id="password" type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} required />
         </div>
-        <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
-            {loading ? 'Logging in...' : 'Sign Up'}
+        <Button type="submit" className="w-full cursor-pointer" disabled={loading || status === 'loading'}>
+            {loading || status === 'loading' ? 'Signing up...' : 'Sign Up'}
         </Button>
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">

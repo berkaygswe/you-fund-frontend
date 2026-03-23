@@ -6,6 +6,7 @@ import { shortenNumberIntl } from './shortenNumberIntl';
 export const useFormatCurrency = () => {
     const currency = useCurrencySymbol();
 
+    // eslint-disable-next-line react/display-name
     return useMemo(() => (price: number | null | undefined, shorten: boolean = false): ReactNode => {
         if (price == null || isNaN(price)) return '-';
 

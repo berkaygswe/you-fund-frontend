@@ -9,23 +9,21 @@ import { useState } from "react";
 
 export default function LoginButton(){
 
-    const { user, logout } = useAuth();
+    const { user, logout, status } = useAuth();
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = async () => {
+    const handleLogout = async () => {
         try {
             await logout();
+            router.refresh();
             router.push('/login');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Registration failed');
-        } finally {
-            setLoading(false);
+            setError(err instanceof Error ? err.message : 'Logout failed');
         }
     };
 
-    if (loading) {
+    if (status === 'loading') {
         return <Button className="cursor-pointer" variant="outline" disabled>Loading...</Button>;
     }
 
@@ -35,7 +33,7 @@ export default function LoginButton(){
 
     return (
         <>
-            {!loading && !user && (
+            {status === 'unauthenticated' && !user && (
                 <Link href="/login">
                     <Button className="cursor-pointer" variant="outline">
                     Login / Signup
@@ -43,7 +41,7 @@ export default function LoginButton(){
                 </Link>
             )}
 
-            {!loading && user && (
+            {status === 'authenticated' && user && (
                 <div className="flex items-center gap-2">
                     <Link href="/profile">
                         <Button variant="ghost">
@@ -52,7 +50,7 @@ export default function LoginButton(){
                         </Button>
                     </Link>
 
-                    <Button onClick={handleSubmit} className="cursor-pointer" variant="outline">
+                    <Button onClick={handleLogout} className="cursor-pointer" variant="outline">
                         Logout
                     </Button>
                 </div>

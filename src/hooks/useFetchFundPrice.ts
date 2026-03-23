@@ -1,7 +1,7 @@
 // src/hooks/useFetchFundPrice.ts
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fundsApi } from '../services/api';
 import { FundPrices } from '@/types/fundPrices';
 
@@ -9,36 +9,23 @@ interface UseResult {
   prices: FundPrices[];
   loading: boolean;
   error: Error | null;
-  refetch: () => Promise<void>;
+  refetch: () => Promise<any>;
 }
 
 export function useFetchFundGraph(code: string, startDate: string, endDate: string, currency: string | null): UseResult {
-  const [prices, setFundPrice] = useState<FundPrices[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
+    const shouldFetch = currency !== null;
 
-  const fetchFundGraph = useCallback(async () => {
-    if (!currency) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fundsApi.getFundGraph(code, startDate, endDate, currency);
-      setFundPrice(data);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-    } finally {
-      setLoading(false);
-    }
-  }, [code, startDate, endDate, currency]);
+    const { data, error, isLoading, refetch } = useQuery<FundPrices[]>({
+        queryKey: ['fundGraph', code, startDate, endDate, currency],
+        queryFn: () => fundsApi.getFundGraph(code, startDate, endDate, currency),
+        enabled: shouldFetch,
+        placeholderData: keepPreviousData,
+    });
 
-  // Clear stale data when currency changes to prevent wrong-format flicker
-  useEffect(() => {
-    setFundPrice([]);
-  }, [currency]);
-
-  useEffect(() => {
-    fetchFundGraph();
-  }, [fetchFundGraph]);
-
-  return { prices, loading, error, refetch: fetchFundGraph };
+    return { 
+        prices: data || [], 
+        loading: isLoading, 
+        error: error instanceof Error ? error : (error ? new Error(String(error)) : null), 
+        refetch 
+    };
 }

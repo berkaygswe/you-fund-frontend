@@ -1,6 +1,7 @@
 import { PriceChanges } from "./priceChanges";
 
 export interface FundDetail {
+    assetId: string;
     code: string;
     name: string;
     fundType: string;

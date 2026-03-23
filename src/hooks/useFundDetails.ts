@@ -1,15 +1,21 @@
 // src/hooks/useFunds.ts
 "use client";
 
+import { useQuery } from '@tanstack/react-query';
 import { fundsApi } from '../services/api';
 import { FundDetail } from '@/types/fundDetail';
-import { useApiData } from './useApiData';
 
 export function useFundDetails(code: string) {
-  const { data, loading, error, refetch } = useApiData<FundDetail>(
-    () => fundsApi.getFundDetails(code),
-    []
-  );
+  const { data, error, isLoading, refetch } = useQuery<FundDetail>({
+    queryKey: ['fundDetails', code],
+    queryFn: () => fundsApi.getFundDetails(code),
+    enabled: !!code,
+  });
 
-  return { fund: data, loading, error, refetch };
+  return { 
+      fund: data || null, 
+      loading: isLoading, 
+      error: error instanceof Error ? error : (error ? new Error(String(error)) : null), 
+      refetch 
+  };
 }

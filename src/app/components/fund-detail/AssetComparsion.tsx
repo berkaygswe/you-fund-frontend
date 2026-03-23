@@ -148,7 +148,7 @@ export default function AssetComparison({ code }: { code: string }) {
                                         key={key}
                                         variant={timeRange === key ? "default" : "outline"}
                                         size="sm"
-                                        className="cursor-pointer"
+                                        className={`cursor-pointer ${timeRange === key ? 'border-transparent border' : ''}`}
                                         onClick={() => {
                                             setTimeRange(key)
                                         }}
