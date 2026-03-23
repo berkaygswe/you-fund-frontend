@@ -8,6 +8,7 @@ import FundInfo from '@/app/components/fund-detail/FundInfo';
 import RiskScale from '@/app/components/fund-detail/Risk';
 import ImageWrap from '@/app/components/ImageWrap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AddToWatchlistButton from '@/app/components/watchlist/AddToWatchlistButton';
 import { useFundDetails } from '@/hooks/useFundDetails';
 import { FundDetail } from '@/types/fundDetail';
 import { ArrowDown, ArrowUp } from 'lucide-react';
@@ -53,13 +54,16 @@ export default function Page() {
                             />
                         )}
                     </div>
-                    <div>
-                        <div>
-                            <span className='text-2xl font-bold mr-2'>{slug}</span>
-                            {fund.founderName}
+                    <div className="w-full flex-1">
+                        <div className="flex justify-between items-start pr-4">
+                            <div>
+                                <span className='text-2xl font-bold mr-2'>{slug}</span>
+                                {fund.founderName}
+                            </div>
+                            <AddToWatchlistButton symbol={slug} assetId={fund.assetId} />
                         </div>
-                        <div>{fund.name}</div>
-                        <div className='md:flex text-sm gap-6'>
+                        <div className="mt-1">{fund.name}</div>
+                        <div className='md:flex text-sm gap-6 mt-2'>
                             {priceChangeLabels.map(({ key, label }) => {
                                 const value = fund.priceChanges[key];
                                 return (

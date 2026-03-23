@@ -101,7 +101,7 @@ export default function EtfDetailPage() {
                     <Info className="w-8 h-8 text-red-600" />
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">ETF Data Not Available</h1>
-                <p className="text-gray-600 max-w-md">We couldn't load the details for this ETF. It might be temporarily unavailable or the symbol might be incorrect.</p>
+                <p className="text-gray-600 max-w-md">We couldn&apos;t load the details for this ETF. It might be temporarily unavailable or the symbol might be incorrect.</p>
                 <Button className="mt-6" onClick={() => window.location.reload()}>
                     Try Again
                 </Button>

@@ -3,7 +3,7 @@
 import { useAssetTopMovers } from "@/hooks/useAssetTopMovers";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrency } from "@/hooks/useCurrency";
-import { Flame, Snowflake, TrendingUp, TrendingDown } from "lucide-react";
+import { Flame, Snowflake, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useRouter } from 'next/navigation';
 
@@ -16,26 +16,39 @@ export default function AssetTopMovers() {
     const { assets: topLosers, loading: topLosersLoading, error: topLosersError } = useAssetTopMovers('ASC', currency);
     const { assets: topGainers, loading: topGainersLoading, error: topGainersError } = useAssetTopMovers('DESC', currency);
 
-    if (topLosersLoading || topGainersLoading) {
+    if (topLosersLoading || topGainersLoading || !currency || topLosers === null || topGainers === null) {
         return (
-            <div className="space-y-4">
-                <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                <div className="flex flex-col space-y-4">
                     <div className="flex items-center gap-2">
-                        <Skeleton className="h-5 w-5" />
-                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-24" />
                     </div>
-                    <div className="space-y-2">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center justify-between p-2 rounded-lg border">
-                                <div className="flex items-center gap-3">
-                                    <Skeleton className="h-8 w-8 rounded" />
-                                    <div>
-                                        <Skeleton className="h-4 w-16 mb-1" />
-                                        <Skeleton className="h-3 w-12" />
-                                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="p-4 rounded-xl border h-[116px]">
+                                <Skeleton className="h-4 w-12 mb-2" />
+                                <Skeleton className="h-3 w-24 mb-4" />
+                                <div className="flex justify-between items-end">
+                                    <Skeleton className="h-4 w-16" />
+                                    <Skeleton className="h-3 w-12" />
                                 </div>
-                                <div className="text-right">
-                                    <Skeleton className="h-4 w-16 mb-1" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="flex flex-col space-y-4">
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="p-4 rounded-xl border h-[116px]">
+                                <Skeleton className="h-4 w-12 mb-2" />
+                                <Skeleton className="h-3 w-24 mb-4" />
+                                <div className="flex justify-between items-end">
+                                    <Skeleton className="h-4 w-16" />
                                     <Skeleton className="h-3 w-12" />
                                 </div>
                             </div>
@@ -46,7 +59,6 @@ export default function AssetTopMovers() {
         );
     }
 
-    // Handle error state
     if (topLosersError || topGainersError) {
         return (
             <div className="text-center py-6">
@@ -56,10 +68,9 @@ export default function AssetTopMovers() {
         );
     }
 
-    const displayTopLosers = Array.isArray(topLosers) ? topLosers : [];
-    const displayTopGainers = Array.isArray(topGainers) ? topGainers : [];
+    const displayTopLosers = topLosers ?? [];
+    const displayTopGainers = topGainers ?? [];
 
-    // Only render the card if assetComparisonData has data and prices has data
     if (displayTopLosers.length === 0 && displayTopGainers.length === 0) {
         return (
             <div className="text-center py-6">
@@ -70,15 +81,15 @@ export default function AssetTopMovers() {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* Top Gainers */}
-            <div className="space-y-3">
+            <div className="flex flex-col space-y-4">
                 <div className="flex items-center gap-2">
-                    <Flame className="h-5 w-5 text-red-500" />
-                    <h3 className="font-semibold text-sm">Top Gainers (24h)</h3>
+                    <Flame className="h-4 w-4 text-emerald-500" />
+                    <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">Top Gainers</h3>
                 </div>
-                <div className="space-y-2">
-                    {displayTopGainers.slice(0, 5).map((asset, index) => {
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {displayTopGainers.slice(0, 6).map((asset) => {
                         const isFund = asset.type === 'fund';
                         return (
                             <div
@@ -86,25 +97,18 @@ export default function AssetTopMovers() {
                                 onClick={() => {
                                     if (isFund) router.push(`/fund/detail/${asset.symbol}`);
                                 }}
-                                className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors ${isFund ? 'cursor-pointer' : ''
-                                    }`}
+                                className={`p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors group relative overflow-hidden ${isFund ? 'cursor-pointer' : ''}`}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-lg">
-                                        <span className="text-xs font-bold text-green-600">#{index + 1}</span>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium text-sm">{asset.symbol}</div>
-                                        <div className="text-xs text-muted-foreground">{asset.name}</div>
-                                    </div>
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+                                <div className="flex justify-between items-start mb-2 relative z-10">
+                                    <div className="font-bold text-foreground">{asset.symbol}</div>
+                                    <div className="text-xs text-muted-foreground bg-background/50 px-2 py-0.5 rounded-full border border-border/50 uppercase">{asset.type || 'Asset'}</div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="font-semibold text-sm">
-                                        {formatCurrency(Number(asset.currentClose))}
-                                    </div>
-                                    <div className="flex items-center gap-1 text-green-600 text-xs">
-                                        <TrendingUp className="h-3 w-3" />
-                                        <span>+{asset.percentageChange.toFixed(2)}%</span>
+                                <div className="text-xs text-muted-foreground mb-4 relative z-10 line-clamp-1">{asset.name}</div>
+                                <div className="flex justify-between items-end relative z-10">
+                                    <div className="font-mono font-medium text-foreground">{formatCurrency(Number(asset.currentClose))}</div>
+                                    <div className="flex items-center text-xs font-mono font-bold text-emerald-500">
+                                        <ArrowUpRight className="h-3 w-3 mr-0.5" /> +{asset.percentageChange.toFixed(2)}%
                                     </div>
                                 </div>
                             </div>
@@ -114,13 +118,13 @@ export default function AssetTopMovers() {
             </div>
 
             {/* Top Losers */}
-            <div className="space-y-3">
+            <div className="flex flex-col space-y-4">
                 <div className="flex items-center gap-2">
-                    <Snowflake className="h-5 w-5 text-blue-500" />
-                    <h3 className="font-semibold text-sm">Top Losers (24h)</h3>
+                    <Snowflake className="h-4 w-4 text-rose-500" />
+                    <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">Top Losers</h3>
                 </div>
-                <div className="space-y-2">
-                    {displayTopLosers.slice(0, 5).map((asset, index) => {
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {displayTopLosers.slice(0, 6).map((asset) => {
                         const isFund = asset.type === 'fund';
                         return (
                             <div
@@ -128,25 +132,18 @@ export default function AssetTopMovers() {
                                 onClick={() => {
                                     if (isFund) router.push(`/fund/detail/${asset.symbol}`);
                                 }}
-                                className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors ${isFund ? 'cursor-pointer' : ''
-                                    }`}
+                                className={`p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 transition-colors group relative overflow-hidden ${isFund ? 'cursor-pointer' : ''}`}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg">
-                                        <span className="text-xs font-bold text-red-600">#{index + 1}</span>
-                                    </div>
-                                    <div>
-                                        <div className="font-medium text-sm">{asset.symbol}</div>
-                                        <div className="text-xs text-muted-foreground">{asset.name}</div>
-                                    </div>
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
+                                <div className="flex justify-between items-start mb-2 relative z-10">
+                                    <div className="font-bold text-foreground">{asset.symbol}</div>
+                                    <div className="text-xs text-muted-foreground bg-background/50 px-2 py-0.5 rounded-full border border-border/50 uppercase">{asset.type || 'Asset'}</div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="font-semibold text-sm">
-                                        {formatCurrency(Number(asset.currentClose))}
-                                    </div>
-                                    <div className="flex items-center gap-1 text-red-600 text-xs">
-                                        <TrendingDown className="h-3 w-3" />
-                                        <span>{asset.percentageChange.toFixed(2)}%</span>
+                                <div className="text-xs text-muted-foreground mb-4 relative z-10 line-clamp-1">{asset.name}</div>
+                                <div className="flex justify-between items-end relative z-10">
+                                    <div className="font-mono font-medium text-foreground">{formatCurrency(Number(asset.currentClose))}</div>
+                                    <div className="flex items-center text-xs font-mono font-bold text-rose-500">
+                                        <ArrowDownRight className="h-3 w-3 mr-0.5" /> {Math.abs(asset.percentageChange).toFixed(2)}%
                                     </div>
                                 </div>
                             </div>
@@ -154,15 +151,6 @@ export default function AssetTopMovers() {
                     })}
                 </div>
             </div>
-
-            {/* View All Button 
-            <div className="pt-2">
-                <button className="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border rounded-lg hover:bg-muted/50">
-                    <span>View All Market Movers</span>
-                    <ArrowUpRight className="h-4 w-4" />
-                </button>
-            </div>
-            */}
         </div>
     )
 }
