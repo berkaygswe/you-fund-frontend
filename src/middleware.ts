@@ -1,54 +1,32 @@
 // middleware.ts
+// Uses a simple flag cookie for redirect decisions.
+// This is NOT a security boundary — just UX redirects.
+// Real auth is validated by the backend on every API call.
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-async function isAuthenticated(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get('jwt')?.value;
+const PROTECTED_PATHS = ['/dashboard', '/profile'];
+const AUTH_PAGES = ['/login', '/signup'];
 
-  if (!token) {
-    return false;
-  }
-  /* Uncomment this block if you want to validate the JWT token
-    try {
-      // Call /me with the JWT token
-      const user = await authClient.getCurrentUser(token)
-      return true;
-    } catch (error) {
-      console.error('Failed to refresh session:', error)
-      return false;
-    }
-  */
-  return true;
-}
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isLoggedIn = request.cookies.has('logged_in');
 
-export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
-  const protectedPaths = ['/dashboard', '/profile'];
-  const publicPaths = ['/login', '/signup'];
-
-  const isProtected = protectedPaths.some(path => pathname.startsWith(path));
-  const isPublic = publicPaths.some(path => pathname.startsWith(path));
-
-  const authenticated = await isAuthenticated(request);
-
+  // ROOT → redirect logged-in users to market overview
   if (pathname === '/') {
-    if (authenticated) {
+    if (isLoggedIn) {
       return NextResponse.redirect(new URL('/market-overview', request.url));
     }
     return NextResponse.next();
   }
 
-  if (isProtected && !authenticated) {
-    // Not authenticated, redirect to login
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    // Clear potentially invalid token
-    response.cookies.delete('jwt');
-    return response;
+  // PROTECTED routes → redirect unauthenticated to login
+  if (PROTECTED_PATHS.some((p) => pathname.startsWith(p)) && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (isPublic && authenticated) {
-    // Already authenticated, redirect away from login/signup
+  // AUTH pages → redirect already-logged-in users away
+  if (AUTH_PAGES.some((p) => pathname.startsWith(p)) && isLoggedIn) {
     return NextResponse.redirect(new URL('/market-overview', request.url));
   }
 
@@ -56,5 +34,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/profile/:path*', '/login', '/signup'],
+  matcher: ['/', '/dashboard/:path*', '/profile/:path*', '/login', '/signup'],
 };

@@ -1,69 +1,50 @@
 // src/app/layout.tsx
-
-export const dynamic = 'force-dynamic'; 
-
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
-import { getSession } from "@/lib/sessions";
-import { User } from "@/types/auth";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from '@vercel/analytics/next';
+import QueryProvider from "@/app/components/QueryProvider";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "You Fund",
-  description: "You fund",
+    title: "You Fund",
+    description: "You fund",
     icons: {
-    icon: '/you-fund-icon.svg',
-  }
+        icon: '/you-fund-icon.svg',
+    }
 };
 
 export default async function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
+    const cookieStore = await cookies();
+    const hasSessionHint = cookieStore.has("logged_in");
 
-  let initialUser = null;
-
-  try {
-    const session = await getSession();
-
-    if (session && session.email) {
-      // If a session exists, we can infer the user, or fetch more detailed info if needed
-      // For simplicity, we'll just use the email from the session for the User object
-      // In a real app, you might want to fetch more user details from your authClient API
-      // if the session only contains basic info.
-      initialUser = { email: session.email } as User;
-    }
-  } catch (error) {
-    console.error('Failed to fetch initial user on server:', error);
-    // If the token is invalid/expired, `getCurrentUser` will throw,
-    // and `initialUser` will remain null. This is expected.
-  }
-  
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <AuthProvider initialUser={initialUser}>
-          {children}
-          <SpeedInsights />
-          <Analytics />
-        </AuthProvider>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+                <QueryProvider>
+                    <AuthProvider initialSessionHint={hasSessionHint}>
+                        {children}
+                        <SpeedInsights />
+                        <Analytics />
+                    </AuthProvider>
+                </QueryProvider>
+            </body>
+        </html>
+    );
 }
