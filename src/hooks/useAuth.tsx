@@ -20,6 +20,7 @@ interface AuthContextType {
     login: (data: LoginRequest) => Promise<void>;
     register: (data: RegisterRequest) => Promise<void>;
     logout: () => Promise<void>;
+    hasSessionHint: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -144,7 +145,7 @@ export function AuthProvider({ children, initialSessionHint = false }: { childre
     }, [stopRefreshInterval]);
 
     return (
-        <AuthContext.Provider value={{ user, status, login, register, logout }}>
+        <AuthContext.Provider value={{ user, status, login, register, logout, hasSessionHint: initialSessionHint }}>
             {children}
         </AuthContext.Provider>
     );

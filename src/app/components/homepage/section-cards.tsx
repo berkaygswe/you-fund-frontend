@@ -70,7 +70,7 @@ export function SectionCards() {
     const { assetComparisonData, loading: comparisonLoading, error: comparisonError } = useAssetDetailComparsion(assetCodes, startDate, currency);
 
     const renderTableContent = () => {
-        if (comparisonLoading || graphLoading) {
+        if (comparisonLoading || graphLoading || !currency) {
             return (
                 <div className="w-full overflow-x-auto rounded-xl border border-border/40 bg-background/50 backdrop-blur-sm">
                     <table className="w-full text-sm text-left">

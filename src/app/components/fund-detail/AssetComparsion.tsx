@@ -91,7 +91,7 @@ export default function AssetComparison({ code }: { code: string }) {
         return Array.isArray(assetComparisonData) ? assetComparisonData : [];
     }, [assetComparisonData]);
 
-    if (loading) {
+    if (loading || !currency) {
         return (
             <Card>
                 <CardHeader>

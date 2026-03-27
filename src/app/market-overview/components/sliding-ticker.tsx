@@ -6,6 +6,7 @@ import { useFormatCurrency } from "@/utils/formatCurrency";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { useMemo, useRef } from "react";
 import { useRealtimePrices } from '@/hooks/useRealtimePrices';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const popularAssets = [
     { symbol: 'XAU', name: 'GOLD' },
@@ -93,11 +94,22 @@ export function SlidingMarketTicker() {
     }, [currency]);
 
     const { assetComparisonData, loading } = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const isInitialLoading = loading || !currency || !assetComparisonData || assetComparisonData.length === 0;
     const realtimePrices = useRealtimePrices(wsSymbols, currency);
 
-    if (loading || !assetComparisonData) {
+    if (isInitialLoading) {
         return (
-            <div className="w-full h-[40px] border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="w-full overflow-hidden border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative isolate h-[44px]">
+                <div className="flex items-center h-full">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                        <div key={i} className="flex items-center gap-2 flex-shrink-0 px-4">
+                            <Skeleton className="h-4 w-14" />
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-3 w-12" />
+                            <div className="h-3 w-px bg-border/50 ml-4 hidden sm:block"></div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -127,7 +139,7 @@ export function SlidingMarketTicker() {
     const repeatedItems = [...tickerItems, ...tickerItems];
 
     return (
-        <div className="w-full max-w-full overflow-hidden border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative isolate">
+        <div className="w-full max-w-full overflow-hidden border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative isolate h-[44px]">
             {/* Gradient masks for smooth fade effect on edges */}
             <div className="absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-background to-transparent pointer-events-none"></div>
             <div className="absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-background to-transparent pointer-events-none"></div>

@@ -6,10 +6,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function LoginButton(){
+export default function LoginButton() {
 
-    const { user, logout, status } = useAuth();
+    const { user, logout, status, hasSessionHint } = useAuth();
     const router = useRouter();
     const [error, setError] = useState('');
 
@@ -24,7 +25,18 @@ export default function LoginButton(){
     };
 
     if (status === 'loading') {
-        return <Button className="cursor-pointer" variant="outline" disabled>Loading...</Button>;
+        return (
+            <div className="flex items-center gap-2">
+                {hasSessionHint ? (
+                    <>
+                        <Skeleton className="h-9 w-24 rounded-md" />
+                        <Skeleton className="h-9 w-20 rounded-md" />
+                    </>
+                ) : (
+                    <Skeleton className="h-9 w-[150px] rounded-md" />
+                )}
+            </div>
+        )
     }
 
     if (error) {
@@ -36,7 +48,7 @@ export default function LoginButton(){
             {status === 'unauthenticated' && !user && (
                 <Link href="/login">
                     <Button className="cursor-pointer" variant="outline">
-                    Login / Signup
+                        Login / Signup
                     </Button>
                 </Link>
             )}
@@ -45,8 +57,8 @@ export default function LoginButton(){
                 <div className="flex items-center gap-2">
                     <Link href="/profile">
                         <Button variant="ghost">
-                        <UserCircle className="w-5 h-5 mr-1" />
-                        Profile
+                            <UserCircle className="w-5 h-5 mr-1" />
+                            Profile
                         </Button>
                     </Link>
 
