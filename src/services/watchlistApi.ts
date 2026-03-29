@@ -1,4 +1,5 @@
 import { authRequest } from '@/lib/auth-client';
+import { Currency } from '@/types/currency';
 import { CreateWatchlistRequest, WatchlistResponse, WatchlistItemResponse, WatchlistAssetWithPriceResponse } from '@/types/watchlist';
 
 export const watchlistApi = {
@@ -23,8 +24,8 @@ export const watchlistApi = {
             method: 'GET',
         }),
 
-    getWatchlistAssetsWithPrices: (id: number) =>
-        authRequest<WatchlistAssetWithPriceResponse[]>(`/watchlists/${id}/assets`, {
+    getWatchlistAssetsWithPrices: (id: number, currency: Currency = 'USD') =>
+        authRequest<WatchlistAssetWithPriceResponse[]>(`/watchlists/${id}/assets?currency=${currency}`, {
             method: 'GET',
         }),
 

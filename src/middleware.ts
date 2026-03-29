@@ -5,7 +5,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PROTECTED_PATHS = ['/dashboard', '/profile'];
+const PROTECTED_PATHS = ['/dashboard', '/profile', '/watchlist'];
 const AUTH_PAGES = ['/login', '/signup'];
 
 export function middleware(request: NextRequest) {
@@ -34,5 +34,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/profile/:path*', '/login', '/signup'],
+  matcher: ['/', '/dashboard/:path*', '/profile/:path*', '/watchlist/:path*', '/login', '/signup'],
 };

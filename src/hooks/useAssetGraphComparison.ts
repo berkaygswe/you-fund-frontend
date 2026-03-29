@@ -5,7 +5,7 @@ import { AssetGraphComparison } from "@/types/assetGraphComparison";
 export function useAssetGraphComparison(assetCodes: string[], fromDate: string, toDate: string, currency: string | null) {
     const shouldFetch = assetCodes.length > 1 && currency !== null;
 
-    const { data, error, isLoading, refetch } = useQuery<AssetGraphComparison[]>({
+    const { data, error, isLoading, refetch, isFetching, isPlaceholderData } = useQuery<AssetGraphComparison[]>({
         queryKey: ['assetGraphComparison', assetCodes.join(','), fromDate, toDate, currency],
         queryFn: () => fundsApi.getAssetGraphComparison(assetCodes, fromDate, toDate, currency),
         enabled: shouldFetch,
@@ -16,6 +16,8 @@ export function useAssetGraphComparison(assetCodes: string[], fromDate: string, 
         assetComparisonData: data || [], 
         loading: isLoading, 
         error: error instanceof Error ? error : (error ? new Error(String(error)) : null), 
-        refetch 
+        refetch,
+        isFetching,
+        isPlaceholderData
     };
 }
