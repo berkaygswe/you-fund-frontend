@@ -1,0 +1,94 @@
+{
+  "Common": {
+    "language": "English",
+    "synced": "SYNCED"
+  },
+  "Nav": {
+    "home": "Home",
+    "fundListing": "Fund Listing",
+    "etfListing": "ETF Listing",
+    "usStocks": "US Stocks",
+    "crypto": "Crypto",
+    "watchlist": "Watchlist",
+    "appName": "You Fund"
+  },
+  "Header": {
+    "loginSignup": "Login / Signup",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "Dashboard": {
+    "MarketOverview": {
+      "title": "Market Overview",
+      "subtitle": "Real-time financial intelligence & global asset trends",
+      "totalAssets": "Total Assets",
+      "activeMarkets": "Active Markets",
+      "volume24h": "24h Volume",
+      "marketSentiment": "Market Sentiment",
+      "bullish": "BULLISH",
+      "bearish": "BEARISH",
+      "fromDays": "from 30d",
+      "from24h": "from 24h",
+      "thisWeek": "new this wk",
+      "positiveMetrics": "positive metrics",
+      "volatilityWatch": "Volatility Watch",
+      "marketPerformanceGrid": "Market Performance Grid",
+      "assetCrossComparison": "Asset Cross-Comparison",
+      "liveIntelligenceFeed": "Live Intelligence Feed",
+      "commandCenter": "Command Center",
+      "exploreFunds": "Explore Funds",
+      "exploreEtfs": "Explore ETFs",
+      "compareAssets": "Compare Assets",
+      "marketCalendar": "Market Calendar",
+      "viewArchive": "View Archive"
+    }
+  },
+  "Fund": {
+    "title": "Fund Listing",
+    "subtitle": "Browse and compare available funds"
+  },
+  "Etf": {
+    "title": "ETF Listing",
+    "subtitle": "Browse and compare available ETFs"
+  },
+  "Crypto": {
+    "title": "Crypto",
+    "subtitle": "Browse and compare cryptocurrencies"
+  },
+  "Stocks": {
+    "title": "US Stocks",
+    "subtitle": "Browse and compare US stocks"
+  },
+  "Watchlist": {
+    "title": "My Watchlist",
+    "subtitle": "Track your favorite assets"
+  },
+  "Auth": {
+    "Login": {
+      "title": "Login to your account",
+      "description": "Enter your email below to login to your account",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot your password?",
+      "submitButton": "Login",
+      "loggingIn": "Logging in...",
+      "orContinueWith": "Or continue with",
+      "githubLogin": "Login with GitHub",
+      "dontHaveAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "Signup": {
+      "title": "Create an account",
+      "description": "Enter your email below to create your account",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot your password?",
+      "submitButton": "Sign Up",
+      "signingUp": "Signing up...",
+      "orContinueWith": "Or continue with",
+      "githubSignup": "Sign up with GitHub",
+      "haveAccount": "Already have an account?",
+      "login": "Login"
+    }
+  }
+}

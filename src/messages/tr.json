@@ -1,0 +1,94 @@
+{
+  "Common": {
+    "language": "Türkçe",
+    "synced": "SYNKRON"
+  },
+  "Nav": {
+    "home": "Ana Sayfa",
+    "fundListing": "Fon Listesi",
+    "etfListing": "ETF Listesi",
+    "usStocks": "ABD Hisseleri",
+    "crypto": "Kripto",
+    "watchlist": "İzleme Listesi",
+    "appName": "You Fund"
+  },
+  "Header": {
+    "loginSignup": "Giriş Yap / Kaydol",
+    "profile": "Profil",
+    "logout": "Çıkış Yap"
+  },
+  "Dashboard": {
+    "MarketOverview": {
+      "title": "Piyasa Özeti",
+      "subtitle": "Gerçek zamanlı finansal zeka ve küresel varlık trendleri",
+      "totalAssets": "Toplam Varlık",
+      "activeMarkets": "Aktif Piyasalar",
+      "volume24h": "24s Hacim",
+      "marketSentiment": "Piyasa Eğilimi",
+      "bullish": "YÜKSELİŞ",
+      "bearish": "DÜŞÜŞ",
+      "fromDays": "30g önce",
+      "from24h": "24s önce",
+      "thisWeek": "bu hafta yeni",
+      "positiveMetrics": "pozitif metrik",
+      "volatilityWatch": "Volatilite İzleme",
+      "marketPerformanceGrid": "Piyasa Performans Tablosu",
+      "assetCrossComparison": "Varlık Karşılaştırması",
+      "liveIntelligenceFeed": "Canlı Haber Akışı",
+      "commandCenter": "Komuta Merkezi",
+      "exploreFunds": "Fonları Keşfet",
+      "exploreEtfs": "ETF'leri Keşfet",
+      "compareAssets": "Varlıkları Karşılaştır",
+      "marketCalendar": "Piyasa Takvimi",
+      "viewArchive": "Arşivi Görüntüle"
+    }
+  },
+  "Fund": {
+    "title": "Fon Listesi",
+    "subtitle": "Mevcut fonlara göz atın ve karşılaştırın"
+  },
+  "Etf": {
+    "title": "ETF Listesi",
+    "subtitle": "Mevcut ETF'lere göz atın ve karşılaştırın"
+  },
+  "Crypto": {
+    "title": "Kripto",
+    "subtitle": "Kripto para birimlerine göz atın ve karşılaştırın"
+  },
+  "Stocks": {
+    "title": "ABD Hisseleri",
+    "subtitle": "ABD hisselerine göz atın ve karşılaştırın"
+  },
+  "Watchlist": {
+    "title": "İzleme Listem",
+    "subtitle": "Favori varlıklarınızı takip edin"
+  },
+  "Auth": {
+    "Login": {
+      "title": "Hesabınıza giriş yapın",
+      "description": "Hesabınıza giriş yapmak için e-postanızı girin",
+      "emailLabel": "E-posta",
+      "passwordLabel": "Şifre",
+      "forgotPassword": "Şifrenizi mi unuttunuz?",
+      "submitButton": "Giriş Yap",
+      "loggingIn": "Giriş yapılıyor...",
+      "orContinueWith": "Veya şununla devam et",
+      "githubLogin": "GitHub ile giriş yap",
+      "dontHaveAccount": "Hesabınız yok mu?",
+      "signUp": "Kaydol"
+    },
+    "Signup": {
+      "title": "Hesap oluşturun",
+      "description": "Hesabınızı oluşturmak için e-postanızı girin",
+      "emailLabel": "E-posta",
+      "passwordLabel": "Şifre",
+      "forgotPassword": "Şifrenizi mi unuttunuz?",
+      "submitButton": "Kaydol",
+      "signingUp": "Kaydediliyor...",
+      "orContinueWith": "Veya şununla devam et",
+      "githubSignup": "GitHub ile kaydol",
+      "haveAccount": "Zaten hesabınız var mı?",
+      "login": "Giriş Yap"
+    }
+  }
+}
