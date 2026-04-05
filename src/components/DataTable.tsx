@@ -112,9 +112,9 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-2xl border border-border/30 overflow-x-auto shadow-sm">
         <Table>
-          <TableHeader className='bg-muted'>
+          <TableHeader className='sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border/30'>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
@@ -150,7 +150,7 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   className={cn(
-                    'bg-background transition-opacity duration-200',
+                    'bg-background hover:bg-muted/30 transition-all duration-200 border-b border-border/30 last:border-0',
                     isFetching && 'opacity-70 grayscale-[0.5] pointer-events-none'
                   )}
                 >

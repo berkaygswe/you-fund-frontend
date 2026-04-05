@@ -20,7 +20,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
         <WebSocketProvider>
             <SidebarProvider>
                 <AppSidebar />
-                <SidebarInset className="bg-gray-50 min-w-0 overflow-x-hidden">
+                <SidebarInset className="bg-background min-w-0 overflow-x-hidden">
                     <Header />
                     <main className="w-full">
                         <div className="m-3 md:m-6">{children}</div>

@@ -65,7 +65,7 @@ const getStartDateFromRange = (range: string) => {
 
 const chartConfig = {} as ChartConfig;
 
-export default function AssetComparison({ code }: { code: string }) {
+export default function AssetComparison({ code, standalone = true }: { code: string; standalone?: boolean }) {
 
     const currency = useCurrency();
 
@@ -91,7 +91,121 @@ export default function AssetComparison({ code }: { code: string }) {
         return Array.isArray(assetComparisonData) ? assetComparisonData : [];
     }, [assetComparisonData]);
 
+    const renderContent = () => (
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                    {ranges.map(({ key, label }) => (
+                        <Button
+                            key={key}
+                            variant={timeRange === key ? "default" : "outline"}
+                            size="sm"
+                            className={`cursor-pointer ${timeRange === key ? 'border-transparent border' : ''}`}
+                            onClick={() => {
+                                setTimeRange(key)
+                            }}
+                        >
+                            {label}
+                        </Button>
+                    ))}
+                </div>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="cursor-pointer"><CirclePlus /> Add Assets</Button>
+                    </DialogTrigger>
+                    <DialogContent className="md:max-w-[600px]">
+                        <DialogHeader>
+                            <DialogTitle>Add Assets</DialogTitle>
+                        </DialogHeader>
+                        <AssetSearchPanel
+                            selectedAssets={selectedAssets}
+                            setSelectedAssets={setSelectedAssets}
+                            currentAssetSymbol={code}
+                        />
+                        <DialogFooter>
+                            <Button>Save changes</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
+            <div>
+                <ChartContainer config={chartConfig} className="-ms-8 max-h-[400px] md:w-full">
+                    <BarChart accessibilityLayer data={chartData}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                            dataKey="name"
+                            tickLine={false}
+                            tickMargin={10}
+                            axisLine={false}
+                            interval={0}
+                            tick={({ x, y, payload }) => {
+                                const label = payload.value;
+                                const isTooLong = label.length > 15;
+                                const item = chartData.find(d => d.name === label);
+                                const display = isTooLong && item ? item.symbol : label;
+
+                                return (
+                                    <text
+                                        x={x}
+                                        y={y + 10}
+                                        textAnchor="middle"
+                                        fontSize={12}
+                                        fill="#666"
+                                    >
+                                        {display}
+                                    </text>
+                                );
+                            }}
+                        />
+                        <ChartTooltip
+                            cursor={false}
+                            content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                    const { name, percentChangeFromStart } = payload[0].payload;
+                                    return (
+                                        <div className="bg-white p-2 rounded shadow text-sm border">
+                                            <div className="font-medium">{name}</div>
+                                            <div className={percentChangeFromStart >= 0 ? "text-green-600" : "text-red-600"}>
+                                                {percentChangeFromStart >= 0 ? "+" : ""}
+                                                {percentChangeFromStart.toFixed(2)}%
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            }}
+                        />
+                        <YAxis axisLine={false} />
+                        <Bar dataKey="percentChangeFromStart" fill="var(--color-value)" radius={8} >
+                            {chartData.map((entry) => (
+                                <Cell
+                                    key={entry.symbol || entry.name}
+                                    fill={entry.percentChangeFromStart >= 0 ? '#22c55e' : '#ef4444'} // Tailwind green-500 / red-500
+                                />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
+            </div>
+        </div>
+    )
+
     if (loading || !currency) {
+        if (!standalone) {
+            return (
+                <div className="flex flex-col gap-4">
+                    <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                            {ranges.map(({ key }) => (
+                                <Skeleton key={key} className="h-8 w-20" />
+                            ))}
+                        </div>
+                        <Skeleton className="h-8 w-32" />
+                    </div>
+                    <Skeleton className="h-[300px] w-full" />
+                </div>
+            )
+        }
         return (
             <Card>
                 <CardHeader>
@@ -116,6 +230,13 @@ export default function AssetComparison({ code }: { code: string }) {
 
     // Return the empty state if data is not available after loading
     if (chartData.length === 0) {
+        if (!standalone) {
+            return (
+                <div className="flex flex-col items-center justify-center p-8 text-gray-500">
+                    No data available for the selected assets.
+                </div>
+            )
+        }
         return (
             <Card>
                 <CardHeader>
@@ -130,9 +251,13 @@ export default function AssetComparison({ code }: { code: string }) {
         )
     }
 
+    if (!standalone) {
+        return renderContent();
+    }
+
     return (
         <div>
-            <Card>
+            <Card className="overflow-hidden">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5" />
@@ -140,102 +265,7 @@ export default function AssetComparison({ code }: { code: string }) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                                {ranges.map(({ key, label }) => (
-                                    <Button
-                                        key={key}
-                                        variant={timeRange === key ? "default" : "outline"}
-                                        size="sm"
-                                        className={`cursor-pointer ${timeRange === key ? 'border-transparent border' : ''}`}
-                                        onClick={() => {
-                                            setTimeRange(key)
-                                        }}
-                                    >
-                                        {label}
-                                    </Button>
-                                ))}
-                            </div>
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline" size="sm" className="cursor-pointer"><CirclePlus /> Add Assets</Button>
-                                </DialogTrigger>
-                                <DialogContent className="md:max-w-[600px]">
-                                    <DialogHeader>
-                                        <DialogTitle>Add Assets</DialogTitle>
-                                    </DialogHeader>
-                                    <AssetSearchPanel
-                                        selectedAssets={selectedAssets}
-                                        setSelectedAssets={setSelectedAssets}
-                                        currentAssetSymbol={code}
-                                    />
-                                    <DialogFooter>
-                                        <Button>Save changes</Button>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                        <div>
-                            <ChartContainer config={chartConfig} className="-ms-8 max-h-[400px] md:w-full">
-                                <BarChart accessibilityLayer data={chartData}>
-                                    <CartesianGrid vertical={false} />
-                                    <XAxis
-                                        dataKey="name"
-                                        tickLine={false}
-                                        tickMargin={10}
-                                        axisLine={false}
-                                        interval={0}
-                                        tick={({ x, y, payload }) => {
-                                            const label = payload.value;
-                                            const isTooLong = label.length > 15;
-                                            const item = chartData.find(d => d.name === label);
-                                            const display = isTooLong && item ? item.symbol : label;
-
-                                            return (
-                                                <text
-                                                    x={x}
-                                                    y={y + 10}
-                                                    textAnchor="middle"
-                                                    fontSize={12}
-                                                    fill="#666"
-                                                >
-                                                    {display}
-                                                </text>
-                                            );
-                                        }}
-                                    />
-                                    <ChartTooltip
-                                        cursor={false}
-                                        content={({ active, payload }) => {
-                                            if (active && payload && payload.length) {
-                                                const { name, percentChangeFromStart } = payload[0].payload;
-                                                return (
-                                                    <div className="bg-white p-2 rounded shadow text-sm border">
-                                                        <div className="font-medium">{name}</div>
-                                                        <div className={percentChangeFromStart >= 0 ? "text-green-600" : "text-red-600"}>
-                                                            {percentChangeFromStart >= 0 ? "+" : ""}
-                                                            {percentChangeFromStart.toFixed(2)}%
-                                                        </div>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        }}
-                                    />
-                                    <YAxis axisLine={false} />
-                                    <Bar dataKey="percentChangeFromStart" fill="var(--color-value)" radius={8} >
-                                        {chartData.map((entry) => (
-                                            <Cell
-                                                key={entry.symbol || entry.name}
-                                                fill={entry.percentChangeFromStart >= 0 ? '#22c55e' : '#ef4444'} // Tailwind green-500 / red-500
-                                            />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ChartContainer>
-                        </div>
-                    </div>
+                    {renderContent()}
                 </CardContent>
             </Card>
         </div>
