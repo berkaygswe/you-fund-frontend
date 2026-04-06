@@ -2,8 +2,10 @@ import fetchNews from "@/services/newsApi";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Clock, Building2, TrendingUp, ImageIcon, ArrowUpRight } from "lucide-react";
 import NewsImage from "./news-image";
+import { getTranslations } from "next-intl/server";
 
 export default async function FinanceNews() {
+  const t = await getTranslations('Dashboard.MarketOverview');
   const articles = await fetchNews();
 
   const formatTimeAgo = (dateString: string) => {
@@ -11,10 +13,10 @@ export default async function FinanceNews() {
     const publishedDate = new Date(dateString);
     const diffInHours = Math.floor((now.getTime() - publishedDate.getTime()) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 1) return t('justNow');
+    if (diffInHours < 24) return t('hoursAgo', { hours: diffInHours });
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diffInDays < 7) return t('daysAgo', { days: diffInDays });
     return publishedDate.toLocaleDateString();
   };
 
@@ -23,8 +25,8 @@ export default async function FinanceNews() {
       {articles.length === 0 ? (
         <div className="text-center py-12">
           <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-          <p className="text-muted-foreground mb-2">No finance news available</p>
-          <p className="text-sm text-muted-foreground">Please check back later</p>
+          <p className="text-muted-foreground mb-2">{t('noFinanceNews')}</p>
+          <p className="text-sm text-muted-foreground">{t('checkBackLater')}</p>
         </div>
       ) : (
         <>
@@ -33,7 +35,7 @@ export default async function FinanceNews() {
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 mb-4">
                 <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-muted-foreground">Featured</span>
+                <span className="text-sm font-medium text-muted-foreground">{t('featured')}</span>
               </div>
               <article className="group cursor-pointer">
                 <a
@@ -87,9 +89,9 @@ export default async function FinanceNews() {
           {/* Recent Articles */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm">Recent News</h3>
+              <h3 className="font-semibold text-sm">{t('recentNews')}</h3>
               <Badge variant="secondary" className="text-xs">
-                {articles.length - 1} more
+                {t('moreCount', { count: articles.length - 1 })}
               </Badge>
             </div>
 
@@ -148,7 +150,7 @@ export default async function FinanceNews() {
           {/* View All Button */}
           <div className="pt-2">
             <button className="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border rounded-lg hover:bg-muted/50">
-              <span>View All Financial News</span>
+              <span>{t('viewAllNews')}</span>
               <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>

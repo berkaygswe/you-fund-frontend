@@ -18,17 +18,19 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton";
-
-const chartConfig = {
-    avgReturn: {
-        label: "Getiri",
-        color: "var(--chart-1)",
-    },
-} satisfies ChartConfig
+import { useTranslations } from "next-intl";
 
 export default function FundTypePerformance() {
+    const t = useTranslations('Dashboard.MarketOverview');
     const currency = useCurrency();
     const { fundTypePerformance, loading, error } = useFundTypePerformance(currency);
+
+    const chartConfig = {
+        avgReturn: {
+            label: t('returnLabel'),
+            color: "var(--chart-1)",
+        },
+    } satisfies ChartConfig
 
     if (loading) {
         return (
@@ -36,10 +38,10 @@ export default function FundTypePerformance() {
                 <CardHeader className="items-center">
                     <CardTitle className="flex items-center gap-2">
                         <BarChart3 className="h-5 w-5" />
-                        TEFAS Fund Type Performance
+                        {t('fundTypePerformanceTitle')}
                     </CardTitle>
                     <CardDescription>
-                        Showing TEFAS funds with average returns in one year
+                        {t('fundTypePerformanceSubtitle')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="pb-0">
@@ -57,10 +59,10 @@ export default function FundTypePerformance() {
                 <CardHeader className="items-center">
                     <CardTitle className="flex items-center gap-2">
                         <BarChart3 className="h-5 w-5" />
-                        TEFAS Fund Type Performance
+                        {t('fundTypePerformanceTitle')}
                     </CardTitle>
                     <CardDescription>
-                        Showing TEFAS funds with average returns in one year
+                        {t('fundTypePerformanceSubtitle')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="pb-0">
@@ -79,10 +81,10 @@ export default function FundTypePerformance() {
             <CardHeader className="items-center">
                 <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5" />
-                    TEFAS Fund Type Performance
+                    {t('fundTypePerformanceTitle')}
                 </CardTitle>
                 <CardDescription>
-                    Showing TEFAS funds with average returns in one year
+                    {t('fundTypePerformanceSubtitle')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="pb-0">

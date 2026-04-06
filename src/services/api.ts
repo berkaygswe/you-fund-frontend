@@ -47,7 +47,7 @@ async function fetchData<T>(endpoint: string, options: RequestInit = {}): Promis
 
     if (!response.ok) {
         throw new ApiError(
-            response.status >= 500 ? `Server error: ${response.statusText}` : `API error: ${response.statusText}`, 
+            response.status >= 500 ? `Server error: ${response.statusText}` : `API error: ${response.statusText}`,
             response.status
         );
     }
@@ -168,12 +168,12 @@ export const fundsApi = {
     },
 
     getEtfMetadata: async (symbol: string): Promise<EtfMetadata> => {
-        return fetchData<EtfMetadata>(`/etf/detail/${symbol}`);
+        return fetchData<EtfMetadata>(`/etf/metadata/${symbol}`);
     },
 
     getEtfPriceChanges: async (symbol: string, currency: string | null): Promise<EtfPriceChanges> => {
         if (!currency) return {} as EtfPriceChanges;
-        return fetchData<EtfPriceChanges>(`/etf/detail/price-changes?symbol=${symbol}&currency=${currency}`);
+        return fetchData<EtfPriceChanges>(`/asset/price-changes?symbol=${symbol}&currency=${currency}`);
     },
 
     getStockList: async (params?: {

@@ -1,8 +1,13 @@
 export interface EtfPriceChanges {
-    closePrice: number;
-    volume: number;
+    name: string;
+    symbol: string;
+    iconUrl: string;
+    price: number;
     dailyChangePercent: number;
     monthlyChangePercent: number;
-    ytdChangePercent: number;
     yearlyChangePercent: number;
+    ytdChangePercent: number;
+    volume: number;
+    currency: string;
+    timestamp: number;
 }

@@ -7,6 +7,7 @@ import { AppSidebar } from "@/components/AppSideBar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Header } from "@/components/header";
 import { WebSocketProvider } from "@/providers/WebSocketProvider";
+import { QuantBackground } from "@/components/ui/quant-background";
 
 export default function Template({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -20,10 +21,11 @@ export default function Template({ children }: { children: React.ReactNode }) {
         <WebSocketProvider>
             <SidebarProvider>
                 <AppSidebar />
-                <SidebarInset className="bg-background min-w-0 overflow-x-hidden">
+                <SidebarInset className="bg-background min-w-0 overflow-x-hidden relative">
                     <Header />
-                    <main className="w-full">
-                        <div className="m-3 md:m-6">{children}</div>
+                    <main className="w-full relative min-h-screen">
+                        <QuantBackground />
+                        <div className="m-3 md:m-6 relative z-10">{children}</div>
                         <div className="mt-10"></div>
                     </main>
                 </SidebarInset>

@@ -28,15 +28,7 @@ import { AssetSearchResult } from "@/types/assetSearchResult";
 import { CirclePlus, TrendingUp } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
 import { Skeleton } from "@/components/ui/skeleton";
-
-
-const ranges = [
-    { key: "1w", label: "7 days" },
-    { key: "1m", label: "30 days" },
-    { key: "3m", label: "3 months" },
-    { key: "6m", label: "6 months" },
-    { key: "1y", label: "1 year" },
-]
+import { useTranslations } from "next-intl";
 
 const getStartDateFromRange = (range: string) => {
     const today = new Date();
@@ -66,8 +58,16 @@ const getStartDateFromRange = (range: string) => {
 const chartConfig = {} as ChartConfig;
 
 export default function AssetComparison({ code, standalone = true }: { code: string; standalone?: boolean }) {
-
+    const t = useTranslations('Dashboard.MarketOverview');
     const currency = useCurrency();
+
+    const ranges = [
+        { key: "1w", label: t('w1') },
+        { key: "1m", label: t('m1') },
+        { key: "3m", label: t('m3') },
+        { key: "6m", label: t('m6') },
+        { key: "1y", label: t('y1') },
+    ]
 
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([
         { symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' },
@@ -111,11 +111,11 @@ export default function AssetComparison({ code, standalone = true }: { code: str
                 </div>
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="cursor-pointer"><CirclePlus /> Add Assets</Button>
+                        <Button variant="outline" size="sm" className="cursor-pointer"><CirclePlus /> {t('addAssets')}</Button>
                     </DialogTrigger>
                     <DialogContent className="md:max-w-[600px]">
                         <DialogHeader>
-                            <DialogTitle>Add Assets</DialogTitle>
+                            <DialogTitle>{t('addAssets')}</DialogTitle>
                         </DialogHeader>
                         <AssetSearchPanel
                             selectedAssets={selectedAssets}
@@ -123,7 +123,7 @@ export default function AssetComparison({ code, standalone = true }: { code: str
                             currentAssetSymbol={code}
                         />
                         <DialogFooter>
-                            <Button>Save changes</Button>
+                            <Button>{t('saveChanges')}</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -164,7 +164,7 @@ export default function AssetComparison({ code, standalone = true }: { code: str
                                     const { name, percentChangeFromStart } = payload[0].payload;
                                     return (
                                         <div className="bg-white p-2 rounded shadow text-sm border">
-                                            <div className="font-medium">{name}</div>
+                                            <div className="font-medium text-black">{name}</div>
                                             <div className={percentChangeFromStart >= 0 ? "text-green-600" : "text-red-600"}>
                                                 {percentChangeFromStart >= 0 ? "+" : ""}
                                                 {percentChangeFromStart.toFixed(2)}%
@@ -233,18 +233,18 @@ export default function AssetComparison({ code, standalone = true }: { code: str
         if (!standalone) {
             return (
                 <div className="flex flex-col items-center justify-center p-8 text-gray-500">
-                    No data available for the selected assets.
+                    {t('noDataAvailable')}
                 </div>
             )
         }
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Asset Comparison</CardTitle>
+                    <CardTitle>{t('assetComparisonTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col items-center justify-center p-8 text-gray-500">
-                        No data available for the selected assets.
+                        {t('noDataAvailable')}
                     </div>
                 </CardContent>
             </Card>
@@ -261,7 +261,7 @@ export default function AssetComparison({ code, standalone = true }: { code: str
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5" />
-                        Asset Comparison
+                        {t('assetComparisonTitle')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

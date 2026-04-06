@@ -1,11 +1,9 @@
-"'use client';
-
 import React from 'react';
-import { LandingNav } from './landing-page/LandingNav';
-import { LandingHero } from './landing-page/LandingHero';
-import { LandingFeatures } from './landing-page/LandingFeatures';
-import { PortfolioSimulation } from './landing-page/PortfolioSimulation';
-import { LandingFooter } from './landing-page/LandingFooter';
+import { LandingNav } from '@/components/landing-page/LandingNav';
+import { LandingHero } from '@/components/landing-page/LandingHero';
+import { LandingFeatures } from '@/components/landing-page/LandingFeatures';
+import { PortfolioSimulation } from '@/components/landing-page/PortfolioSimulation';
+import { LandingFooter } from '@/components/landing-page/LandingFooter';
 
 export default function LandingEnhanced() {
     return (

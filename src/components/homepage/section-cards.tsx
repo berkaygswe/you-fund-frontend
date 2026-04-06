@@ -9,6 +9,7 @@ import { useFormatCurrency } from "@/utils/formatCurrency";
 import { ArrowDownRight, ArrowUpRight, BarChart3, Bitcoin, DollarSign, Gem } from "lucide-react"
 import { useMemo, useState } from "react";
 import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 const assetGroups = {
     indices: [
@@ -49,6 +50,7 @@ const assetGroups = {
 };
 
 export function SectionCards() {
+    const t = useTranslations('Dashboard.MarketOverview');
     const formatCurrency = useFormatCurrency()
     const currency = useCurrency();
     const router = useRouter();
@@ -76,10 +78,10 @@ export function SectionCards() {
                     <table className="w-full text-sm text-left">
                         <thead className="text-xs text-muted-foreground bg-muted/40 border-b border-border/40 uppercase tracking-wider">
                             <tr>
-                                <th className="px-6 py-4 font-medium">Asset</th>
-                                <th className="px-6 py-4 font-medium text-right">Price</th>
-                                <th className="px-6 py-4 font-medium text-right">7d Change</th>
-                                <th className="px-6 py-4 font-medium text-right hidden md:table-cell">7d Trend</th>
+                                <th className="px-6 py-4 font-medium">{t('asset')}</th>
+                                <th className="px-6 py-4 font-medium text-right">{t('price')}</th>
+                                <th className="px-6 py-4 font-medium text-right">{t('change7d')}</th>
+                                <th className="px-6 py-4 font-medium text-right hidden md:table-cell">{t('trend7d')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border/40">
@@ -100,8 +102,8 @@ export function SectionCards() {
         if (comparisonError || graphError) {
             return (
                 <div className="p-6 text-center border rounded-xl bg-background/50">
-                    <div className="text-red-500 mb-2">Error loading market data</div>
-                    <p className="text-sm text-muted-foreground">Please try again later</p>
+                    <div className="text-red-500 mb-2">{t('errorLoadingMarketData')}</div>
+                    <p className="text-sm text-muted-foreground">{t('tryAgainLater')}</p>
                 </div>
             );
         }
@@ -109,8 +111,8 @@ export function SectionCards() {
         if (!assetComparisonData || assetComparisonData.length === 0 || !prices || prices.length === 0) {
             return (
                 <div className="p-6 text-center border rounded-xl bg-background/50">
-                    <div className="text-muted-foreground mb-2">No market data available</div>
-                    <p className="text-sm text-muted-foreground">Please check back later</p>
+                    <div className="text-muted-foreground mb-2">{t('noMarketData')}</div>
+                    <p className="text-sm text-muted-foreground">{t('checkBackLater')}</p>
                 </div>
             );
         }
@@ -120,10 +122,10 @@ export function SectionCards() {
                 <table className="w-full text-sm text-left">
                     <thead className="text-xs text-muted-foreground bg-muted/40 border-b border-border/40 uppercase tracking-wider">
                         <tr>
-                            <th className="px-6 py-4 font-medium">Asset</th>
-                            <th className="px-6 py-4 font-medium text-right">Price</th>
-                            <th className="px-6 py-4 font-medium text-right">7d Change</th>
-                            <th className="px-6 py-4 font-medium text-right hidden md:table-cell">7d Trend</th>
+                            <th className="px-6 py-4 font-medium">{t('asset')}</th>
+                            <th className="px-6 py-4 font-medium text-right">{t('price')}</th>
+                            <th className="px-6 py-4 font-medium text-right">{t('change7d')}</th>
+                            <th className="px-6 py-4 font-medium text-right hidden md:table-cell">{t('trend7d')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border/40">
@@ -154,7 +156,7 @@ export function SectionCards() {
                                                 <div className="font-semibold text-foreground flex items-center gap-2">
                                                     {asset.symbol}
                                                     <span className="text-[10px] font-normal uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-background border border-border/50 text-muted-foreground">
-                                                        {asset.type}
+                                                        {t(asset.type || 'asset')}
                                                     </span>
                                                 </div>
                                                 <div className="text-xs text-muted-foreground">{asset.name}</div>
@@ -189,19 +191,24 @@ export function SectionCards() {
         );
     };
 
+    const getTabLabel = (key: string) => {
+        if (key === 'tefasFunds') return t('tefasFundsLabel');
+        return t(key);
+    }
+
     return (
         <Tabs defaultValue="indices" onValueChange={(val) => setActiveTab(val as keyof typeof assetGroups)} className="w-full">
             <div className="flex items-center justify-between mb-4 mt-2 sm:mt-0 px-2 sm:px-0">
                 <div className="hidden sm:block text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                    {activeTab} Overview
+                    {getTabLabel(activeTab)} {t('overview')}
                 </div>
                 <TabsList className="bg-muted/50 p-1 border border-border/50 w-full sm:w-auto h-auto grid grid-cols-4 sm:flex gap-1">
-                    <TabsTrigger value="indices" className="gap-2 text-xs py-2"><BarChart3 className="h-3 w-3" /> <span className="hidden sm:inline">Indices</span></TabsTrigger>
-                    <TabsTrigger value="crypto" className="gap-2 text-xs py-2"><Bitcoin className="h-3 w-3" /> <span className="hidden sm:inline">Crypto</span></TabsTrigger>
-                    <TabsTrigger value="forex" className="gap-2 text-xs py-2"><DollarSign className="h-3 w-3" /> <span className="hidden sm:inline">Forex</span></TabsTrigger>
-                    <TabsTrigger value="commodities" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">Commodities</span></TabsTrigger>
-                    <TabsTrigger value="stocks" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">Stocks</span></TabsTrigger>
-                    <TabsTrigger value="tefasFunds" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">Tefas Funds</span></TabsTrigger>
+                    <TabsTrigger value="indices" className="gap-2 text-xs py-2"><BarChart3 className="h-3 w-3" /> <span className="hidden sm:inline">{t('indices')}</span></TabsTrigger>
+                    <TabsTrigger value="crypto" className="gap-2 text-xs py-2"><Bitcoin className="h-3 w-3" /> <span className="hidden sm:inline">{t('crypto')}</span></TabsTrigger>
+                    <TabsTrigger value="forex" className="gap-2 text-xs py-2"><DollarSign className="h-3 w-3" /> <span className="hidden sm:inline">{t('forex')}</span></TabsTrigger>
+                    <TabsTrigger value="commodities" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">{t('commodities')}</span></TabsTrigger>
+                    <TabsTrigger value="stocks" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">{t('stocks')}</span></TabsTrigger>
+                    <TabsTrigger value="tefasFunds" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">{t('tefasFundsLabel')}</span></TabsTrigger>
                 </TabsList>
             </div>
 
