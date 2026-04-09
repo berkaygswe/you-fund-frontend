@@ -18,7 +18,7 @@ import { useParams } from 'next/navigation';
 export default function Page() {
 
     const params = useParams();
-    const slug = params.slug as string;
+    const slug = (params.slug || params.symbol) as string;
     const { fund, loading, error } = useFundDetails(slug);
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -106,7 +106,7 @@ export default function Page() {
                 <div className='col-span-2 flex flex-col gap-4'>
                     <FundDetailGraph chartClassName='-ms-5' code={slug}></FundDetailGraph>
                     <RiskScale riskLevel={fund.risk}></RiskScale>
-                    <AssetComparison code={slug}></AssetComparison>
+                    <AssetComparison code={slug} type='fund'></AssetComparison>
                 </div>
                 <div className='col-span-1 flex flex-col gap-4'>
                     <FundInfo fund={fund}></FundInfo>

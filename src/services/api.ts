@@ -14,6 +14,7 @@ import { Etf } from '@/types/etf';
 import { EtfMetadata } from '@/types/etfMetada';
 import { EtfPriceChanges } from '@/types/etfPriceChanges';
 import { Currency } from '@/types/currency';
+import { AssetIdentifier } from '@/types/asset';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -96,10 +97,10 @@ export const fundsApi = {
         return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}&currency=${currency}`);
     },
 
-    getAssetGraphComparison: async (assetCodes: string[], fromDate: string, toDate: string, currency: string | null): Promise<AssetGraphComparison[]> => {
+    getAssetGraphComparison: async (assets: AssetIdentifier[], fromDate: string, toDate: string, currency: string | null): Promise<AssetGraphComparison[]> => {
         if (!currency) return [];
-        const codes = encodeURIComponent(assetCodes.join(','));
-        return fetchData<AssetGraphComparison[]>(`/asset/detail/graph/comparison?assetCodes=${codes}&fromDate=${fromDate}&toDate=${toDate}&currency=${currency}`);
+        const keys = encodeURIComponent(assets.map(a => `${a.type}:${a.symbol}`).join(','));
+        return fetchData<AssetGraphComparison[]>(`/asset/detail/graph/comparison?assetKeys=${keys}&fromDate=${fromDate}&toDate=${toDate}&currency=${currency}`);
     },
 
     getAssetSearch: async (searchTerms: string, type: string | null, page: number = 0, size: number = 10): Promise<AssetSearchApiResponse> => {
@@ -120,10 +121,10 @@ export const fundsApi = {
         return fetchData<FundAllocation[]>(`/fund/detail/allocations/${code}`);
     },
 
-    getAssetDetailComparison: async (assetCodes: string[], fromDate: string, currency: string | null): Promise<AssetDetailComparison[]> => {
+    getAssetDetailComparison: async (assets: AssetIdentifier[], fromDate: string, currency: string | null): Promise<AssetDetailComparison[]> => {
         if (!currency) return [];
-        const codes = encodeURIComponent(assetCodes.filter(Boolean).join(','));
-        return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetCodes=${codes}&fromDate=${fromDate}&currency=${currency}`);
+        const keys = encodeURIComponent(assets.filter(Boolean).map(a => `${a.type}:${a.symbol}`).join(','));
+        return fetchData<AssetDetailComparison[]>(`/asset/detail/comparison?assetKeys=${keys}&fromDate=${fromDate}&currency=${currency}`);
     },
 
     getAssetTopMovers: async (direction: 'ASC' | 'DESC', currency: string | null): Promise<AssetTopMovers[]> => {
@@ -171,9 +172,9 @@ export const fundsApi = {
         return fetchData<EtfMetadata>(`/etf/metadata/${symbol}`);
     },
 
-    getEtfPriceChanges: async (symbol: string, currency: string | null): Promise<EtfPriceChanges> => {
+    getAssetPriceChanges: async (type: string, symbol: string, currency: string | null): Promise<EtfPriceChanges> => {
         if (!currency) return {} as EtfPriceChanges;
-        return fetchData<EtfPriceChanges>(`/asset/price-changes?symbol=${symbol}&currency=${currency}`);
+        return fetchData<EtfPriceChanges>(`/asset/price-changes?type=${type}&symbol=${symbol}&currency=${currency}`);
     },
 
     getStockList: async (params?: {

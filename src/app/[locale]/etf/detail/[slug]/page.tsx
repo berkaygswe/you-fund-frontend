@@ -64,7 +64,7 @@ const MetricCard = ({ title, value, icon: Icon, color = 'blue' }: { title: strin
 export default function EtfDetailPage() {
     const currency = useCurrency();
     const params = useParams();
-    const slug = params.slug as string;
+    const slug = (params.slug || params.symbol) as string;
 
     const { etfMetadata, loading } = useEtfMetada(slug);
     const { etfPriceChanges, loading: etfPriceChangeLoading } = useEtfPriceChanges(slug, currency);

@@ -1,13 +1,14 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fundsApi } from "@/services/api";
 import { AssetDetailComparison } from "@/types/assetDetailComparsion";
+import { AssetIdentifier } from '@/types/asset';
 
-export function useAssetDetailComparsion(assetCodes: string[], fromDate: string, currency: string | null) {
-    const shouldFetch = assetCodes.length > 0 && currency !== null;
+export function useAssetDetailComparsion(assets: AssetIdentifier[], fromDate: string, currency: string | null) {
+    const shouldFetch = assets.length > 0 && currency !== null;
 
     const { data, error, isLoading, refetch, isFetching, isPlaceholderData } = useQuery<AssetDetailComparison[]>({
-        queryKey: ['assetDetailComparison', assetCodes.join(','), fromDate, currency],
-        queryFn: () => fundsApi.getAssetDetailComparison(assetCodes, fromDate, currency),
+        queryKey: ['assetDetailComparison', assets.map(a => `${a.type}:${a.symbol}`).join(','), fromDate, currency],
+        queryFn: () => fundsApi.getAssetDetailComparison(assets, fromDate, currency),
         enabled: shouldFetch,
         placeholderData: keepPreviousData,
     });

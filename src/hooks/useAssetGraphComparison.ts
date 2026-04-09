@@ -2,12 +2,14 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fundsApi } from "@/services/api";
 import { AssetGraphComparison } from "@/types/assetGraphComparison";
 
-export function useAssetGraphComparison(assetCodes: string[], fromDate: string, toDate: string, currency: string | null) {
-    const shouldFetch = assetCodes.length > 1 && currency !== null;
+import { AssetIdentifier } from "@/types/asset";
+
+export function useAssetGraphComparison(assets: AssetIdentifier[], fromDate: string, toDate: string, currency: string | null) {
+    const shouldFetch = assets.length > 0 && currency !== null;
 
     const { data, error, isLoading, refetch, isFetching, isPlaceholderData } = useQuery<AssetGraphComparison[]>({
-        queryKey: ['assetGraphComparison', assetCodes.join(','), fromDate, toDate, currency],
-        queryFn: () => fundsApi.getAssetGraphComparison(assetCodes, fromDate, toDate, currency),
+        queryKey: ['assetGraphComparison', assets.map(a => `${a.type}:${a.symbol}`).join(','), fromDate, toDate, currency],
+        queryFn: () => fundsApi.getAssetGraphComparison(assets, fromDate, toDate, currency),
         enabled: shouldFetch,
         placeholderData: keepPreviousData,
     });
