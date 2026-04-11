@@ -9,6 +9,7 @@ import {
     useCallback,
     ReactNode,
 } from "react";
+import { AssetIdentifier } from "@/types/asset";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -32,8 +33,8 @@ interface RealtimeMessage {
 }
 
 interface WebSocketContextValue {
-    /** Subscribe symbols for a given currency. Returns an unsubscribe function. */
-    subscribe: (symbols: string[], currency: string) => () => void;
+    /** Subscribe assets for a given currency. Returns an unsubscribe function. */
+    subscribe: (assets: AssetIdentifier[], currency: string) => () => void;
     /** All price updates received so far, keyed by symbol. */
     prices: Record<string, PriceUpdate>;
     /** Whether the shared WebSocket is currently open. */
@@ -57,10 +58,15 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     const refCountMap = useRef<Map<string, number>>(new Map());
 
     /**
-     * Tracks the currently subscribed currency per symbol key.
+     * Tracks the currently subscribed currency per asset key.
      * Needed so we can batch the server messages correctly.
      */
     const subscribedCurrencies = useRef<Map<string, string>>(new Map());
+
+    /**
+     * Tracks the asset identity (type and symbol) per key.
+     */
+    const assetMeta = useRef<Map<string, AssetIdentifier>>(new Map());
 
     // ── Connection lifecycle (mount/unmount only) ──────────────────────────
 
@@ -74,21 +80,21 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
             // Re-subscribe any symbols that were registered before the connection opened
             // (or after a reconnect). Group by currency to batch the subscribe messages.
-            const byCurrency = new Map<string, string[]>();
+            const byCurrency = new Map<string, AssetIdentifier[]>();
             for (const [key, count] of refCountMap.current.entries()) {
                 if (count > 0) {
                     const currency = subscribedCurrencies.current.get(key);
-                    const symbol = key.split("::")[0];
-                    if (currency) {
+                    const asset = assetMeta.current.get(key);
+                    if (currency && asset) {
                         const list = byCurrency.get(currency) || [];
-                        list.push(symbol);
+                        list.push(asset);
                         byCurrency.set(currency, list);
                     }
                 }
             }
-            for (const [currency, symbols] of byCurrency) {
+            for (const [currency, assets] of byCurrency) {
                 ws.send(
-                    JSON.stringify({ action: "subscribe", symbols, currency })
+                    JSON.stringify({ action: "subscribe", assets, currency })
                 );
             }
         };
@@ -146,29 +152,30 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     // ── Subscribe / Unsubscribe with ref counting ─────────────────────────
 
     const subscribe = useCallback(
-        (symbols: string[], currency: string): (() => void) => {
-            const newSymbols: string[] = [];
+        (assets: AssetIdentifier[], currency: string): (() => void) => {
+            const newAssets: AssetIdentifier[] = [];
 
-            for (const symbol of symbols) {
-                const key = `${symbol}::${currency}`;
+            for (const asset of assets) {
+                const key = `${asset.type}::${asset.symbol}::${currency}`;
                 const current = refCountMap.current.get(key) ?? 0;
                 refCountMap.current.set(key, current + 1);
                 subscribedCurrencies.current.set(key, currency);
+                assetMeta.current.set(key, asset);
 
                 // First subscriber for this key → actually subscribe on the server
                 if (current === 0) {
-                    newSymbols.push(symbol);
+                    newAssets.push(asset);
                 }
             }
 
             // Send subscribe message if there are new symbols to subscribe
-            if (newSymbols.length > 0) {
+            if (newAssets.length > 0) {
                 const ws = wsRef.current;
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(
                         JSON.stringify({
                             action: "subscribe",
-                            symbols: newSymbols,
+                            assets: newAssets,
                             currency,
                         })
                     );
@@ -178,29 +185,30 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
             // Return the unsubscribe cleanup function
             return () => {
-                const staleSymbols: string[] = [];
+                const staleAssets: AssetIdentifier[] = [];
 
-                for (const symbol of symbols) {
-                    const key = `${symbol}::${currency}`;
+                for (const asset of assets) {
+                    const key = `${asset.type}::${asset.symbol}::${currency}`;
                     const current = refCountMap.current.get(key) ?? 0;
                     const next = Math.max(0, current - 1);
                     refCountMap.current.set(key, next);
 
                     // Last subscriber removed → unsubscribe from the server
                     if (next === 0) {
-                        staleSymbols.push(symbol);
+                        staleAssets.push(asset);
                         refCountMap.current.delete(key);
                         subscribedCurrencies.current.delete(key);
+                        assetMeta.current.delete(key);
                     }
                 }
 
-                if (staleSymbols.length > 0) {
+                if (staleAssets.length > 0) {
                     const ws = wsRef.current;
                     if (ws && ws.readyState === WebSocket.OPEN) {
                         ws.send(
                             JSON.stringify({
                                 action: "unsubscribe",
-                                symbols: staleSymbols,
+                                assets: staleAssets,
                                 currency,
                             })
                         );

@@ -8,13 +8,15 @@ import { useMemo, useRef } from "react";
 import { useRealtimePrices } from '@/hooks/useRealtimePrices';
 import { Skeleton } from "@/components/ui/skeleton";
 
-const popularAssets = [
-    { symbol: 'XAU', name: 'GOLD' },
-    { symbol: 'XAG', name: 'SILVER' },
-    { symbol: 'XU100', name: 'BIST 100' },
-    { symbol: 'IXIC', name: 'NASDAQ' },
-    { symbol: 'GSPC', name: 'S&P 500' },
-    { symbol: 'BTC', name: 'BTC', isCrypto: true },
+import { AssetType } from "@/types/asset";
+
+const popularAssets: { symbol: string; name: string; type: AssetType }[] = [
+    { symbol: 'XAU', name: 'GOLD', type: 'commodity' },
+    { symbol: 'XAG', name: 'SILVER', type: 'commodity' },
+    { symbol: 'XU100', name: 'BIST 100', type: 'index' },
+    { symbol: 'IXIC', name: 'NASDAQ', type: 'index' },
+    { symbol: 'GSPC', name: 'S&P 500', type: 'index' },
+    { symbol: 'BTC', name: 'BTC', type: 'cryptocurrency' },
 ];
 
 /**
@@ -83,19 +85,13 @@ export function SlidingMarketTicker() {
     sDate.setDate(today.getDate() - 7);
     const startDate = sDate.toISOString().slice(0, 10);
 
-    const assetCodes = useMemo(() => {
-        return popularAssets.map(asset => asset.symbol);
+    const assets = useMemo(() => {
+        return popularAssets.map(asset => ({ type: asset.type, symbol: asset.symbol }));
     }, []);
 
-    const wsSymbols = useMemo(() => {
-        return popularAssets.map(asset =>
-            asset.isCrypto && currency ? `${asset.symbol}-${currency}` : asset.symbol
-        );
-    }, [currency]);
-
-    const { assetComparisonData, loading } = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const { assetComparisonData, loading } = useAssetDetailComparsion(assets, startDate, currency);
     const isInitialLoading = loading || !currency || !assetComparisonData || assetComparisonData.length === 0;
-    const realtimePrices = useRealtimePrices(wsSymbols, currency);
+    const realtimePrices = useRealtimePrices(assets, currency);
 
     if (isInitialLoading) {
         return (
@@ -118,9 +114,7 @@ export function SlidingMarketTicker() {
         const detail = assetComparisonData.find(d => d.symbol === asset.symbol);
         if (!detail) return null;
 
-        // Determine the symbol string used to subscribe
-        const wsSymbol = asset.isCrypto && currency ? `${asset.symbol}-${currency}` : asset.symbol;
-        const rt = realtimePrices[wsSymbol];
+        const rt = realtimePrices[asset.symbol];
 
         return {
             symbol: asset.symbol,

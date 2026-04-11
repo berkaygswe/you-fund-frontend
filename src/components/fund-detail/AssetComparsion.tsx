@@ -57,7 +57,9 @@ const getStartDateFromRange = (range: string) => {
 
 const chartConfig = {} as ChartConfig;
 
-export default function AssetComparison({ code, standalone = true }: { code: string; standalone?: boolean }) {
+import { AssetType } from "@/types/asset";
+
+export default function AssetComparison({ code, type = 'etf', standalone = true }: { code: string; type?: AssetType; standalone?: boolean }) {
     const t = useTranslations('Dashboard.MarketOverview');
     const currency = useCurrency();
 
@@ -70,7 +72,7 @@ export default function AssetComparison({ code, standalone = true }: { code: str
     ]
 
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([
-        { symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' },
+        { symbol: code, name: '', type: type, icon_url: '', exchange_icon_url: '' },
         { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
         { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url: '', exchange_icon_url: '' },
         { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url: '', exchange_icon_url: '' },
@@ -78,13 +80,15 @@ export default function AssetComparison({ code, standalone = true }: { code: str
         { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url: '', exchange_icon_url: '' },
     ]);
 
-    const assetCodes = useMemo(() => selectedAssets.map(asset => asset.symbol), [selectedAssets]);
+    const assets = useMemo(() => selectedAssets
+        .filter(asset => asset.symbol !== "")
+        .map(asset => ({ type: (asset.type || 'etf') as AssetType, symbol: asset.symbol })), [selectedAssets]);
 
     const [timeRange, setTimeRange] = useState("1y");
 
     const startDate = getStartDateFromRange(timeRange);
 
-    const { assetComparisonData, loading } = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const { assetComparisonData, loading } = useAssetDetailComparsion(assets, startDate, currency);
 
     // Ensure assetComparisonData is always an array, even if empty or null initially
     const chartData = useMemo(() => {

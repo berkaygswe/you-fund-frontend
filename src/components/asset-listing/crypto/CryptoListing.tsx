@@ -19,14 +19,13 @@ import { RealtimeChangeCell, RealtimePriceCell } from '../etf/RealtimeCells';
 
 // ─── Cell Wrappers ──────────────────────────────────────────────────────────
 
-function PriceCellWrapper({ symbol, currency, value, pricesRef }: {
+function PriceCellWrapper({ symbol, value, pricesRef }: {
     symbol: string;
     currency: string | null;
     value: number;
     pricesRef: React.RefObject<Record<string, PriceUpdate>>;
 }) {
-    const wsSymbol = `${symbol}-${currency}`;
-    const rt = pricesRef.current?.[symbol] || pricesRef.current?.[wsSymbol];
+    const rt = pricesRef.current?.[symbol];
     return (
         <div className="text-center whitespace-nowrap">
             <RealtimePriceCell
@@ -38,14 +37,13 @@ function PriceCellWrapper({ symbol, currency, value, pricesRef }: {
     );
 }
 
-function ChangeCellWrapper({ symbol, currency, value, pricesRef }: {
+function ChangeCellWrapper({ symbol, value, pricesRef }: {
     symbol: string;
     currency: string | null;
     value: number;
     pricesRef: React.RefObject<Record<string, PriceUpdate>>;
 }) {
-    const wsSymbol = `${symbol}-${currency}`;
-    const rt = pricesRef.current?.[symbol] || pricesRef.current?.[wsSymbol];
+    const rt = pricesRef.current?.[symbol];
     return (
         <RealtimeChangeCell
             value={value}
@@ -108,9 +106,8 @@ export function CryptoListing() {
     const { cryptos, totalCount, totalPages, isLoading, isFetching, error, retry } = useCryptoList(params);
 
     // Realtime prices subscription
-    // Generate WS symbols dynamically like BTC-USD if USD is selected
-    const symbols = useMemo(() => cryptos?.map(e => `${e.symbol}-${currency}`) || [], [cryptos, currency]);
-    const realtimePrices = useRealtimePrices(symbols, params.currency);
+    const assets = useMemo(() => cryptos?.map(e => ({ type: 'cryptocurrency', symbol: e.symbol } as const)) || [], [cryptos]);
+    const realtimePrices = useRealtimePrices(assets, params.currency);
 
     const pricesRef = useRef(realtimePrices);
     pricesRef.current = realtimePrices;
@@ -124,7 +121,7 @@ export function CryptoListing() {
             size: 70,
             cell: ({ row }) => (
                 <div className="font-medium">
-                    <Link className='grid grid-cols-2 justify-center items-center' href={`/crypto/detail/${row.getValue('symbol')}`}>
+                    <Link className='grid grid-cols-2 justify-center items-center' href={`/asset/cryptocurrency/${row.getValue('symbol')}`}>
                         {row.original.iconUrl ? (
                             <div className="flex justify-center">
                                 <ImageWrap

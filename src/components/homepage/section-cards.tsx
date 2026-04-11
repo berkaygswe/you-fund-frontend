@@ -18,10 +18,10 @@ const assetGroups = {
         { symbol: 'GSPC', name: 'S&P 500', type: 'index' },
     ],
     crypto: [
-        { symbol: 'BTC', name: 'Bitcoin', type: 'crypto' },
-        { symbol: 'ETH', name: 'Ethereum', type: 'crypto' },
-        { symbol: 'SOL', name: 'Solana', type: 'crypto' },
-        { symbol: 'AVAX', name: 'Avalanche', type: 'crypto' }
+        { symbol: 'BTC', name: 'Bitcoin', type: 'cryptocurrency' },
+        { symbol: 'ETH', name: 'Ethereum', type: 'cryptocurrency' },
+        { symbol: 'SOL', name: 'Solana', type: 'cryptocurrency' },
+        { symbol: 'AVAX', name: 'Avalanche', type: 'cryptocurrency' }
     ],
     forex: [
         { symbol: 'EURUSD', name: 'EUR/USD', type: 'forex' },
@@ -64,12 +64,12 @@ export function SectionCards() {
 
     const activeAssets = assetGroups[activeTab];
 
-    const assetCodes = useMemo(() => {
-        return activeAssets.map(asset => asset.symbol);
+    const activeAssetsFormatted = useMemo(() => {
+        return activeAssets.map(asset => ({ type: asset.type, symbol: asset.symbol } as any));
     }, [activeAssets]);
 
-    const { assetComparisonData: prices, loading: graphLoading, error: graphError, isPlaceholderData: graphPlaceholder } = useAssetGraphComparison(assetCodes, startDate, today.toISOString().slice(0, 10), currency);
-    const { assetComparisonData, loading: comparisonLoading, error: comparisonError, isPlaceholderData: comparisonPlaceholder } = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const { assetComparisonData: prices, loading: graphLoading, error: graphError, isPlaceholderData: graphPlaceholder } = useAssetGraphComparison(activeAssetsFormatted, startDate, today.toISOString().slice(0, 10), currency);
+    const { assetComparisonData, loading: comparisonLoading, error: comparisonError, isPlaceholderData: comparisonPlaceholder } = useAssetDetailComparsion(activeAssetsFormatted, startDate, currency);
 
     const renderTableContent = () => {
         if (comparisonLoading || graphLoading || comparisonPlaceholder || graphPlaceholder || !currency) {
@@ -143,9 +143,7 @@ export function SectionCards() {
                             return (
                                 <tr key={idx} className="hover:bg-muted/30 transition-colors group cursor-pointer"
                                     onClick={() => {
-                                        if (asset.type === 'fund' || asset.type === 'etf' || asset.type === 'stock') {
-                                            router.push(`/${asset.type}/detail/${asset.symbol}`);
-                                        }
+                                        router.push(`/asset/${asset.type}/${asset.symbol}`);
                                     }}>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

@@ -91,14 +91,13 @@ export default function AssetTopMovers() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {displayTopGainers.slice(0, 6).map((asset) => {
-                        const isFund = asset.type === 'fund';
                         return (
                             <div
                                 key={asset.symbol}
                                 onClick={() => {
-                                    if (isFund) router.push(`/fund/detail/${asset.symbol}`);
+                                    router.push(`/asset/${asset.type}/${asset.symbol}`);
                                 }}
-                                className={`p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors group relative overflow-hidden ${isFund ? 'cursor-pointer' : ''}`}
+                                className={`p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors group relative overflow-hidden cursor-pointer`}
                             >
                                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
                                 <div className="flex justify-between items-start mb-2 relative z-10">
@@ -126,14 +125,13 @@ export default function AssetTopMovers() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {displayTopLosers.slice(0, 6).map((asset) => {
-                        const isFund = asset.type === 'fund';
                         return (
                             <div
                                 key={asset.symbol}
                                 onClick={() => {
-                                    if (isFund) router.push(`/fund/detail/${asset.symbol}`);
+                                    router.push(`/asset/${asset.type}/${asset.symbol}`);
                                 }}
-                                className={`p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 transition-colors group relative overflow-hidden ${isFund ? 'cursor-pointer' : ''}`}
+                                className={`p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 transition-colors group relative overflow-hidden cursor-pointer`}
                             >
                                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
                                 <div className="flex justify-between items-start mb-2 relative z-10">

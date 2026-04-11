@@ -29,6 +29,7 @@ import { AssetSearchResult } from "@/types/assetSearchResult";
 import { useCurrency } from '@/hooks/useCurrency';
 import { cn } from "@/lib/utils";
 import { useAssetGraphComparison } from "@/hooks/useAssetGraphComparison";
+import { AssetType } from "@/types/asset";
 
 // Colors for different assets in comparison chart
 const COLORS = [
@@ -250,9 +251,9 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
     const [pendingRange, setPendingRange] = useState<DateRange | undefined>(undefined);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-    const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: '', icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
-    const assetCodes = useMemo(() => {
-        return selectedAssets.map(asset => asset.symbol);
+    const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: 'fund', icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
+    const assets = useMemo(() => {
+        return selectedAssets.map(asset => ({ type: (asset.type || 'fund') as AssetType, symbol: asset.symbol }));
     }, [selectedAssets]);
 
     // derive ISO dates based on “custom” vs preset
@@ -266,9 +267,9 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
             ? customRange.to.toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10);
     const { prices } = useFetchFundGraph(code, startDate, endDate, currency);
-    const { assetComparisonData } = useAssetGraphComparison(assetCodes, startDate, endDate, currency);
+    const { assetComparisonData } = useAssetGraphComparison(assets, startDate, endDate, currency);
 
-    const isComparisonMode = assetCodes.length > 1 || (assetCodes.length === 1 && assetCodes[0] !== code);
+    const isComparisonMode = assets.length > 1 || (assets.length === 1 && assets[0].symbol !== code);
 
     const chartConfig = {
         title: {
@@ -296,11 +297,11 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
     ]
 
     const popularAssets = [
-        { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { symbol: 'XAU', name: 'GOLD', type: 'commodity' as AssetType, icon_url: '', exchange_icon_url: '' },
+        { symbol: 'XAG', name: 'SILVER', type: 'commodity' as AssetType, icon_url: '', exchange_icon_url: '' },
+        { symbol: 'XU100', name: 'BIST 100', type: 'index' as AssetType, icon_url: '', exchange_icon_url: '' },
+        { symbol: 'IXIC', name: 'NASDAQ', type: 'index' as AssetType, icon_url: '', exchange_icon_url: '' },
+        { symbol: 'GSPC', name: 'S&P 500', type: 'index' as AssetType, icon_url: '', exchange_icon_url: '' },
     ]
 
     return (

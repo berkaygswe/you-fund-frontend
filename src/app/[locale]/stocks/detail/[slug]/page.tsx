@@ -73,7 +73,7 @@ const stockData = {
 export default function StockDetailPage() {
     const currency = useCurrency();
     const params = useParams();
-    const slug = params.slug as string;
+    const slug = (params.slug || params.symbol) as string;
 
     // For now we'll use mock data, but in a real implementation these would come from API hooks
     const stockMetadata = stockData;

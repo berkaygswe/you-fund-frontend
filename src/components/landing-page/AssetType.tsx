@@ -1,5 +1,6 @@
 import { useAssetDetailComparsion } from "@/hooks/useAssetDetailComparison";
 import { useCurrency } from "@/hooks/useCurrency";
+import type { AssetType } from "@/types/asset";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useMemo, useState } from "react";
 import FloatingCard from "./FloatingCard";
@@ -86,8 +87,12 @@ export default function AssetType() {
     const startDate = sDate.toISOString().slice(0, 10);
 
     const [activeTab, setActiveTab] = useState('stock');
-    const assetCodes = useMemo(() => assets.map(asset => asset.symbol), [assets]);
-    const { assetComparisonData, loading: comparisonLoading, error: comparisonError } = useAssetDetailComparsion(assetCodes, startDate, currency);
+    const assetIdentifiers = useMemo(() => assets.map(asset => ({ 
+        type: asset.type as AssetType, 
+        symbol: asset.symbol 
+    })), []);
+    
+    const { assetComparisonData, loading: comparisonLoading, error: comparisonError } = useAssetDetailComparsion(assetIdentifiers, startDate, currency);
 
     // Filter assets based on the activeTab
     const filteredAssets = useMemo(() => {

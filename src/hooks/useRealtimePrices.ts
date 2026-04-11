@@ -1,23 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useWebSocket, PriceUpdate } from '@/providers/WebSocketProvider';
+import { AssetIdentifier } from '@/types/asset';
 
 export type { PriceUpdate } from '@/providers/WebSocketProvider';
 
 /**
- * Subscribes to real-time price updates for the given symbols.
+ * Subscribes to real-time price updates for the given assets.
  *
  * Uses the shared WebSocket connection from WebSocketProvider.
- * Multiple components can subscribe to overlapping symbols without
+ * Multiple components can subscribe to overlapping assets without
  * creating duplicate server subscriptions (ref-counted internally).
  *
- * Returns only the price updates relevant to the requested symbols.
+ * Returns only the price updates relevant to the requested assets.
  */
-export const useRealtimePrices = (symbols: string[], currency: string | null) => {
+export const useRealtimePrices = (assets: AssetIdentifier[], currency: string | null) => {
     const { subscribe, prices } = useWebSocket();
     const [, forceUpdate] = useState(0);
 
-    // Keep a stable reference to the current symbols string for comparison
-    const symbolsKey = useMemo(() => symbols.join(','), [symbols]);
+    // Keep a stable reference for comparison
+    const assetsKey = useMemo(() => assets.map(a => `${a.type}:${a.symbol}`).join(','), [assets]);
 
     // Reset component-level awareness when currency changes
     const prevCurrencyRef = useRef(currency);
@@ -28,20 +29,21 @@ export const useRealtimePrices = (symbols: string[], currency: string | null) =>
         }
     }, [currency]);
 
-    // Subscribe/unsubscribe when symbols or currency change
+    // Subscribe/unsubscribe when assets or currency change
     useEffect(() => {
-        if (!currency || symbols.length === 0) return;
+        if (!currency || assets.length === 0) return;
 
-        const unsubscribe = subscribe(symbols, currency);
+        const unsubscribe = subscribe(assets, currency);
         return unsubscribe;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [symbolsKey, currency, subscribe]);
+    }, [assetsKey, currency, subscribe]);
 
-    // Filter the shared price store to only return data for the requested symbols
+    // Filter the shared price store to only return data for the requested assets
     return useMemo(() => {
         const filtered: Record<string, PriceUpdate> = {};
 
-        for (const requestedSymbol of symbols) {
+        for (const asset of assets) {
+            const requestedSymbol = asset.symbol;
             // requestedSymbol might be "BTC-USD" or just "VOO"
             const baseSymbol = requestedSymbol.split('-')[0];
             const p = prices[baseSymbol];
@@ -55,5 +57,5 @@ export const useRealtimePrices = (symbols: string[], currency: string | null) =>
 
         return filtered;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [symbolsKey, prices, currency]);
+    }, [assetsKey, prices, currency]);
 };
