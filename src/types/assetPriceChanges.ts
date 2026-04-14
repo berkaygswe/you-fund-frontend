@@ -1,4 +1,4 @@
-export interface EtfPriceChanges {
+export interface AssetPriceChanges {
     name: string;
     symbol: string;
     iconUrl: string;

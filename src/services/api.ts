@@ -12,7 +12,7 @@ import { AssetTopMovers } from '@/types/assetTopMovers';
 import { FundTypePerformance } from '@/types/fundTypePerformance';
 import { Etf } from '@/types/etf';
 import { EtfMetadata } from '@/types/etfMetada';
-import { EtfPriceChanges } from '@/types/etfPriceChanges';
+import { AssetPriceChanges } from '@/types/assetPriceChanges';
 import { Currency } from '@/types/currency';
 import { AssetIdentifier } from '@/types/asset';
 
@@ -172,9 +172,15 @@ export const fundsApi = {
         return fetchData<EtfMetadata>(`/etf/metadata/${symbol}`);
     },
 
-    getAssetPriceChanges: async (type: string, symbol: string, currency: string | null): Promise<EtfPriceChanges> => {
-        if (!currency) return {} as EtfPriceChanges;
-        return fetchData<EtfPriceChanges>(`/asset/price-changes?type=${type}&symbol=${symbol}&currency=${currency}`);
+    getAssetPriceChanges: async (type: string, symbol: string, currency: string | null): Promise<AssetPriceChanges> => {
+        if (!currency) return {} as AssetPriceChanges;
+        return fetchData<AssetPriceChanges>(`/asset/price-changes?type=${type}&symbol=${symbol}&currency=${currency}`);
+    },
+
+    getBulkPriceChanges: async (assets: AssetIdentifier[], currency: string | null): Promise<AssetPriceChanges[]> => {
+        if (!currency || assets.length === 0) return [];
+        const keys = encodeURIComponent(assets.map(a => `${a.type}:${a.symbol}`).join(','));
+        return fetchData<AssetPriceChanges[]>(`/asset/price-changes/bulk?assetKeys=${keys}&currency=${currency}`);
     },
 
     getStockList: async (params?: {

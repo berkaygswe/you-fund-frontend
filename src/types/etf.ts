@@ -1,9 +1,9 @@
-import { EtfPriceChanges } from "./etfPriceChanges";
+import { AssetPriceChanges } from "./assetPriceChanges";
 
-export interface Etf extends EtfPriceChanges {
-  symbol: string;
-  name: string;
-  date: string;
-  iconUrl: string;
-  price: number;
+export interface Etf extends AssetPriceChanges {
+    symbol: string;
+    name: string;
+    date: string;
+    iconUrl: string;
+    price: number;
 }

@@ -241,9 +241,10 @@ type FundGraphProps = {
     className?: string;
     chartClassName?: string;
     code: string;
+    type?: AssetType;
 }
 
-export default function FundDetailGraph({ className, code, chartClassName }: FundGraphProps) {
+export default function FundDetailGraph({ className, code, chartClassName, type = 'fund' }: FundGraphProps) {
 
     const currency = useCurrency();
 
@@ -251,10 +252,10 @@ export default function FundDetailGraph({ className, code, chartClassName }: Fun
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
     const [pendingRange, setPendingRange] = useState<DateRange | undefined>(undefined);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-    const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: 'fund', icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
+    const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: type, icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
     const assets = useMemo(() => {
-        return selectedAssets.map(asset => ({ type: (asset.type || 'fund') as AssetType, symbol: asset.symbol }));
-    }, [selectedAssets]);
+        return selectedAssets.map(asset => ({ type: (asset.type || type) as AssetType, symbol: asset.symbol }));
+    }, [selectedAssets, type]);
 
     // derive ISO dates based on “custom” vs preset
     const startDate =
