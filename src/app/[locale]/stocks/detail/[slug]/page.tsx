@@ -1,10 +1,5 @@
 "use client"
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Globe, Building2, Calendar, DollarSign, BarChart3, PieChart, Info, ExternalLink, Shield, Zap, Target, ArrowUpRight, ArrowDownRight, Star, Factory, Users } from 'lucide-react';
-import { useFormatCurrency } from '@/utils/formatCurrency';
-import { formatPercent } from '@/utils/formatPercent';
 import FundDetailGraph from '@/components/fund-detail/FundDetailGraph';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useParams } from 'next/navigation';
@@ -16,78 +11,18 @@ import { StockKeyMetrics } from '@/components/stock/detail/StockKeyMetrics';
 import { StockFinancialsTab } from '@/components/stock/detail/StockFinancialsTab';
 import { StockPerformanceTab } from '@/components/stock/detail/StockPerformanceTab';
 import { CompanyOverviewTab } from '@/components/stock/detail/CompanyOverviewTab';
-
-// Mock data for US stock
-const stockData = {
-    symbol: 'AAPL',
-    name: 'Apple Inc.',
-    description: 'Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, a line of smartphones; Mac, a line of personal computers; iPad, a line of multi-purpose tablets; and wearables, home and accessories comprising AirPods, Apple TV, Apple Watch, Beats products, and HomePod.',
-    currentPrice: 175.23,
-    priceChange: 2.45,
-    priceChangePercent: 1.42,
-    marketCap: 2800000000000,
-    peRatio: 29.8,
-    pbRatio: 36.2,
-    dividendYield: 0.55,
-    eps: 5.88,
-    beta: 1.29,
-    fiftyTwoWeekHigh: 198.23,
-    fiftyTwoWeekLow: 124.17,
-    avgVolume: 58392000,
-    sharesOutstanding: 15980000000,
-    revenue: 383295000000,
-    netIncome: 96958000000,
-    sector: 'Technology',
-    industry: 'Consumer Electronics',
-    headquarters: 'Cupertino, California',
-    founded: 1976,
-    ceo: 'Timothy D. Cook',
-    employees: 164000,
-    website: 'https://www.apple.com',
-    primaryExchange: 'NASDAQ',
-    currency: 'USD',
-    topCompetitors: [
-        { name: 'Microsoft Corporation', symbol: 'MSFT' },
-        { name: 'Alphabet Inc.', symbol: 'GOOGL' },
-        { name: 'Amazon.com Inc.', symbol: 'AMZN' },
-        { name: 'Tesla Inc.', symbol: 'TSLA' },
-        { name: 'Meta Platforms Inc.', symbol: 'META' }
-    ],
-    institutionalHolders: [
-        { name: 'Vanguard Group Inc', stake: 8.09 },
-        { name: 'BlackRock Inc', stake: 5.92 },
-        { name: 'Berkshire Hathaway Inc', stake: 5.83 },
-        { name: 'State Street Corp', stake: 3.91 },
-        { name: 'Fidelity Management & Research Co', stake: 1.93 }
-    ],
-    financials: {
-        revenueGrowth: 2.8,
-        profitMargin: 25.3,
-        roe: 148.7,
-        roa: 22.1,
-        debtToEquity: 160.3,
-        currentRatio: 0.94
-    }
-};
+import { useStockMetadata } from '@/hooks/useStockMetadata';
+import { useAssetPriceChanges } from '@/hooks/useAssetPriceChanges';
 
 export default function StockDetailPage() {
     const currency = useCurrency();
     const params = useParams();
     const slug = (params.slug || params.symbol) as string;
 
-    // For now we'll use mock data, but in a real implementation these would come from API hooks
-    const stockMetadata = stockData;
-    const stockPriceChanges = {
-        closePrice: stockData.currentPrice,
-        dailyChangePercent: stockData.priceChangePercent,
-        oneMonthChangePercent: 3.24,
-        threeMonthChangePercent: 8.72,
-        oneYearChangePercent: 12.45,
-        fiveYearChangePercent: 156.78
-    };
+    const { stockMetadata, loading: stockLoading } = useStockMetadata(slug);
+    const { assetPriceChanges: stockPriceChanges, loading: stockPriceChangeLoading } = useAssetPriceChanges(slug, currency, 'stock');
 
-    const loading = false;
-    const stockPriceChangeLoading = false;
+    const loading = stockLoading || !stockMetadata;
 
     if (loading || stockPriceChangeLoading) {
         return (
@@ -104,22 +39,21 @@ export default function StockDetailPage() {
                 name={stockMetadata.name}
                 sector={stockMetadata.sector}
                 industry={stockMetadata.industry}
-                primaryExchange={stockMetadata.primaryExchange}
+                primaryExchange={stockMetadata.exchange}
             />
 
             <StockPriceCard
-                closePrice={stockPriceChanges.closePrice}
-                dailyChangePercent={stockPriceChanges.dailyChangePercent}
+                closePrice={stockPriceChanges?.price || 0}
+                dailyChangePercent={stockPriceChanges?.dailyChangePercent || 0}
                 marketCap={stockMetadata.marketCap}
             />
 
             <StockKeyMetrics
                 marketCap={stockMetadata.marketCap}
-                peRatio={stockMetadata.peRatio}
+                peRatio={stockMetadata.trailingPe}
                 dividendYield={stockMetadata.dividendYield}
-                eps={stockMetadata.eps}
                 sharesOutstanding={stockMetadata.sharesOutstanding}
-                employees={stockMetadata.employees}
+                employees={stockMetadata.fullTimeEmployees}
             />
 
             <div className='mb-8'>
@@ -145,35 +79,29 @@ export default function StockDetailPage() {
                 <TabsContent value="overview" className="mt-6">
                     <CompanyOverviewTab
                         description={stockMetadata.description}
-                        ceo={stockMetadata.ceo}
-                        founded={stockMetadata.founded}
-                        headquarters={stockMetadata.headquarters}
+                        headquarters={stockMetadata.city && stockMetadata.country ? `${stockMetadata.city}, ${stockMetadata.country}` : undefined}
                         fiftyTwoWeekHigh={stockMetadata.fiftyTwoWeekHigh}
                         fiftyTwoWeekLow={stockMetadata.fiftyTwoWeekLow}
-                        avgVolume={stockMetadata.avgVolume}
+                        avgVolume={stockPriceChanges?.volume}
                         beta={stockMetadata.beta}
                     />
                 </TabsContent>
 
                 <TabsContent value="financials" className="mt-6">
                     <StockFinancialsTab
-                        revenue={stockMetadata.revenue}
-                        netIncome={stockMetadata.netIncome}
-                        revenueGrowth={stockMetadata.financials.revenueGrowth}
-                        profitMargin={stockMetadata.financials.profitMargin}
-                        roe={stockMetadata.financials.roe}
-                        roa={stockMetadata.financials.roa}
-                        debtToEquity={stockMetadata.financials.debtToEquity}
-                        currentRatio={stockMetadata.financials.currentRatio}
+                        revenueGrowth={stockMetadata.revenueGrowth}
+                        profitMargin={stockMetadata.profitMargins}
+                        roe={stockMetadata.returnOnEquity}
+                        roa={stockMetadata.returnOnAssets}
                     />
                 </TabsContent>
 
                 <TabsContent value="performance" className="mt-6">
                     <StockPerformanceTab
-                        dailyChangePercent={stockPriceChanges.dailyChangePercent}
-                        oneMonthChangePercent={stockPriceChanges.oneMonthChangePercent}
-                        threeMonthChangePercent={stockPriceChanges.threeMonthChangePercent}
-                        oneYearChangePercent={stockPriceChanges.oneYearChangePercent}
+                        dailyChangePercent={stockPriceChanges?.dailyChangePercent}
+                        oneMonthChangePercent={stockPriceChanges?.monthlyChangePercent}
+                        threeMonthChangePercent={stockPriceChanges?.ytdChangePercent}
+                        oneYearChangePercent={stockPriceChanges?.yearlyChangePercent}
                         beta={stockMetadata.beta}
                     />
                 </TabsContent>
@@ -182,10 +110,8 @@ export default function StockDetailPage() {
                     <StockDetailsTab
                         sector={stockMetadata.sector}
                         industry={stockMetadata.industry}
-                        employees={stockMetadata.employees}
+                        employees={stockMetadata.fullTimeEmployees}
                         website={stockMetadata.website}
-                        institutionalHolders={stockMetadata.institutionalHolders}
-                        topCompetitors={stockMetadata.topCompetitors}
                     />
                 </TabsContent>
             </Tabs>

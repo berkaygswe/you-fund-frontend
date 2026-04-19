@@ -1,6 +1,6 @@
 "use client";
 
-import { useAssetDetailComparsion } from "@/hooks/useAssetDetailComparison";
+import { useAssetBulkPriceChanges } from "@/hooks/useAssetBulkPriceChanges";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
@@ -80,17 +80,12 @@ function TickerItem({ symbol, name, initialValue, initialChange, realtimePrice, 
 export function SlidingMarketTicker() {
     const currency = useCurrency();
 
-    const today = new Date();
-    const sDate = new Date(today);
-    sDate.setDate(today.getDate() - 7);
-    const startDate = sDate.toISOString().slice(0, 10);
-
     const assets = useMemo(() => {
         return popularAssets.map(asset => ({ type: asset.type, symbol: asset.symbol }));
     }, []);
 
-    const { assetComparisonData, loading } = useAssetDetailComparsion(assets, startDate, currency);
-    const isInitialLoading = loading || !currency || !assetComparisonData || assetComparisonData.length === 0;
+    const { priceChangesData, loading } = useAssetBulkPriceChanges(assets, currency);
+    const isInitialLoading = loading || !currency || !priceChangesData || priceChangesData.length === 0;
     const realtimePrices = useRealtimePrices(assets, currency);
 
     if (isInitialLoading) {
@@ -111,7 +106,7 @@ export function SlidingMarketTicker() {
     }
 
     const tickerItems = popularAssets.map(asset => {
-        const detail = assetComparisonData.find(d => d.symbol === asset.symbol);
+        const detail = priceChangesData.find(d => d.symbol === asset.symbol);
         if (!detail) return null;
 
         const rt = realtimePrices[asset.symbol];
@@ -119,8 +114,8 @@ export function SlidingMarketTicker() {
         return {
             symbol: asset.symbol,
             name: asset.name,
-            initialValue: detail.close,
-            initialChange: detail.percentChangeFromStart,
+            initialValue: detail.price,
+            initialChange: detail.dailyChangePercent,
             realtimePrice: rt?.price,
             realtimeChange: rt?.dailyChangePercent
         };

@@ -1,7 +1,8 @@
+import { UUID } from "crypto";
 import { PriceChanges } from "./priceChanges";
 
 export interface FundDetail {
-    assetId: string;
+    assetId: UUID;
     code: string;
     name: string;
     fundType: string;

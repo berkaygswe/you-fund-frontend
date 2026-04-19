@@ -13,7 +13,6 @@ export function useApiData<T>(fetchFn: () => Promise<T>, deps: ReadonlyArray<unk
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchData = useCallback(async () => {
     setData(null); // Clear stale data immediately to prevent wrong-format display
     setLoading(true);
@@ -26,6 +25,7 @@ export function useApiData<T>(fetchFn: () => Promise<T>, deps: ReadonlyArray<unk
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   useEffect(() => {

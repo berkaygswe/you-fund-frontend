@@ -182,7 +182,7 @@ export function EtfListing() {
             size: 100,
             cell: ({ row }) => (
                 <div className="text-center whitespace-nowrap">
-                    {formatCurrency(row.getValue('volume'))}
+                    {formatCurrency(row.getValue('volume'), true)}
                 </div>
             ),
         },
@@ -205,9 +205,19 @@ export function EtfListing() {
                         );
                     }
 
+                    if (value === undefined || value === null) {
+                        return (
+                            <div className="text-center text-muted-foreground font-medium">
+                                -
+                            </div>
+                        );
+                    }
+
+                    const isPositive = value >= 0;
+
                     return (
-                        <div className={`text-center font-semibold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {value >= 0 ? (
+                        <div className={`text-center font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                            {isPositive ? (
                                 <ArrowUp className="inline h-4 w-4 mr-1" />
                             ) : (
                                 <ArrowDown className="inline h-4 w-4 mr-1" />

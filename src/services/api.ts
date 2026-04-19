@@ -15,6 +15,7 @@ import { EtfMetadata } from '@/types/etfMetada';
 import { AssetPriceChanges } from '@/types/assetPriceChanges';
 import { Currency } from '@/types/currency';
 import { AssetIdentifier } from '@/types/asset';
+import { StockMetadata } from '@/types/stockMetadata';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -243,6 +244,10 @@ export const fundsApi = {
             totalCount: data.totalElements,
             totalPages: data.totalPages
         };
+    },
+
+    getStockMetadata: async (symbol: string): Promise<StockMetadata> => {
+        return fetchData<StockMetadata>(`/stock/metadata/${symbol}`);
     },
 
     // Add more API methods as needed

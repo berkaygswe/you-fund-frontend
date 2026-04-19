@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 export interface CreateWatchlistRequest {
     name: string;
 }
@@ -21,7 +23,7 @@ export interface WatchlistResponse {
 
 export interface WatchlistAssetWithPriceResponse {
     id: number;
-    assetId: string;
+    assetId: UUID;
     symbol: string;
     assetName: string;
     assetType: string;

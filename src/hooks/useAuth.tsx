@@ -50,7 +50,7 @@ export function AuthProvider({ children, initialSessionHint = false }: { childre
             setUser(userData);
             setStatus('authenticated');
             return true;
-        } catch (error: any) {
+        } catch (error: unknown) {
             setAccessToken(null);
             setUser(null);
             setStatus('unauthenticated');
@@ -58,7 +58,7 @@ export function AuthProvider({ children, initialSessionHint = false }: { childre
             // Only clear the session cookie if the token is explicitly invalid (401 or 403).
             // If the Java backend is down (network error or 5xx), keep the hint cookie
             // so they can seamlessly log back in when the server comes back online.
-            if (error?.status === 401 || error?.status === 403) {
+            if ((error as { status?: number })?.status === 401 || (error as { status?: number })?.status === 403) {
                 await deleteSessionAction();
             }
             return false;

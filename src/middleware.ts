@@ -26,6 +26,8 @@ export function middleware(request: NextRequest) {
     return paths.some((p) => pathWithoutLocale.startsWith(p) || pathWithoutLocale === p);
   };
 
+  const localeMatch = pathname.match(/^\/(en|tr)(\/|$)/);
+  const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
   const pathWithoutLocale = pathname.replace(/^\/(en|tr)(\/|$)/, '/');
 
   // 2. Apply Custom Redirection Logic (Auth)
@@ -33,20 +35,19 @@ export function middleware(request: NextRequest) {
   // ROOT → redirect logged-in users to market overview
   if (pathWithoutLocale === '/') {
     if (isLoggedIn) {
-      return NextResponse.redirect(new URL('/market-overview', request.url));
+      return NextResponse.redirect(new URL(`/${locale}/market-overview`, request.url));
     }
     return response;
   }
 
   // PROTECTED routes → redirect unauthenticated to login
   if (isPath(PROTECTED_PATHS, pathname) && !isLoggedIn) {
-    // We should redirect to the localized /login if possible, but for simplicity:
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
   // AUTH pages → redirect already-logged-in users away
   if (isPath(AUTH_PAGES, pathname) && isLoggedIn) {
-    return NextResponse.redirect(new URL('/market-overview', request.url));
+    return NextResponse.redirect(new URL(`/${locale}/market-overview`, request.url));
   }
 
   return response;

@@ -1,10 +1,12 @@
 import { useMemo, ReactNode } from 'react';
-import { useCurrencySymbol } from './getCurrencySymbol'
+import { useLocale } from 'next-intl';
+import { useCurrencySymbol } from './getCurrencySymbol';
 import { shortenNumberIntl } from './shortenNumberIntl';
 
 // Hook-safe version for use inside React components
 export const useFormatCurrency = () => {
     const currency = useCurrencySymbol();
+    const locale = useLocale();
 
     // eslint-disable-next-line react/display-name
     return useMemo(() => (price: number | null | undefined, shorten: boolean = false): ReactNode => {
@@ -14,7 +16,7 @@ export const useFormatCurrency = () => {
         let formattedPrice: string;
 
         if (shorten) {
-            formattedPrice = shortenNumberIntl(price, 1);
+            formattedPrice = shortenNumberIntl(price, 1, locale);
         } else {
             formattedPrice = price.toFixed(2);
         }
@@ -37,5 +39,5 @@ export const useFormatCurrency = () => {
                 <span className="text-[0.85em] opacity-80 font-normal ml-[2px]" > {currency} </span>
             </>
         );
-    }, [currency]);
-}
+    }, [currency, locale]);
+};

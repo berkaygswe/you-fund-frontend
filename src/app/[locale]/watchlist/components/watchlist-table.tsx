@@ -16,12 +16,13 @@ import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useFormatCurrency } from "@/utils/formatCurrency";
+import { UUID } from "crypto";
 
 interface WatchlistTableProps {
     assets?: WatchlistAssetWithPriceResponse[];
     isLoading: boolean;
     period: string;
-    onRemoveAsset?: (symbol: string) => void;
+    onRemoveAsset?: (assetId: UUID) => void;
     isRemoving?: boolean;
 }
 
@@ -144,7 +145,7 @@ export default function WatchlistTable({ assets, isLoading, period, onRemoveAsse
                                             variant="ghost"
                                             size="icon"
                                             className="h-8 w-8 text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 transition-all opacity-0 group-hover:opacity-100"
-                                            onClick={() => onRemoveAsset?.(asset.symbol)}
+                                            onClick={() => onRemoveAsset?.(asset.assetId)}
                                             disabled={isRemoving}
                                         >
                                             <Trash2 className="h-4 w-4" />

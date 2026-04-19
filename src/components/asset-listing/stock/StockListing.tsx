@@ -11,18 +11,52 @@ import debounce from "lodash.debounce";
 import { DataTable } from "../../DataTable";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
-import { Input } from "@/components/ui/input";
 import { useStockList } from "@/hooks/useStockList";
+import { useRealtimePrices, PriceUpdate } from '@/hooks/useRealtimePrices';
+import { RealtimeChangeCell, RealtimePriceCell } from '../etf/RealtimeCells';
+import { useRef, useEffect } from "react";
+import { Input } from "@/components/ui/input";
 
 // Move outside component to prevent recreation on each render
-const periods = ['dailyChangePercent', 'oneMonthChangePercent', 'threeMonthChangePercent', 'oneYearChangePercent'] as const;
+const periods = ['dailyChangePercent', 'monthlyChangePercent', 'yearlyChangePercent', 'ytdChangePercent'] as const;
 
 const periodHeaderMap: Record<typeof periods[number], string> = {
     'dailyChangePercent': 'Daily Return',
-    'oneMonthChangePercent': '1 Month Return',
-    'threeMonthChangePercent': '3 Month Return',
-    'oneYearChangePercent': '1 Year Return',
+    'monthlyChangePercent': '1 Month Return',
+    'yearlyChangePercent': '1 Year Return',
+    'ytdChangePercent': 'YTD Return',
 };
+
+function PriceCellWrapper({ symbol, value, pricesRef }: {
+    symbol: string;
+    value: number;
+    pricesRef: React.RefObject<Record<string, PriceUpdate>>;
+}) {
+    const rt = pricesRef.current?.[symbol];
+    return (
+        <div className="text-center whitespace-nowrap">
+            <RealtimePriceCell
+                value={value}
+                realtimePrice={rt?.price}
+                timestamp={rt?.lastUpdate}
+            />
+        </div>
+    );
+}
+
+function ChangeCellWrapper({ symbol, value, pricesRef }: {
+    symbol: string;
+    value: number;
+    pricesRef: React.RefObject<Record<string, PriceUpdate>>;
+}) {
+    const rt = pricesRef.current?.[symbol];
+    return (
+        <RealtimeChangeCell
+            value={value}
+            realtimeChange={rt?.dailyChangePercent}
+        />
+    );
+}
 
 export function StockListing() {
 
@@ -68,8 +102,14 @@ export function StockListing() {
     }), [globalFilter, sorting, pagination, currency]);
 
     // Data fetching
-    //const { funds, loading, error } = useFunds();
     const { stocks, totalCount, totalPages, loading, error } = useStockList(params);
+
+    // Realtime prices subscription
+    const assets = useMemo(() => stocks?.map(e => ({ type: 'stock', symbol: e.symbol } as const)) || [], [stocks]);
+    const realtimePrices = useRealtimePrices(assets, params.currency);
+
+    const pricesRef = useRef(realtimePrices);
+    pricesRef.current = realtimePrices;
 
     // Memoized columns definition
     const columns = useMemo<ColumnDef<Etf>[]>(() => [
@@ -80,11 +120,11 @@ export function StockListing() {
             size: 70,
             cell: ({ row }) => (
                 <div className="font-medium">
-                    <div className='grid grid-cols-2 justify-center items-center'>
+                    <Link className='grid grid-cols-2 justify-center items-center' href={`/asset/stock/${row.getValue('symbol')}`}>
                         {row.original.iconUrl ? (
                             <div className="flex justify-center">
                                 <ImageWrap
-                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/etf/${row.original.iconUrl}`}
+                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/stock/${row.original.iconUrl}`}
                                     width={20}
                                     height={20}
                                     className='rounded-md'
@@ -103,7 +143,7 @@ export function StockListing() {
                             </div>
                         )}
                         {row.getValue('symbol')}
-                    </div>
+                    </Link>
                 </div>
             ),
         },
@@ -119,13 +159,15 @@ export function StockListing() {
             ),
         },
         {
-            accessorKey: 'closePrice',
+            accessorKey: 'price',
             header: 'Price',
             size: 100,
             cell: ({ row }) => (
-                <div className="text-center whitespace-nowrap">
-                    {formatCurrency(row.getValue('closePrice'))}
-                </div>
+                <PriceCellWrapper
+                    symbol={row.original.symbol}
+                    value={row.getValue('price')}
+                    pricesRef={pricesRef}
+                />
             ),
         },
         {
@@ -146,11 +188,31 @@ export function StockListing() {
                 header: periodHeaderMap[period],
                 size: 100,
                 cell: ({ row }: { row: Row<Etf> }) => {
-                    // Type assertion for row.original to access dynamic keys safely
                     const value = (row.original as unknown as Record<string, number>)[period];
+
+                    if (period === 'dailyChangePercent') {
+                        return (
+                            <ChangeCellWrapper
+                                symbol={row.original.symbol}
+                                value={value}
+                                pricesRef={pricesRef}
+                            />
+                        );
+                    }
+
+                    if (value === undefined || value === null) {
+                        return (
+                            <div className="text-center text-muted-foreground font-medium">
+                                -
+                            </div>
+                        );
+                    }
+
+                    const isPositive = value >= 0;
+
                     return (
-                        <div className={`text-center font-semibold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {value >= 0 ? (
+                        <div className={`text-center font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                            {isPositive ? (
                                 <ArrowUp className="inline h-4 w-4 mr-1" />
                             ) : (
                                 <ArrowDown className="inline h-4 w-4 mr-1" />

@@ -1,6 +1,7 @@
 import { authRequest } from '@/lib/auth-client';
 import { Currency } from '@/types/currency';
 import { CreateWatchlistRequest, WatchlistResponse, WatchlistItemResponse, WatchlistAssetWithPriceResponse } from '@/types/watchlist';
+import { UUID } from 'crypto';
 
 export const watchlistApi = {
     createWatchlist: (data: CreateWatchlistRequest) =>
@@ -29,13 +30,13 @@ export const watchlistApi = {
             method: 'GET',
         }),
 
-    addAssetToWatchlist: (id: number, symbol: string) =>
-        authRequest<WatchlistItemResponse>(`/watchlists/${id}/items/${symbol}`, {
+    addAssetToWatchlist: (id: number, assetId: UUID) =>
+        authRequest<WatchlistItemResponse>(`/watchlists/${id}/items/${assetId}`, {
             method: 'POST',
         }),
 
-    removeAssetFromWatchlist: (id: number, symbol: string) =>
-        authRequest<void>(`/watchlists/${id}/items/${symbol}`, {
+    removeAssetFromWatchlist: (id: number, assetId: UUID) =>
+        authRequest<void>(`/watchlists/${id}/items/${assetId}`, {
             method: 'DELETE',
         }),
 };

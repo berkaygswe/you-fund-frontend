@@ -2,9 +2,9 @@
 
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { 
-    TrendingUp, Globe, Building2, Calendar, DollarSign, BarChart3, 
-    PieChart, Info, ExternalLink, Shield, Zap, Target, ArrowUpRight, 
+import {
+    TrendingUp, Globe, Building2, Calendar, DollarSign, BarChart3,
+    PieChart, Info, ExternalLink, Shield, Zap, Target, ArrowUpRight,
     ArrowDownRight, Star, Layers, Wallet, Activity, Percent, ArrowRight,
     BookOpen
 } from 'lucide-react';
@@ -16,9 +16,10 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEtfMetada } from '@/hooks/useEtfMetada';
 import { useParams } from 'next/navigation';
-import { useEtfPriceChanges } from '@/hooks/useEtfPriceChanges';
+import { useAssetPriceChanges } from '@/hooks/useAssetPriceChanges';
 import { useCurrency } from '@/hooks/useCurrency';
 import ImageWrap from '@/components/ImageWrap';
+import { EtfMetadata, EtfTopHolding } from '@/types/etfMetada';
 
 const GlassCard = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
     <Card className={`border border-white/40 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${className}`}>
@@ -38,12 +39,12 @@ const colors = {
 
 type ColorKey = keyof typeof colors;
 
-const MetricCard = ({ title, value, icon: Icon, color = 'blue' }: { title: string, value: string | React.ReactNode, icon: any, color?: ColorKey }) => {
+const MetricCard = ({ title, value, icon: Icon, color = 'blue' }: { title: string, value: string | React.ReactNode, icon: React.ElementType, color?: ColorKey }) => {
     return (
         <GlassCard className="transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] group overflow-hidden relative">
             {/* Subtle glow effect */}
             <div className={`absolute -right-8 -top-8 w-24 h-24 blur-3xl opacity-[0.15] dark:opacity-10 pointer-events-none rounded-full bg-${color}-500`} />
-            
+
             <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">
                     <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400">
@@ -67,7 +68,7 @@ export default function EtfDetailPage() {
     const slug = (params.slug || params.symbol) as string;
 
     const { etfMetadata, loading } = useEtfMetada(slug);
-    const { etfPriceChanges, loading: etfPriceChangeLoading } = useEtfPriceChanges(slug, currency);
+    const { assetPriceChanges: etfPriceChanges, loading: etfPriceChangeLoading } = useAssetPriceChanges(slug, currency);
 
     const formatCurrency = useFormatCurrency();
 
@@ -101,7 +102,7 @@ export default function EtfDetailPage() {
                     <p className="text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
                         We couldn&apos;t retrieve the quantitative metrics for this instrument. It may be temporarily unavailable or the ticker might be unrecognized.
                     </p>
-                    <Button 
+                    <Button
                         variant="default"
                         className="rounded-xl px-8 h-12 bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 transition-all font-medium"
                         onClick={() => window.location.reload()}
@@ -137,7 +138,7 @@ export default function EtfDetailPage() {
                                 <span className="w-2 h-2 rounded-full bg-white"></span>
                             </div>
                         </div>
-                        
+
                         <div>
                             <div className="flex items-center gap-3 mb-1.5">
                                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -149,7 +150,7 @@ export default function EtfDetailPage() {
                             </p>
                         </div>
                     </div>
-                    
+
                     <Button className="h-12 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 transition-all font-medium flex gap-2 w-full md:w-auto">
                         <Star className="w-4 h-4 fill-white/20" />
                         Add to Watchlist
@@ -179,7 +180,7 @@ export default function EtfDetailPage() {
             <GlassCard className="mb-8 overflow-hidden relative">
                 {/* Visual texture overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-indigo-50/30 to-purple-50/30 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 mix-blend-overlay"></div>
-                
+
                 <CardContent className="p-8 md:p-10 relative z-10">
                     <div className="flex text-center md:text-left gap-8 flex-col md:flex-row items-center justify-between">
                         <div className="flex flex-col items-center md:items-start">
@@ -189,11 +190,10 @@ export default function EtfDetailPage() {
                             <div className="text-5xl md:text-6xl font-extrabold tracking-tighter text-slate-900 dark:text-white mb-4">
                                 {formatCurrency(etfPriceChanges.price)}
                             </div>
-                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold backdrop-blur-md border ${
-                                etfPriceChanges.dailyChangePercent >= 0 
-                                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" 
+                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold backdrop-blur-md border ${etfPriceChanges.dailyChangePercent >= 0
+                                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
                                 : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400"
-                            }`}>
+                                }`}>
                                 {etfPriceChanges.dailyChangePercent >= 0 ? (
                                     <ArrowUpRight className="h-5 w-5 stroke-[2.5]" />
                                 ) : (
@@ -224,50 +224,47 @@ export default function EtfDetailPage() {
 
             {/* Quick Metrics Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-10">
-                <MetricCard 
-                    title="Expense Ratio" 
-                    value={etfMetadata.expenseRatio ? formatPercent(etfMetadata.expenseRatio * 100) : 'N/A'} 
-                    icon={Percent} 
+                <MetricCard
+                    title="Expense Ratio"
+                    value={etfMetadata.expenseRatio ? formatPercent(etfMetadata.expenseRatio * 100) : 'N/A'}
+                    icon={Percent}
                     color="indigo"
                 />
-                <MetricCard 
-                    title="Dividend Yield" 
-                    value={etfMetadata.dividendYield ? formatPercent(etfMetadata.dividendYield * 100) : 'N/A'} 
-                    icon={TrendingUp} 
+                <MetricCard
+                    title="Dividend Yield"
+                    value={etfMetadata.dividendYield ? formatPercent(etfMetadata.dividendYield * 100) : 'N/A'}
+                    icon={TrendingUp}
                     color="emerald"
                 />
-                <MetricCard 
-                    title="P/E Ratio" 
-                    value={etfMetadata.peRatio ? etfMetadata.peRatio.toFixed(2) : 'N/A'} 
-                    icon={Activity} 
+                <MetricCard
+                    title="P/E Ratio"
+                    value={etfMetadata.peRatio ? etfMetadata.peRatio.toFixed(2) : 'N/A'}
+                    icon={Activity}
                     color="amber"
                 />
-                <MetricCard 
-                    title="Holdings" 
-                    value={etfMetadata.holdingsCount ? etfMetadata.holdingsCount.toLocaleString() : 'N/A'} 
-                    icon={Building2} 
+                <MetricCard
+                    title="Holdings"
+                    value={etfMetadata.holdingsCount ? etfMetadata.holdingsCount.toLocaleString() : 'N/A'}
+                    icon={Building2}
                     color="violet"
                 />
-                <MetricCard 
-                    title="P/B Ratio" 
-                    value={etfMetadata.pbRatio ? etfMetadata.pbRatio.toFixed(2) : 'N/A'} 
-                    icon={Shield} 
+                <MetricCard
+                    title="P/B Ratio"
+                    value={etfMetadata.pbRatio ? etfMetadata.pbRatio.toFixed(2) : 'N/A'}
+                    icon={Shield}
                     color="rose"
                 />
-                <MetricCard 
-                    title="Inception" 
-                    value={etfMetadata.inceptionDate ? new Date(etfMetadata.inceptionDate).getFullYear().toString() : 'N/A'} 
-                    icon={Calendar} 
+                <MetricCard
+                    title="Inception"
+                    value={etfMetadata.inceptionDate ? new Date(etfMetadata.inceptionDate).getFullYear().toString() : 'N/A'}
+                    icon={Calendar}
                     color="slate"
                 />
             </div>
 
             {/* Price Action Chart Area */}
             <div className="mb-10 w-full overflow-hidden rounded-3xl border border-white/40 dark:border-slate-800 bg-white/40 dark:bg-slate-900/30 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 dark:ring-white/5">
-                <div className="p-4 border-b border-white/40 dark:border-slate-800 bg-white/20 dark:bg-transparent">
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-200">Price Action</h3>
-                </div>
-                <FundDetailGraph className="border-0 bg-transparent" code={slug} />
+                <FundDetailGraph className="border-0 bg-transparent" code={slug} type="etf" />
             </div>
 
             {/* Deep Dive Tabs */}
@@ -301,7 +298,7 @@ export default function EtfDetailPage() {
                             </CardHeader>
                             <CardContent>
                                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px] mb-8">{etfMetadata.description}</p>
-                                
+
                                 <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Structure Profiling</h4>
                                 <div className="grid sm:grid-cols-2 gap-4">
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-2xl hover:bg-white/60 transition-colors">
@@ -336,7 +333,7 @@ export default function EtfDetailPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-3 px-6 pb-6">
-                                {etfMetadata.topHoldings?.map((holding: any, idx: number) => (
+                                {etfMetadata.topHoldings?.map((holding: EtfTopHolding, idx: number) => (
                                     <div key={idx} className="flex items-center justify-between p-4 bg-white/40 dark:bg-slate-800/40 border border-slate-100/50 dark:border-slate-700/30 rounded-xl hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all duration-200 group">
                                         <div className="flex items-center gap-4">
                                             <div className="w-8 flex justify-center text-sm font-bold text-slate-400 group-hover:text-blue-500 transition-colors">
@@ -347,8 +344,8 @@ export default function EtfDetailPage() {
                                         <div className="text-right flex items-center gap-4">
                                             <div className="font-bold text-lg text-slate-900 dark:text-white">{formatPercent(holding['Holding Percent'] * 100)}</div>
                                             <div className="w-16 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full hidden sm:block overflow-hidden">
-                                                 <div 
-                                                    className="h-full bg-blue-500 rounded-full" 
+                                                <div
+                                                    className="h-full bg-blue-500 rounded-full"
                                                     style={{ width: `${Math.min(holding['Holding Percent'] * 100 * 3, 100)}%` }}
                                                 />
                                             </div>
@@ -371,7 +368,7 @@ export default function EtfDetailPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="px-6 pb-6 space-y-5">
-                                {sectors.map((sector: any) => (
+                                {sectors.map((sector: { sector: string; weight: number }) => (
                                     <div key={sector.sector} className="group">
                                         <div className="flex justify-between items-center mb-2">
                                             <span className="text-slate-700 dark:text-slate-300 font-medium">{sector.sector}</span>
@@ -407,15 +404,14 @@ export default function EtfDetailPage() {
                             </CardHeader>
                             <CardContent className="space-y-4 px-6 pb-6">
                                 {[{ label: 'Daily Return', val: etfPriceChanges.dailyChangePercent },
-                                  { label: 'Monthly Return', val: etfPriceChanges.monthlyChangePercent },
-                                  { label: 'YTD Return', val: etfPriceChanges.ytdChangePercent },
-                                  { label: '1 Year Return', val: etfPriceChanges.yearlyChangePercent }
-                                 ].map((item) => (
-                                    <div key={item.label} className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${
-                                        item.val >= 0 
-                                            ? "bg-emerald-50/40 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-500/20 hover:bg-emerald-50" 
-                                            : "bg-rose-50/40 border-rose-100 dark:bg-rose-900/10 dark:border-rose-500/20 hover:bg-rose-50"
-                                    }`}>
+                                { label: 'Monthly Return', val: etfPriceChanges.monthlyChangePercent },
+                                { label: 'YTD Return', val: etfPriceChanges.ytdChangePercent },
+                                { label: '1 Year Return', val: etfPriceChanges.yearlyChangePercent }
+                                ].map((item) => (
+                                    <div key={item.label} className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${item.val >= 0
+                                        ? "bg-emerald-50/40 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-500/20 hover:bg-emerald-50"
+                                        : "bg-rose-50/40 border-rose-100 dark:bg-rose-900/10 dark:border-rose-500/20 hover:bg-rose-50"
+                                        }`}>
                                         <span className="font-semibold text-slate-700 dark:text-slate-300">{item.label}</span>
                                         <span className={`font-bold text-xl ${item.val >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                                             {item.val >= 0 ? "+" : ""}
@@ -444,7 +440,7 @@ export default function EtfDetailPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl">
                                         <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Inception Date</div>
-                                        <div className="font-bold text-slate-900 dark:text-white text-lg">{new Date(etfMetadata.inceptionDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric'})}</div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-lg">{new Date(etfMetadata.inceptionDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
                                     </div>
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl">
                                         <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Exchange</div>
@@ -506,7 +502,7 @@ export default function EtfDetailPage() {
                                         <ArrowRight className="w-5 h-5 text-emerald-500" />
                                     </div>
                                 </button>
-                                
+
                                 <button className="w-full flex items-center justify-between p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl hover:bg-purple-50/50 dark:hover:bg-purple-900/10 hover:border-purple-200 dark:hover:border-purple-900/50 transition-all duration-300 group">
                                     <div className="text-left">
                                         <div className="font-bold text-slate-900 dark:text-white text-lg mb-1 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">Holdings Breakdown</div>

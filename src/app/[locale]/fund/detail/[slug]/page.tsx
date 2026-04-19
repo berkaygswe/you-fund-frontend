@@ -104,7 +104,7 @@ export default function Page() {
             </div>
             <div className='flex flex-col md:grid md:grid-cols-3 gap-6'>
                 <div className='col-span-2 flex flex-col gap-4'>
-                    <FundDetailGraph chartClassName='-ms-5' code={slug}></FundDetailGraph>
+                    <FundDetailGraph chartClassName='-ms-5' code={slug} type="fund"></FundDetailGraph>
                     <RiskScale riskLevel={fund.risk}></RiskScale>
                     <AssetComparison code={slug} type='fund'></AssetComparison>
                 </div>

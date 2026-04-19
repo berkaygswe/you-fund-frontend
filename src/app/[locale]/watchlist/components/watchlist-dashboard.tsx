@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { watchlistApi } from "@/services/watchlistApi";
+import { WatchlistResponse } from "@/types/watchlist";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import WatchlistTable from "./watchlist-table";
@@ -11,8 +12,9 @@ import { Plus, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrencyStore } from "@/stores/currency-store";
 import { useAuth } from "@/hooks/useAuth";
+import { UUID } from "crypto";
 
-function WatchlistSection({ watchlist, period }: { watchlist: any; period: string }) {
+function WatchlistSection({ watchlist, period }: { watchlist: WatchlistResponse; period: string }) {
     const queryClient = useQueryClient();
     const currency = useCurrencyStore((s) => s.currency);
     const { status } = useAuth();
@@ -24,16 +26,16 @@ function WatchlistSection({ watchlist, period }: { watchlist: any; period: strin
     });
 
     const removeAssetMutation = useMutation({
-        mutationFn: (symbol: string) => watchlistApi.removeAssetFromWatchlist(watchlist.id, symbol),
+        mutationFn: (assetId: UUID) => watchlistApi.removeAssetFromWatchlist(watchlist.id, assetId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['watchlist-assets', watchlist.id] });
             queryClient.invalidateQueries({ queryKey: ['watchlists'] }); // To update item count
         }
     });
 
-    const handleRemoveAsset = (symbol: string) => {
-        if (window.confirm(`Are you sure you want to remove ${symbol} from this watchlist?`)) {
-            removeAssetMutation.mutate(symbol);
+    const handleRemoveAsset = (assetId: UUID) => {
+        if (window.confirm(`Are you sure you want to remove ${assetId} from this watchlist?`)) {
+            removeAssetMutation.mutate(assetId);
         }
     };
 
