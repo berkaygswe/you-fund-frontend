@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, usePathname } from "@/i18n/routing";
 import { watchlistApi } from '@/services/watchlistApi';
@@ -13,40 +14,38 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { UUID } from 'crypto';
 
 interface AddToWatchlistButtonProps {
     symbol: string;
-    assetId: string;
+    assetId: UUID;
 }
 
 export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlistButtonProps) {
+    const queryClient = useQueryClient();
     const { status } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
 
     const [open, setOpen] = useState(false);
-    const [watchlists, setWatchlists] = useState<WatchlistResponse[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [newWatchlistName, setNewWatchlistName] = useState('');
-    const [isCreating, setIsCreating] = useState(false);
-    const [isAdding, setIsAdding] = useState<number | null>(null);
-    const [addedWatchlistIds, setAddedWatchlistIds] = useState<Set<number>>(new Set());
 
-    useEffect(() => {
-        if (open && status === 'authenticated') {
-            loadWatchlists();
-        }
-    }, [open, status]);
+    // Query for the list of watchlists
+    const { data: watchlists = [], isLoading: isLoadingWatchlists } = useQuery({
+        queryKey: ['watchlists'],
+        queryFn: () => watchlistApi.getUserWatchlists(),
+        enabled: open && status === 'authenticated',
+    });
 
-    const loadWatchlists = async () => {
-        setIsLoading(true);
-        try {
-            const data = await watchlistApi.getUserWatchlists();
-            setWatchlists(data);
-
-            // Fetch items for each watchlist to determine if the current asset is already added
+    // Query for items in each watchlist to determine if the asset is already added
+    // Note: This matches the logic from before but is now cached and managed by React Query
+    const { data: addedWatchlistIds = new Set<number>(), isLoading: isLoadingMembership } = useQuery({
+        queryKey: ['watchlist-membership', symbol, assetId],
+        queryFn: async () => {
             const addedIds = new Set<number>();
-            await Promise.all(data.map(async (wl) => {
+            if (!watchlists.length) return addedIds;
+
+            await Promise.all(watchlists.map(async (wl) => {
                 try {
                     const items = await watchlistApi.getWatchlistItems(wl.id);
                     if (items.some(item => item.assetId === assetId || item.symbol === symbol)) {
@@ -56,14 +55,36 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
                     console.error(`Failed to load items for watchlist ${wl.id}`, err);
                 }
             }));
-            
-            setAddedWatchlistIds(addedIds);
-        } catch (error) {
-            console.error("Failed to load watchlists", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+            return addedIds;
+        },
+        enabled: open && status === 'authenticated' && watchlists.length > 0,
+        placeholderData: (prev) => prev, // Keep previous data while loading for better UX
+    });
+
+    // Mutation to create a new watchlist
+    const createWatchlistMutation = useMutation({
+        mutationFn: (name: string) => watchlistApi.createWatchlist({ name }),
+        onSuccess: (newWl) => {
+            queryClient.invalidateQueries({ queryKey: ['watchlists'] });
+            setNewWatchlistName('');
+            // Automatically add to the newly created watchlist
+            addToWatchlistMutation.mutate(newWl.id);
+        },
+    });
+
+    // Mutation to add asset to watchlist
+    const addToWatchlistMutation = useMutation({
+        mutationFn: (watchlistId: number,) => watchlistApi.addAssetToWatchlist(watchlistId, assetId),
+        onSuccess: (_, watchlistId) => {
+            queryClient.invalidateQueries({ queryKey: ['watchlist-membership', symbol, assetId] });
+            queryClient.invalidateQueries({ queryKey: ['watchlists'] }); // Update counts
+            queryClient.invalidateQueries({ queryKey: ['watchlist-assets', watchlistId] }); // Refresh specific watchlist views
+        },
+    });
+
+    const isLoading = isLoadingWatchlists || isLoadingMembership;
+    const isAdding = addToWatchlistMutation.isPending ? (addToWatchlistMutation.variables as number) : null;
+    const isCreating = createWatchlistMutation.isPending;
 
     const handleOpenChange = (newOpen: boolean) => {
         if (newOpen && status !== 'authenticated') {
@@ -80,40 +101,14 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
 
     const handleCreateWatchlist = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newWatchlistName.trim() || isCreating) return;
-
-        setIsCreating(true);
-        try {
-            const newWatchlist = await watchlistApi.createWatchlist({ name: newWatchlistName.trim() });
-            setWatchlists([...watchlists, newWatchlist]);
-            setNewWatchlistName('');
-
-            // Automatically add the item to the new watchlist
-            await handleAddToWatchlist(newWatchlist.id);
-        } catch (error) {
-            console.error("Failed to create watchlist", error);
-        } finally {
-            setIsCreating(false);
-        }
+        const name = newWatchlistName.trim();
+        if (!name || isCreating) return;
+        createWatchlistMutation.mutate(name);
     };
 
     const handleAddToWatchlist = async (watchlistId: number) => {
         if (isAdding === watchlistId || addedWatchlistIds.has(watchlistId)) return;
-        setIsAdding(watchlistId);
-        try {
-            await watchlistApi.addAssetToWatchlist(watchlistId, symbol);
-            setAddedWatchlistIds(prev => {
-                const newSet = new Set(prev);
-                newSet.add(watchlistId);
-                return newSet;
-            });
-            // We could optionally close the popover here or just show a checkmark
-            // setTimeout(() => setOpen(false), 1000);
-        } catch (error) {
-            console.error("Failed to add to watchlist", error);
-        } finally {
-            setIsAdding(null);
-        }
+        addToWatchlistMutation.mutate(watchlistId);
     };
 
     return (

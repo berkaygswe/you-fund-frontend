@@ -9,7 +9,7 @@ interface UseResult {
   prices: FundPrices[];
   loading: boolean;
   error: Error | null;
-  refetch: () => Promise<any>;
+  refetch: () => Promise<unknown>;
 }
 
 export function useFetchFundGraph(code: string, startDate: string, endDate: string, currency: string | null): UseResult {

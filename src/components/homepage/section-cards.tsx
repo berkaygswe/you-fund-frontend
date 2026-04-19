@@ -10,6 +10,7 @@ import { ArrowDownRight, ArrowUpRight, BarChart3, Bitcoin, DollarSign, Gem } fro
 import { useMemo, useState } from "react";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { AssetIdentifier } from "@/types/asset";
 
 const assetGroups = {
     indices: [
@@ -64,8 +65,8 @@ export function SectionCards() {
 
     const activeAssets = assetGroups[activeTab];
 
-    const activeAssetsFormatted = useMemo(() => {
-        return activeAssets.map(asset => ({ type: asset.type, symbol: asset.symbol } as any));
+    const activeAssetsFormatted = useMemo<AssetIdentifier[]>(() => {
+        return activeAssets.map(asset => ({ type: asset.type as AssetIdentifier['type'], symbol: asset.symbol }));
     }, [activeAssets]);
 
     const { assetComparisonData: prices, loading: graphLoading, error: graphError, isPlaceholderData: graphPlaceholder } = useAssetGraphComparison(activeAssetsFormatted, startDate, today.toISOString().slice(0, 10), currency);

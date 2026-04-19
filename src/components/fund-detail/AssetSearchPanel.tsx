@@ -10,9 +10,9 @@ import ImageWrap from "../ImageWrap";
 import Image from 'next/image';
 
 type AssetSearchPanelProps = {
-  selectedAssets: AssetSearchResult[];
-  setSelectedAssets: React.Dispatch<React.SetStateAction<AssetSearchResult[]>>;
-  currentAssetSymbol: string;
+    selectedAssets: AssetSearchResult[];
+    setSelectedAssets: React.Dispatch<React.SetStateAction<AssetSearchResult[]>>;
+    currentAssetSymbol: string;
 };
 
 const asset_types = [
@@ -21,7 +21,7 @@ const asset_types = [
     { name: 'Commodity', type: 'commodity' },
 ]
 
-export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAssetSymbol}: AssetSearchPanelProps) {
+export function AssetSearchPanel({ selectedAssets, setSelectedAssets, currentAssetSymbol }: AssetSearchPanelProps) {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -35,8 +35,6 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
     } = useAssetSearch(debouncedSearchTerm, type, 10);
     const bottomRef = useRef<HTMLDivElement | null>(null);
 
-    console.log("Search results:", searchResults);
-
     // Debounced function — memoized to avoid re-creating on every render
     const debouncedSearch = useMemo(() => {
         return debounce((value: string) => {
@@ -45,7 +43,7 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
                 setDebouncedSearchTerm(value);
             });
         }, 300);
-    }, [startTransition]);
+    }, []);
 
     const debouncedFetchNextPage = useMemo(() => {
         return debounce(() => {
@@ -98,7 +96,7 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
 
     const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setSearchTerm(value); 
+        setSearchTerm(value);
         debouncedSearch(value);
     }, [debouncedSearch]);
 
@@ -132,7 +130,7 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
 
                     {selectedAssets?.map((asset) => {
 
-                        if(asset.symbol === currentAssetSymbol) return null; // Skip current asset
+                        if (asset.symbol === currentAssetSymbol) return null; // Skip current asset
 
                         return (
                             <div key={`selected-${asset.symbol}`} className={`flex items-center gap-2 p-2 hover:bg-gray-100`}>
@@ -144,7 +142,7 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
                                         className='rounded-md'
                                         alt="Founder logo"
                                     />
-                                    ) : (
+                                ) : (
                                     <Image
                                         src="/bank.jpg"
                                         width={20}
@@ -162,10 +160,10 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
                                         setSelectedAssets((prev) => prev.filter((c) => c.symbol !== asset.symbol));
                                     }}
                                 >
-                                    <Minus/>
+                                    <Minus />
                                 </Button>
                             </div>
-                        )    
+                        )
                     })}
 
                     {selectedAssets.length > 0 && searchResults.length > 0 && <div className="text-xs text-muted-foreground px-2 py-1">Search Results</div>}
@@ -182,7 +180,7 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
                                         className='rounded-md'
                                         alt="Founder logo"
                                     />
-                                    ) : (
+                                ) : (
                                     <Image
                                         src="/bank.jpg"
                                         width={20}
@@ -205,7 +203,7 @@ export function AssetSearchPanel({selectedAssets, setSelectedAssets, currentAsse
                                         //setSearchTerm(""); // Clear search after selection
                                     }}
                                 >
-                                <Plus/>
+                                    <Plus />
                                 </Button>
                             </div>
                         ))}
