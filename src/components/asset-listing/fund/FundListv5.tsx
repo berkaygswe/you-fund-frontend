@@ -102,7 +102,7 @@ export function FundListv5() {
             size: 70,
             cell: ({ row }) => (
                 <div className="font-medium">
-                    <Link className='flex gap-1 justify-center items-center' href={`/asset/fund/${row.getValue('code')}`}>
+                    <Link className='flex gap-1 justify-center items-center' href={`/fund/detail/${row.getValue('code')}`}>
                         {row.original.founderLogoUrl ? (
                             <ImageWrap
                                 src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/fund/${row.original.founderLogoUrl}`}

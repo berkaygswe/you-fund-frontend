@@ -121,7 +121,7 @@ export function CryptoListing() {
             size: 70,
             cell: ({ row }) => (
                 <div className="font-medium">
-                    <Link className='grid grid-cols-2 justify-center items-center' href={`/asset/cryptocurrency/${row.getValue('symbol')}`}>
+                    <Link className='grid grid-cols-2 justify-center items-center' href={`/crypto/detail/${row.getValue('symbol')}`}>
                         {row.original.iconUrl ? (
                             <div className="flex justify-center">
                                 <ImageWrap
