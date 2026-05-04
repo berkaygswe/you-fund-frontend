@@ -12,12 +12,12 @@ interface UseResult {
   refetch: () => Promise<unknown>;
 }
 
-export function useFetchFundGraph(code: string, startDate: string, endDate: string, currency: string | null): UseResult {
+export function useFetchFundGraph(assetId: string, startDate: string, endDate: string, currency: string | null): UseResult {
     const shouldFetch = currency !== null;
 
     const { data, error, isLoading, refetch } = useQuery<FundPrices[]>({
-        queryKey: ['fundGraph', code, startDate, endDate, currency],
-        queryFn: () => fundsApi.getFundGraph(code, startDate, endDate, currency),
+        queryKey: ['fundGraph', assetId, startDate, endDate, currency],
+        queryFn: () => fundsApi.getFundGraph(assetId, startDate, endDate, currency),
         enabled: shouldFetch,
         placeholderData: keepPreviousData,
     });

@@ -63,7 +63,7 @@ export function AssetSearchResultItem({
             <div className="flex-shrink-0">
                 {asset.icon_url ? (
                     <ImageWrap
-                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/logos/${asset.icon_url}`}
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/${asset.type.toLowerCase()}/${asset.icon_url}`}
                         width={28}
                         height={28}
                         className="rounded-md"

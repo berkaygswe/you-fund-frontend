@@ -8,11 +8,13 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { useFetchFundGraph } from "@/hooks/useFetchFundPrice";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { BarChart3, CalendarIcon, GitCompare } from "lucide-react";
+import { BarChart3, CalendarIcon, GitCompare, CandlestickChart, AreaChart as AreaChartIcon } from "lucide-react";
+import { TradingViewChart } from "./TradingViewChart";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { AssetGraphComparison } from "@/types/assetGraphComparison";
 import {
@@ -30,6 +32,7 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { cn } from "@/lib/utils";
 import { useAssetGraphComparison } from "@/hooks/useAssetGraphComparison";
 import { AssetType } from "@/types/asset";
+import { FundPrices } from "@/types/fundPrices";
 
 // Colors for different assets in comparison chart
 const COLORS = [
@@ -43,8 +46,9 @@ const COLORS = [
     "#a064d8"  // Lavender Purple
 ];
 
+
 // Component for single fund price chart
-function SingleFundChart({ config, prices, code, className }: { config: ChartConfig, prices: Array<object>, code: string, className?: string }) {
+function SingleFundChart({ config, prices, code, className }: { config: ChartConfig, prices: FundPrices[], code: string, className?: string }) {
 
     if (!prices || prices.length === 0) return null;
     return (
@@ -82,7 +86,7 @@ function SingleFundChart({ config, prices, code, className }: { config: ChartCon
                 />
                 <Area
                     type="natural"
-                    dataKey="price"
+                    dataKey="close"
                     stroke="#8884d8"
                     fillOpacity={0.4}
                     fill="url(#colorPrice)"
@@ -241,10 +245,11 @@ type FundGraphProps = {
     className?: string;
     chartClassName?: string;
     code: string;
+    assetId: string;
     type?: AssetType;
 }
 
-export default function FundDetailGraph({ className, code, chartClassName, type = 'fund' }: FundGraphProps) {
+export default function FundDetailGraph({ className, code, assetId, chartClassName, type = 'fund' }: FundGraphProps) {
 
     const currency = useCurrency();
 
@@ -252,6 +257,7 @@ export default function FundDetailGraph({ className, code, chartClassName, type 
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
     const [pendingRange, setPendingRange] = useState<DateRange | undefined>(undefined);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [chartView, setChartView] = useState<"simple" | "advanced">("simple");
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: type, icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
     const assets = useMemo(() => {
         return selectedAssets.map(asset => ({ type: (asset.type || type) as AssetType, symbol: asset.symbol }));
@@ -267,10 +273,17 @@ export default function FundDetailGraph({ className, code, chartClassName, type 
         timeRange === "custom" && customRange?.to
             ? customRange.to.toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10);
-    const { prices } = useFetchFundGraph(code, startDate, endDate, currency);
+    const { prices } = useFetchFundGraph(assetId, startDate, endDate, currency);
     const { assetComparisonData } = useAssetGraphComparison(assets, startDate, endDate, currency);
 
     const isComparisonMode = assets.length > 1 || (assets.length === 1 && assets[0].symbol !== code);
+
+    // Automatically switch to simple view when in comparison mode
+    useEffect(() => {
+        if (isComparisonMode) {
+            setChartView("simple");
+        }
+    }, [isComparisonMode]);
 
     const chartConfig = {
         title: {
@@ -308,9 +321,26 @@ export default function FundDetailGraph({ className, code, chartClassName, type 
     return (
         <Card className={cn(className)}>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-blue-600" />
-                    Price History
+                <CardTitle className="flex items-center justify-between gap-2 w-full">
+                    <div className="flex items-center gap-2">
+                        <BarChart3 className="w-5 h-5 text-blue-600" />
+                        Price History
+                    </div>
+
+                    {!isComparisonMode && (
+                        <Tabs value={chartView} onValueChange={(v) => setChartView(v as any)} className="w-auto">
+                            <TabsList className="grid w-full grid-cols-2 h-8 p-1">
+                                <TabsTrigger value="simple" className="px-3 text-xs flex items-center gap-1.5">
+                                    <AreaChartIcon className="w-3.5 h-3.5" />
+                                    Simple
+                                </TabsTrigger>
+                                <TabsTrigger value="advanced" className="px-3 text-xs flex items-center gap-1.5">
+                                    <CandlestickChart className="w-3.5 h-3.5" />
+                                    Advanced
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    )}
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -387,6 +417,8 @@ export default function FundDetailGraph({ className, code, chartClassName, type 
 
                     {isComparisonMode && assetComparisonData?.length > 1 ? (
                         <ComparisonChart config={chartConfig} assetComparisonData={assetComparisonData} className={chartClassName} />
+                    ) : chartView === "advanced" ? (
+                        <TradingViewChart data={prices} code={code} className={chartClassName} />
                     ) : (
                         <SingleFundChart config={chartConfig} prices={prices} code={code} className={chartClassName} />
                     )}

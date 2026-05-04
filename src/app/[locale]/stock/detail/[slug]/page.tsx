@@ -57,7 +57,7 @@ export default function StockDetailPage() {
             />
 
             <div className='mb-8'>
-                <FundDetailGraph className="border-0 bg-white shadow-md" code={slug} />
+                <FundDetailGraph className="border-0 bg-white shadow-md" code={slug} assetId={stockMetadata.assetId} type='stock'/>
             </div>
 
             <Tabs defaultValue="overview" className="w-full">

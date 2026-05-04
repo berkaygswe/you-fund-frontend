@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 export interface EtfTopHolding {
   Name: string;
   'Holding Percent': number;
@@ -9,6 +11,7 @@ export interface EtfSectorAllocation {
 }
 
 export interface EtfMetadata {
+  assetId: UUID;
   symbol: string;
   name: string;
   description: string;

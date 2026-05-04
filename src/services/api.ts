@@ -93,9 +93,9 @@ export const fundsApi = {
         };
     },
 
-    getFundGraph: async (code: string, startDate: string, endDate: string, currency: string | null): Promise<FundPrices[]> => {
+    getFundGraph: async (assetId: string, startDate: string, endDate: string, currency: string | null): Promise<FundPrices[]> => {
         if (!currency) return [];
-        return fetchData<FundPrices[]>(`/fund/detail/graph?fundCode=${code}&startDate=${startDate}&endDate=${endDate}&currency=${currency}`);
+        return fetchData<FundPrices[]>(`/asset/detail/graph?assetId=${assetId}&startDate=${startDate}&endDate=${endDate}&currency=${currency}`);
     },
 
     getAssetGraphComparison: async (assets: AssetIdentifier[], fromDate: string, toDate: string, currency: string | null): Promise<AssetGraphComparison[]> => {

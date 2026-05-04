@@ -144,7 +144,7 @@ export function SectionCards() {
                             return (
                                 <tr key={idx} className="hover:bg-muted/30 transition-colors group cursor-pointer"
                                     onClick={() => {
-                                        router.push(`/asset/${asset.type}/${asset.symbol}`);
+                                        router.push(`/${asset.type}/detail/${asset.symbol}`);
                                     }}>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

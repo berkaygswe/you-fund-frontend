@@ -36,6 +36,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "jose": "^6.0.11",
+    "lightweight-charts": "^5.2.0",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.483.0",
     "next": "15.2.8",

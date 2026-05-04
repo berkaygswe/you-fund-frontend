@@ -1,4 +1,7 @@
+import { UUID } from "crypto";
+
 export interface StockMetadata {
+  assetId: UUID;
   symbol: string;
   name: string;
   longName: string;
