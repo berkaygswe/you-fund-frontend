@@ -40,6 +40,7 @@ export default function StockDetailPage() {
                 sector={stockMetadata.sector}
                 industry={stockMetadata.industry}
                 primaryExchange={stockMetadata.exchange}
+                assetId={stockMetadata.assetId}
             />
 
             <StockPriceCard

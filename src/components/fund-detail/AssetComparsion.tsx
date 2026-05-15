@@ -72,12 +72,12 @@ export default function AssetComparison({ code, type = 'etf', standalone = true 
     ]
 
     const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([
-        { symbol: code, name: '', type: type, icon_url: '', exchange_icon_url: '' },
-        { symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url: '', exchange_icon_url: '' },
-        { symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { id: '11111111-1111-1111-1111-111111111111', symbol: code, name: '', type: type, icon_url: '', exchange_icon_url: '' },
+        { id: '11111111-1111-1111-1111-111111111112', symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+        { id: '11111111-1111-1111-1111-111111111113', symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+        { id: '11111111-1111-1111-1111-111111111114', symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { id: '11111111-1111-1111-1111-111111111115', symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { id: '11111111-1111-1111-1111-111111111116', symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url: '', exchange_icon_url: '' },
     ]);
 
     const assets = useMemo(() => selectedAssets

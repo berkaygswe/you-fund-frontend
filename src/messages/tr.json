@@ -1,19 +1,20 @@
 {
   "Common": {
     "language": "Türkçe",
-    "synced": "SYNKRON"
+    "synced": "SENKRONİZE"
   },
   "Nav": {
-    "home": "Ana Sayfa",
+    "home": "Anasayfa",
     "fundListing": "Fon Listesi",
     "etfListing": "ETF Listesi",
-    "usStocks": "ABD Hisseleri",
+    "usStocks": "ABD Hisse Senetleri",
     "crypto": "Kripto",
     "watchlist": "İzleme Listesi",
+    "portfolios": "Portföylerim",
     "appName": "You Fund"
   },
   "Header": {
-    "loginSignup": "Giriş Yap / Kaydol",
+    "loginSignup": "Giriş Yap / Kayıt Ol",
     "profile": "Profil",
     "logout": "Çıkış Yap"
   },
@@ -21,20 +22,20 @@
     "MarketOverview": {
       "title": "Piyasa Özeti",
       "subtitle": "Gerçek zamanlı finansal zeka ve küresel varlık trendleri",
-      "totalAssets": "Toplam Varlık",
+      "totalAssets": "Toplam Varlıklar",
       "activeMarkets": "Aktif Piyasalar",
       "volume24h": "24s Hacim",
-      "marketSentiment": "Piyasa Eğilimi",
-      "bullish": "YÜKSELİŞ",
-      "bearish": "DÜŞÜŞ",
-      "fromDays": "30g önce",
-      "from24h": "24s önce",
+      "marketSentiment": "Piyasa Duyarlılığı",
+      "bullish": "BOĞA",
+      "bearish": "AYI",
+      "fromDays": "30g'den",
+      "from24h": "24s'den",
       "thisWeek": "bu hafta yeni",
-      "positiveMetrics": "pozitif metrik",
-      "volatilityWatch": "Volatilite İzleme",
+      "positiveMetrics": "pozitif metrikler",
+      "volatilityWatch": "Oynaklık Takibi",
       "marketPerformanceGrid": "Piyasa Performans Tablosu",
       "assetCrossComparison": "Varlık Karşılaştırması",
-      "liveIntelligenceFeed": "Canlı Haber Akışı",
+      "liveIntelligenceFeed": "Canlı Zeka Akışı",
       "commandCenter": "Komuta Merkezi",
       "exploreFunds": "Fonları Keşfet",
       "exploreEtfs": "ETF'leri Keşfet",
@@ -44,20 +45,20 @@
       "vsLastPeriod": "geçen döneme göre",
       "topGainers": "En Çok Yükselenler",
       "topLosers": "En Çok Düşenler",
-      "errorLoadingMovers": "Piyasa verileri yüklenirken hata oluştu",
-      "tryAgainLater": "Lütfen daha sonra tekrar deneyiniz",
-      "noMoversData": "Piyasa verisi bulunamadı",
-      "checkBackLater": "Lütfen daha sonra kontrol ediniz",
+      "errorLoadingMovers": "Piyasa hareketleri yüklenirken hata oluştu",
+      "tryAgainLater": "Lütfen daha sonra tekrar deneyin",
+      "noMoversData": "Piyasa hareketleri verisi yok",
+      "checkBackLater": "Lütfen daha sonra tekrar kontrol edin",
       "asset": "Varlık",
       "noFinanceNews": "Finans haberi bulunamadı",
-      "featured": "Öne Çıkan",
+      "featured": "Öne Çıkanlar",
       "recentNews": "Son Haberler",
       "moreCount": "{count} daha fazla",
       "viewAllNews": "Tüm Finans Haberlerini Görüntüle",
       "justNow": "Az önce",
       "hoursAgo": "{hours}s önce",
       "daysAgo": "{days}g önce",
-      "fundTypePerformanceTitle": "TEFAS Fon Türü Performansı",
+      "fundTypePerformanceTitle": "TEFAS Fon Tipi Performansı",
       "fundTypePerformanceSubtitle": "Bir yıllık ortalama getiriler",
       "returnLabel": "Getiri",
       "price": "Fiyat",
@@ -66,17 +67,17 @@
       "indices": "Endeksler",
       "index": "Endeks",
       "crypto": "Kripto",
-      "cryptocurrency": "Kripto",
+      "cryptocurrency": "Kripto Para",
       "forex": "Döviz",
-      "commodities": "Emtia",
+      "commodities": "Emtialar",
       "commodity": "Emtia",
-      "stocks": "Hisseler",
+      "stocks": "Hisse Senetleri",
       "stock": "Hisse",
       "fund": "Fon",
       "tefasFundsLabel": "Tefas Fonları",
-      "overview": "Özeti",
+      "overview": "Genel Bakış",
       "noMarketData": "Piyasa verisi bulunamadı",
-      "errorLoadingMarketData": "Piyasa verileri yüklenirken hata oluştu",
+      "errorLoadingMarketData": "Piyasa verisi yüklenirken hata oluştu",
       "w1": "7 gün",
       "m1": "30 gün",
       "m3": "3 ay",
@@ -85,7 +86,7 @@
       "addAssets": "Varlık Ekle",
       "saveChanges": "Değişiklikleri kaydet",
       "assetComparisonTitle": "Varlık Karşılaştırması",
-      "noDataAvailable": "Seçilen varlıklar için veri bulunamadı."
+      "noDataAvailable": "Seçilen varlıklar için veri bulunmamaktadır."
     }
   },
   "Fund": {
@@ -98,11 +99,11 @@
   },
   "Crypto": {
     "title": "Kripto",
-    "subtitle": "Kripto para birimlerine göz atın ve karşılaştırın"
+    "subtitle": "Kripto paraları göz atın ve karşılaştırın"
   },
   "Stocks": {
-    "title": "ABD Hisseleri",
-    "subtitle": "ABD hisselerine göz atın ve karşılaştırın"
+    "title": "ABD Hisse Senetleri",
+    "subtitle": "ABD hisse senetlerine göz atın ve karşılaştırın"
   },
   "Watchlist": {
     "title": "İzleme Listem",
@@ -117,10 +118,10 @@
       "forgotPassword": "Şifrenizi mi unuttunuz?",
       "submitButton": "Giriş Yap",
       "loggingIn": "Giriş yapılıyor...",
-      "orContinueWith": "Veya şununla devam et",
+      "orContinueWith": "Veya şununla devam edin",
       "githubLogin": "GitHub ile giriş yap",
       "dontHaveAccount": "Hesabınız yok mu?",
-      "signUp": "Kaydol"
+      "signUp": "Kayıt Ol"
     },
     "Signup": {
       "title": "Hesap oluşturun",
@@ -128,11 +129,11 @@
       "emailLabel": "E-posta",
       "passwordLabel": "Şifre",
       "forgotPassword": "Şifrenizi mi unuttunuz?",
-      "submitButton": "Kaydol",
-      "signingUp": "Kaydediliyor...",
-      "orContinueWith": "Veya şununla devam et",
-      "githubSignup": "GitHub ile kaydol",
-      "haveAccount": "Zaten hesabınız var mı?",
+      "submitButton": "Kayıt Ol",
+      "signingUp": "Kayıt olunuyor...",
+      "orContinueWith": "Veya şununla devam edin",
+      "githubSignup": "GitHub ile kayıt ol",
+      "haveAccount": "Zaten bir hesabınız var mı?",
       "login": "Giriş Yap"
     }
   }

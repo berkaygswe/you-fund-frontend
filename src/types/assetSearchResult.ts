@@ -1,4 +1,7 @@
+import { UUID } from "crypto";
+
 export interface AssetSearchResult {
+  id: UUID;
   symbol: string;
   name: string;
   type: string;

@@ -36,6 +36,39 @@ export class AuthApiError extends Error {
     }
 }
 
+async function refreshAccessToken(): Promise<AuthenticationResponse> {
+    if (isRefreshing) {
+        return new Promise<AuthenticationResponse>((resolve, reject) => {
+            addRefreshSubscriber((token) => resolve({ accessToken: token, email: '', tokenType: 'Bearer' }));
+            // Timeout after 10s
+            setTimeout(() => reject(new Error('Refresh timeout')), 10000);
+        });
+    }
+
+    isRefreshing = true;
+    try {
+        const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include',
+        });
+
+        if (refreshRes.ok) {
+            const data: AuthenticationResponse = await refreshRes.json();
+            accessToken = data.accessToken;
+            onRefreshed(data.accessToken);
+            return data;
+        } else {
+            accessToken = null;
+            throw new Error('Refresh failed');
+        }
+    } catch (error) {
+        accessToken = null;
+        throw error;
+    } finally {
+        isRefreshing = false;
+    }
+}
+
 async function request<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -61,43 +94,16 @@ async function request<T>(
 
     // Handle 401 Unauthorized - try refresh
     if (response.status === 401 && !endpoint.includes('/auth/refresh') && !endpoint.includes('/auth/login')) {
-        let newToken: string;
-        if (!isRefreshing) {
-            isRefreshing = true;
-            try {
-                const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
-                    method: 'POST',
-                    credentials: 'include',
-                });
-
-                if (refreshRes.ok) {
-                    const data: AuthenticationResponse = await refreshRes.json();
-                    accessToken = data.accessToken;
-                    isRefreshing = false;
-                    onRefreshed(data.accessToken);
-                    newToken = data.accessToken;
-                } else {
-                    isRefreshing = false;
-                    accessToken = null;
-                    throw new Error('Refresh failed');
-                }
-            } catch (error) {
-                isRefreshing = false;
-                accessToken = null;
-                throw error;
-            }
-        } else {
-            // Wait for refresh to complete
-            newToken = await new Promise<string>((resolve, reject) => {
-                addRefreshSubscriber((token) => resolve(token));
-                // Timeout after 10s
-                setTimeout(() => reject(new Error('Refresh timeout')), 10000);
-            });
+        try {
+            const data = await refreshAccessToken();
+            const newToken = data.accessToken;
+            // Retry with new token
+            headers['Authorization'] = `Bearer ${newToken}`;
+            response = await fetch(url, { ...config, headers });
+        } catch (error) {
+            // Refresh failed, let the 401 error propagate or handle it
+            throw error;
         }
-
-        // Retry with new token
-        headers['Authorization'] = `Bearer ${newToken}`;
-        response = await fetch(url, { ...config, headers });
     }
 
     if (!response.ok) {
@@ -147,10 +153,7 @@ export const authClient = {
             method: 'GET',
         }),
 
-    refresh: () =>
-        request<AuthenticationResponse>('/auth/refresh', {
-            method: 'POST',
-        }),
+    refresh: () => refreshAccessToken(),
 };
 
 export { request as authRequest };

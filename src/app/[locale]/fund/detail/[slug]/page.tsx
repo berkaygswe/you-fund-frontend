@@ -9,6 +9,7 @@ import RiskScale from '@/components/fund-detail/Risk';
 import ImageWrap from '@/components/ImageWrap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AddToWatchlistButton from '@/components/watchlist/AddToWatchlistButton';
+import { AddToPortfolioButton } from '@/components/portfolio/AddToPortfolioButton';
 import { useFundDetails } from '@/hooks/useFundDetails';
 import { FundDetail } from '@/types/fundDetail';
 import { ArrowDown, ArrowUp } from 'lucide-react';
@@ -60,7 +61,18 @@ export default function Page() {
                                 <span className='text-2xl font-bold mr-2'>{slug}</span>
                                 {fund.founderName}
                             </div>
-                            <AddToWatchlistButton symbol={slug} assetId={fund.assetId} />
+                            <div className="flex gap-2">
+                                <AddToPortfolioButton 
+                                    asset={{
+                                        id: fund.assetId,
+                                        symbol: slug,
+                                        name: fund.name,
+                                        type: 'fund'
+                                    }}
+                                    variant="outline"
+                                />
+                                <AddToWatchlistButton symbol={slug} assetId={fund.assetId} />
+                            </div>
                         </div>
                         <div className="mt-1">{fund.name}</div>
                         <div className='md:flex text-sm gap-6 mt-2'>

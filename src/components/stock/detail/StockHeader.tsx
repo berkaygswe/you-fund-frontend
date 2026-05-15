@@ -3,15 +3,18 @@ import { Building2, Target, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
+import { AddToPortfolioButton } from '@/components/portfolio/AddToPortfolioButton';
+
 interface StockHeaderProps {
     symbol: string;
     name: string;
     sector: string;
     industry: string;
     primaryExchange: string;
+    assetId?: string; // Add assetId prop
 }
 
-export function StockHeader({ symbol, name, sector, industry, primaryExchange }: StockHeaderProps) {
+export function StockHeader({ symbol, name, sector, industry, primaryExchange, assetId }: StockHeaderProps) {
     return (
         <div className="mb-8">
             <div className="flex items-start justify-between mb-6">
@@ -32,10 +35,24 @@ export function StockHeader({ symbol, name, sector, industry, primaryExchange }:
                         <p className="text-xl text-gray-600 font-medium">{name}</p>
                     </div>
                 </div>
-                <Button variant="outline" size="sm" className="hidden sm:flex items-center gap-2">
-                    <Star className="w-4 h-4" />
-                    Watchlist
-                </Button>
+                <div className="hidden sm:flex items-center gap-2">
+                    {assetId && (
+                        <AddToPortfolioButton 
+                            asset={{
+                                id: assetId,
+                                symbol: symbol,
+                                name: name,
+                                type: 'stock'
+                            }}
+                            variant="default"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                        />
+                    )}
+                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                        <Star className="w-4 h-4" />
+                        Watchlist
+                    </Button>
+                </div>
             </div>
 
             <div className="flex flex-wrap gap-2 mb-6">

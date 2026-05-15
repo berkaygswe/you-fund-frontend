@@ -7,7 +7,7 @@ import type { NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
-const PROTECTED_PATHS = ['/dashboard', '/profile', '/watchlist'];
+const PROTECTED_PATHS = ['/dashboard', '/profile', '/watchlist', '/portfolios'];
 const AUTH_PAGES = ['/login', '/signup'];
 
 const intlMiddleware = createMiddleware(routing);
@@ -55,5 +55,5 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   // Match only internationalized pathnames
-  matcher: ['/', '/(tr|en)/:path*', '/dashboard/:path*', '/profile/:path*', '/watchlist/:path*', '/login', '/signup'],
+  matcher: ['/', '/(tr|en)/:path*', '/dashboard/:path*', '/profile/:path*', '/watchlist/:path*', '/portfolios/:path*', '/login', '/signup'],
 };

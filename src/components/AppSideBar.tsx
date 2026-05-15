@@ -1,6 +1,6 @@
 "use client"
 
-import { Bitcoin, Briefcase, DollarSign, Home, List, Star } from "lucide-react"
+import { Bitcoin, Briefcase, DollarSign, Home, List, Star, Wallet } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -21,9 +21,10 @@ export function AppSidebar() {
     { titleKey: "home",        url: "/market-overview", icon: Home },
     { titleKey: "fundListing", url: "/fund",            icon: List },
     { titleKey: "etfListing",  url: "/etf",             icon: Briefcase },
-    { titleKey: "usStocks",    url: "/stocks",          icon: DollarSign },
+    { titleKey: "usStocks",    url: "/stock",           icon: DollarSign },
     { titleKey: "crypto",      url: "/crypto",          icon: Bitcoin },
     { titleKey: "watchlist",   url: "/watchlist",       icon: Star },
+    { titleKey: "portfolios",  url: "/portfolios",      icon: Wallet },
   ] as const
 
   return (
