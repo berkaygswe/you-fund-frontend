@@ -32,16 +32,13 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import debounce from "lodash.debounce";
+import { SUPPORTED_CURRENCIES, Currency } from "@/types/currency";
+import { useEffect } from "react";
 
 interface TransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  fixedAsset?: {
-    id: string;
-    symbol: string;
-    name: string;
-    type: string;
-  };
+  fixedAsset?: AssetSummary;
   initialPortfolioId?: number;
 }
 
@@ -61,6 +58,7 @@ export function TransactionDialog({
   const [fee, setFee] = useState<string>("0");
   const [transactionDate, setTransactionDate] = useState<string>(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
   const [notes, setNotes] = useState<string>("");
+  const [currency, setCurrency] = useState<Currency>(SUPPORTED_CURRENCIES[0].value);
 
   // Asset Search State
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,6 +68,17 @@ export function TransactionDialog({
   const { searchResults, loading: searchLoading } = useAssetSearch(debouncedSearchTerm, null, 5);
 
   const createTransaction = useCreateTransaction(Number(portfolioId));
+
+  const selectedPortfolio = useMemo(() => 
+    portfolios?.find(p => p.id.toString() === portfolioId),
+    [portfolios, portfolioId]
+  );
+
+  useEffect(() => {
+    if (selectedPortfolio) {
+      setCurrency(selectedPortfolio.baseCurrency);
+    }
+  }, [selectedPortfolio]);
 
   const debouncedSearch = useMemo(
     () =>
@@ -105,7 +114,7 @@ export function TransactionDialog({
       quantity: Number(quantity),
       pricePerUnit: Number(pricePerUnit),
       fee: Number(fee),
-      currency: "USD", // Should ideally match portfolio or asset currency
+      currency,
       transactionDate: new Date(transactionDate).toISOString(),
       notes: notes || undefined,
     };
@@ -276,7 +285,9 @@ export function TransactionDialog({
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price Per Unit</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                  {SUPPORTED_CURRENCIES.find(c => c.value === currency)?.symbol || "$"}
+                </span>
                 <Input 
                   type="number" 
                   step="any"
@@ -311,6 +322,23 @@ export function TransactionDialog({
                 value={fee}
                 onChange={(e) => setFee(e.target.value)}
               />
+            </div>
+
+            {/* Currency Selection */}
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Currency</Label>
+              <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
+                <SelectTrigger className="bg-muted/50 border-white/5 h-11">
+                  <SelectValue placeholder="Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SUPPORTED_CURRENCIES.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>
+                      {c.value} - {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Notes */}

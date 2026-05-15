@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useCreatePortfolio } from "@/hooks/usePortfolios";
 import { Loader2, Plus, Globe } from "lucide-react";
+import { SUPPORTED_CURRENCIES, Currency } from "@/types/currency";
 
 interface CreatePortfolioDialogProps {
   open: boolean;
@@ -31,7 +32,7 @@ export function CreatePortfolioDialog({
   onOpenChange,
 }: CreatePortfolioDialogProps) {
   const [name, setName] = useState("");
-  const [baseCurrency, setBaseCurrency] = useState("USD");
+  const [baseCurrency, setBaseCurrency] = useState<Currency>(SUPPORTED_CURRENCIES[0].value);
   const createPortfolio = useCreatePortfolio();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,7 +43,7 @@ export function CreatePortfolioDialog({
       await createPortfolio.mutateAsync({ name, baseCurrency });
       onOpenChange(false);
       setName("");
-      setBaseCurrency("USD");
+      setBaseCurrency(SUPPORTED_CURRENCIES[0].value);
     } catch (error) {
       console.error("Failed to create portfolio", error);
     }
@@ -72,15 +73,16 @@ export function CreatePortfolioDialog({
 
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Base Currency</Label>
-              <Select value={baseCurrency} onValueChange={setBaseCurrency}>
+              <Select value={baseCurrency} onValueChange={(value) => setBaseCurrency(value as Currency)}>
                 <SelectTrigger className="bg-muted/50 border-white/5 h-11">
                   <SelectValue placeholder="Select Currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USD">USD - US Dollar</SelectItem>
-                  <SelectItem value="TRY">TRY - Turkish Lira</SelectItem>
-                  <SelectItem value="EUR">EUR - Euro</SelectItem>
-                  <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                  {SUPPORTED_CURRENCIES.map((currency) => (
+                    <SelectItem key={currency.value} value={currency.value}>
+                      {currency.value} - {currency.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-1">

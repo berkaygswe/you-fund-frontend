@@ -1,9 +1,10 @@
-// utils/getDefaultCurrency.ts
-export function getDefaultCurrencyFromLocale(): "TRY" | "USD" {
-  if (typeof navigator === "undefined") return "USD"
+import { Currency, SUPPORTED_CURRENCIES } from "@/types/currency";
 
-  const lang = navigator.language || navigator.languages?.[0] || ""
+export function getDefaultCurrencyFromLocale(): Currency {
+  if (typeof navigator === "undefined") return SUPPORTED_CURRENCIES[0].value;
 
-  if (lang.startsWith("tr")) return "TRY" // Turkish
-  return "USD" // fallback
+  const lang = navigator.language || navigator.languages?.[0] || "";
+
+  if (lang.startsWith("tr")) return "TRY"; // Turkish
+  return SUPPORTED_CURRENCIES[0].value; // fallback
 }

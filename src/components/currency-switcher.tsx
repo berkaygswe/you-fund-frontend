@@ -9,12 +9,7 @@ import {
 } from "@/components/ui/select"
 import { useCurrencyStore } from "@/stores/currency-store"
 import Image from "next/image"
-import { Currency } from "@/types/currency"
-
-const currencies: { code: Currency; symbol: string; countryCode: string }[] = [
-    { code: "USD", symbol: "$", countryCode: "us" },
-    { code: "TRY", symbol: "₺", countryCode: "tr" },
-]
+import { Currency, SUPPORTED_CURRENCIES } from "@/types/currency"
 
 export function CurrencySwitcher() {
     const currency = useCurrencyStore((s) => s.currency)
@@ -33,7 +28,7 @@ export function CurrencySwitcher() {
         )
     }
 
-    const selected = currencies.find((c) => c.code === currency)
+    const selected = SUPPORTED_CURRENCIES.find((c) => c.value === currency)
 
     return (
         <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
@@ -46,21 +41,21 @@ export function CurrencySwitcher() {
                             width={20}
                             height={15}
                         />
-                        <div>{selected.code}</div>
+                        <div>{selected.value}</div>
                     </div>
                 )}
             </SelectTrigger>
             <SelectContent position="popper">
-                {currencies.map((c) => (
-                    <SelectItem key={c.code} value={c.code}>
+                {SUPPORTED_CURRENCIES.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>
                         <div className="flex items-center gap-2">
                             <Image
                                 src={`https://flagcdn.com/h20/${c.countryCode}.png`}
-                                alt={c.code}
+                                alt={c.value}
                                 width={20}
                                 height={15}
                             />
-                            {c.code}
+                            {c.value}
                         </div>
                     </SelectItem>
                 ))}

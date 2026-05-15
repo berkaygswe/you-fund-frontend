@@ -1,7 +1,10 @@
+import { UUID } from "crypto";
+import { Currency } from "./currency";
+
 export type TransactionType = 'BUY' | 'SELL';
 
 export interface AssetSummary {
-  id: string; // UUID
+  id: UUID; // UUID
   symbol: string;
   name: string;
   type: string;
@@ -10,7 +13,7 @@ export interface AssetSummary {
 export interface Portfolio {
   id: number;
   name: string;
-  baseCurrency: string;
+  baseCurrency: Currency;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,7 +29,7 @@ export interface Transaction {
   pricePerUnit: number;
   fee: number;
   totalCost: number;
-  currency: string;
+  currency: Currency;
   transactionDate: string; // ISO format
   notes: string | null;
   createdAt: string;
@@ -44,13 +47,13 @@ export interface Position {
   marketValue: number;
   unrealizedPnl: number;
   unrealizedPnlPercent: number;
-  currency: string;
+  currency: Currency;
 }
 
 export interface PortfolioHoldings {
   portfolioId: number;
   portfolioName: string;
-  baseCurrency: string;
+  baseCurrency: Currency;
   totalMarketValue: number;
   totalUnrealizedPnl: number;
   totalUnrealizedPnlPercent: number;
@@ -60,16 +63,16 @@ export interface PortfolioHoldings {
 // Request Types
 export interface CreatePortfolioRequest {
   name: string;
-  baseCurrency: string; // e.g., 'USD', 'TRY'
+  baseCurrency: Currency; // e.g., 'USD', 'TRY'
 }
 
 export interface CreateTransactionRequest {
-  assetId: string;
+  assetId: UUID;
   transactionType: TransactionType;
   quantity: number;
   pricePerUnit: number;
   fee: number;
-  currency: string;
+  currency: Currency;
   transactionDate: string;
   notes?: string;
 }
