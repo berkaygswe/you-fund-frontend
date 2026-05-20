@@ -136,5 +136,65 @@
       "haveAccount": "Zaten bir hesabınız var mı?",
       "login": "Giriş Yap"
     }
+  },
+  "Portfolio": {
+    "TransactionDialog": {
+      "subtotal": "Ara Toplam",
+      "feesAdded": "Ücretler (eklendi)",
+      "feesDeducted": "Ücretler (düşüldü)",
+      "totalCost": "Toplam Maliyet",
+      "totalProceeds": "Toplam Hasılat",
+      "viewChart": "Grafiği Göster",
+      "hideChart": "Grafiği Gizle",
+      "lowLabel": "Düşük",
+      "highLabel": "Yüksek",
+      "closeLabel": "Kapanış",
+      "useClosePrice": "Kapanışa Eşitle: {price}",
+      "invalidPriceWarningLive": "Fiyat geçerli aralığın dışındadır (canlı dalgalanmalar için ±%10 marj sağlanır)!",
+      "invalidPriceWarningHistorical": "Fiyat günün en düşük ve en yüksek işlem aralığı dahilinde olmalıdır!",
+      "livePrice": "Canlı Fiyat",
+      "historicalRange": "{date} tarihindeki {symbol} Aralığı: {range}"
+    },
+    "EditPortfolioDialog": {
+      "title": "Portföyü Düzenle",
+      "nameLabel": "Portföy Adı",
+      "placeholder": "Örn. Emeklilik, Yüksek Büyüme",
+      "submit": "Değişiklikleri Kaydet",
+      "saving": "Kaydediliyor..."
+    },
+    "Page": {
+      "accessDenied": "Erişim Engellendi",
+      "loginToView": "Lütfen portföylerinizi görüntülemek için giriş yapın.",
+      "confirmDelete": "Bu portföyü ve tüm işlemlerini silmek istediğinizden emin misiniz?",
+      "myPortfolios": "Portföylerim",
+      "manageSubtitle": "Yatırım performansınızı yönetin ve takip edin.",
+      "newPortfolio": "Yeni Portföy",
+      "addTransaction": "İşlem Ekle",
+      "totalMarketValue": "Toplam Piyasa Değeri",
+      "baseCurrency": "Temel Para Birimi",
+      "unrealizedPnL": "Gerçekleşmemiş Kar/Zarar",
+      "assetAllocation": "Varlık Dağılımı",
+      "diversifiedAssets": "{count} varlık arasında çeşitlendirildi",
+      "yourPortfolios": "Portföyleriniz",
+      "editName": "Adı Düzenle",
+      "delete": "Sil",
+      "positions": "Pozisyonlar",
+      "history": "Geçmiş",
+      "tableAsset": "Varlık",
+      "tableQuantity": "Miktar",
+      "tableAvgCost": "Ort. Maliyet",
+      "tableMarketValue": "Piyasa Değeri",
+      "tablePnL": "Kar/Zarar",
+      "noPositions": "Henüz pozisyon yok",
+      "addFirstTransaction": "Portföyünüzü görmek için ilk işleminizi ekleyin",
+      "tableDate": "Tarih",
+      "tableType": "Tür",
+      "tablePrice": "Fiyat",
+      "tableTotal": "Toplam",
+      "noTransactionHistory": "İşlem geçmişi bulunmuyor",
+      "noPortfoliosFound": "Portföy bulunamadı",
+      "createFirstPortfolioDesc": "Yatırımlarınızı takip etmeye başlamak ve gerçek zamanlı Kar/Zarar hesaplamak için ilk portföyünüzü oluşturun.",
+      "createFirstPortfolioBtn": "İlk Portföyümü Oluştur"
+    }
   }
 }

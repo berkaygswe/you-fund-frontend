@@ -61,3 +61,15 @@ export function useDeletePortfolio() {
     },
   });
 }
+
+export function useUpdatePortfolio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<CreatePortfolioRequest> }) =>
+      portfolioApi.updatePortfolio(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+    },
+  });
+}
+

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { 
   Plus, 
   TrendingUp, 
@@ -14,7 +15,7 @@ import {
   ChevronRight,
   DollarSign
 } from "lucide-react";
-import { usePortfolios, usePortfolioHoldings, usePortfolioTransactions, useDeletePortfolio } from "@/hooks/usePortfolios";
+import { usePortfolios, usePortfolioHoldings, usePortfolioTransactions, useDeletePortfolio, useUpdatePortfolio } from "@/hooks/usePortfolios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TransactionDialog } from "@/components/portfolio/TransactionDialog";
 import { CreatePortfolioDialog } from "@/components/portfolio/CreatePortfolioDialog";
+import { EditPortfolioDialog } from "@/components/portfolio/EditPortfolioDialog";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { formatPercent } from "@/utils/formatPercent";
 import { format } from "date-fns";
@@ -46,11 +48,14 @@ import { useEffect } from "react";
 import { useCurrency } from "@/hooks/useCurrency";
 
 export default function PortfoliosPage() {
+  const t = useTranslations("Portfolio.Page");
   const { status } = useAuth();
   const { data: portfolios, isLoading: loadingPortfolios } = usePortfolios();
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>(null);
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
   const [isCreatePortfolioOpen, setIsCreatePortfolioOpen] = useState(false);
+  const [editingPortfolio, setEditingPortfolio] = useState<{ id: number; name: string } | null>(null);
+  const [isEditPortfolioOpen, setIsEditPortfolioOpen] = useState(false);
 
   const currency = useCurrency();
 
@@ -74,14 +79,14 @@ export default function PortfoliosPage() {
   if (status === 'unauthenticated') {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <h3 className="text-xl font-bold mb-2">Access Denied</h3>
-        <p className="text-muted-foreground mb-6">Please log in to view your portfolios.</p>
+        <h3 className="text-xl font-bold mb-2">{t("accessDenied")}</h3>
+        <p className="text-muted-foreground mb-6">{t("loginToView")}</p>
       </div>
     );
   }
 
   const handleDeletePortfolio = async (id: number) => {
-    if (confirm("Are you sure you want to delete this portfolio and all its transactions?")) {
+    if (confirm(t("confirmDelete"))) {
       await deletePortfolio.mutateAsync(id);
       if (selectedPortfolioId === id) {
         setSelectedPortfolioId(null);
@@ -95,9 +100,9 @@ export default function PortfoliosPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-transparent">
-            My Portfolios
+            {t("myPortfolios")}
           </h1>
-          <p className="text-muted-foreground mt-1">Manage and track your investment performance.</p>
+          <p className="text-muted-foreground mt-1">{t("manageSubtitle")}</p>
         </div>
         <div className="flex gap-3">
           <Button 
@@ -106,7 +111,7 @@ export default function PortfoliosPage() {
             className="border-primary/20 hover:bg-primary/5"
           >
             <Plus className="h-4 w-4 mr-2" />
-            New Portfolio
+            {t("newPortfolio")}
           </Button>
           <Button 
             onClick={() => setIsAddTransactionOpen(true)}
@@ -114,7 +119,7 @@ export default function PortfoliosPage() {
             className="shadow-lg shadow-primary/20"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Transaction
+            {t("addTransaction")}
           </Button>
         </div>
       </div>
@@ -134,7 +139,7 @@ export default function PortfoliosPage() {
                 <Wallet className="h-16 w-16" />
               </div>
               <CardHeader className="pb-2">
-                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">Total Market Value</CardDescription>
+                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">{t("totalMarketValue")}</CardDescription>
                 <CardTitle className="text-3xl font-black">
                   {holdings ? formatCurrency(holdings.totalMarketValue) : '--'}
                 </CardTitle>
@@ -142,14 +147,14 @@ export default function PortfoliosPage() {
               <CardContent>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="font-medium">{activePortfolio?.baseCurrency || 'USD'}</span>
-                  <span>• Base Currency</span>
+                  <span>• {t("baseCurrency")}</span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="bg-background/50 border-white/5 rounded-3xl transition-all hover:border-white/10">
               <CardHeader className="pb-2">
-                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">Unrealized PnL</CardDescription>
+                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">{t("unrealizedPnL")}</CardDescription>
                 <CardTitle className={cn(
                   "text-3xl font-black flex items-center gap-2",
                   (holdings?.totalUnrealizedPnl || 0) >= 0 ? "text-green-500" : "text-red-500"
@@ -174,13 +179,13 @@ export default function PortfoliosPage() {
 
             <Card className="bg-background/50 border-white/5 rounded-3xl">
               <CardHeader className="pb-2">
-                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">Asset Allocation</CardDescription>
+                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">{t("assetAllocation")}</CardDescription>
                 <CardTitle className="text-3xl font-black">{holdings?.positions.length || 0}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <PieChart className="h-3 w-3" />
-                  <span>Diversified across {holdings?.positions.length} assets</span>
+                  <span>{t("diversifiedAssets", { count: holdings?.positions.length || 0 })}</span>
                 </div>
               </CardContent>
             </Card>
@@ -189,7 +194,7 @@ export default function PortfoliosPage() {
           {/* Portfolio Selector & Tabs */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1 space-y-4">
-              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Your Portfolios</div>
+              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60 px-1">{t("yourPortfolios")}</div>
               <div className="space-y-2">
                 {portfolios.map((portfolio) => (
                   <div
@@ -218,8 +223,15 @@ export default function PortfoliosPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem className="text-xs">
-                            <Edit2 className="h-3 w-3 mr-2" /> Edit Name
+                          <DropdownMenuItem 
+                            className="text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingPortfolio({ id: portfolio.id, name: portfolio.name });
+                              setIsEditPortfolioOpen(true);
+                            }}
+                          >
+                            <Edit2 className="h-3 w-3 mr-2" /> {t("editName")}
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             className="text-xs text-red-500 focus:text-red-500"
@@ -228,7 +240,7 @@ export default function PortfoliosPage() {
                               handleDeletePortfolio(portfolio.id);
                             }}
                           >
-                            <Trash2 className="h-3 w-3 mr-2" /> Delete
+                            <Trash2 className="h-3 w-3 mr-2" /> {t("delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -241,8 +253,8 @@ export default function PortfoliosPage() {
             <div className="lg:col-span-3">
               <Tabs defaultValue="holdings" className="w-full">
                 <TabsList className="bg-muted/30 p-1 rounded-xl mb-6">
-                  <TabsTrigger value="holdings" className="rounded-lg px-6">Positions</TabsTrigger>
-                  <TabsTrigger value="history" className="rounded-lg px-6">History</TabsTrigger>
+                  <TabsTrigger value="holdings" className="rounded-lg px-6">{t("positions")}</TabsTrigger>
+                  <TabsTrigger value="history" className="rounded-lg px-6">{t("history")}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="holdings" className="m-0">
@@ -250,11 +262,11 @@ export default function PortfoliosPage() {
                     <Table>
                       <TableHeader className="bg-muted/30">
                         <TableRow className="border-white/5 hover:bg-transparent">
-                          <TableHead className="text-[10px] font-bold uppercase py-4">Asset</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">Quantity</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">Avg Cost</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">Market Value</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">PnL</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4">{t("tableAsset")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tableQuantity")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tableAvgCost")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tableMarketValue")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tablePnL")}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -269,8 +281,8 @@ export default function PortfoliosPage() {
                             <TableCell colSpan={5} className="h-64 text-center">
                               <div className="flex flex-col items-center justify-center opacity-40">
                                 <Wallet className="h-10 w-10 mb-4" />
-                                <p className="text-sm font-medium">No positions yet</p>
-                                <p className="text-xs">Add your first transaction to see holdings</p>
+                                <p className="text-sm font-medium">{t("noPositions")}</p>
+                                <p className="text-xs">{t("addFirstTransaction")}</p>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -318,12 +330,12 @@ export default function PortfoliosPage() {
                     <Table>
                       <TableHeader className="bg-muted/30">
                         <TableRow className="border-white/5 hover:bg-transparent">
-                          <TableHead className="text-[10px] font-bold uppercase py-4">Date</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4">Asset</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4">Type</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">Quantity</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">Price</TableHead>
-                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">Total</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4">{t("tableDate")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4">{t("tableAsset")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4">{t("tableType")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tableQuantity")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tablePrice")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tableTotal")}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -338,7 +350,7 @@ export default function PortfoliosPage() {
                             <TableCell colSpan={6} className="h-64 text-center">
                               <div className="flex flex-col items-center justify-center opacity-40">
                                 <History className="h-10 w-10 mb-4" />
-                                <p className="text-sm font-medium">No transaction history</p>
+                                <p className="text-sm font-medium">{t("noTransactionHistory")}</p>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -378,13 +390,13 @@ export default function PortfoliosPage() {
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <Wallet className="h-8 w-8 text-primary" />
           </div>
-          <h3 className="text-xl font-bold mb-2">No portfolios found</h3>
+          <h3 className="text-xl font-bold mb-2">{t("noPortfoliosFound")}</h3>
           <p className="text-muted-foreground mb-6 text-center max-w-sm">
-            Create your first portfolio to start tracking your investments and calculating PnL in real-time.
+            {t("createFirstPortfolioDesc")}
           </p>
           <Button onClick={() => setIsCreatePortfolioOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Create Your First Portfolio
+            {t("createFirstPortfolioBtn")}
           </Button>
         </div>
       )}
@@ -400,6 +412,15 @@ export default function PortfoliosPage() {
         open={isCreatePortfolioOpen} 
         onOpenChange={setIsCreatePortfolioOpen}
       />
+
+      {editingPortfolio && (
+        <EditPortfolioDialog 
+          open={isEditPortfolioOpen}
+          onOpenChange={setIsEditPortfolioOpen}
+          portfolioId={editingPortfolio.id}
+          initialName={editingPortfolio.name}
+        />
+      )}
     </div>
   );
 }

@@ -18,6 +18,7 @@ interface TradingViewChartProps {
     code: string;
     className?: string;
     theme?: 'light' | 'dark';
+    height?: number;
 }
 
 /**
@@ -32,7 +33,8 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     data, 
     code, 
     className = "",
-    theme = 'light' 
+    theme = 'light',
+    height
 }) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<IChartApi | null>(null);
@@ -195,7 +197,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
             handleScroll: true,
             handleScale: true,
             width: chartContainerRef.current.clientWidth,
-            height: 400,
+            height: height || 400,
         });
 
         chartRef.current = chart;
@@ -330,7 +332,10 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
     if (!data || data.length === 0) {
         return (
-            <div className={`w-full h-[400px] flex items-center justify-center border border-dashed rounded-lg text-muted-foreground ${className}`}>
+            <div 
+                className={`w-full flex items-center justify-center border border-dashed rounded-lg text-muted-foreground ${className}`}
+                style={{ height: height || 400 }}
+            >
                 No price data available for the selected range.
             </div>
         );
@@ -407,7 +412,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
                     </div>
                 )}
             </div>
-            <div ref={chartContainerRef} className="w-full h-[400px]" />
+            <div ref={chartContainerRef} className="w-full" style={{ height: height || 400 }} />
         </div>
     );
 };

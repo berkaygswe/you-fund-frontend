@@ -136,5 +136,65 @@
       "haveAccount": "Already have an account?",
       "login": "Login"
     }
+  },
+  "Portfolio": {
+    "TransactionDialog": {
+      "subtotal": "Subtotal",
+      "feesAdded": "Fees (added)",
+      "feesDeducted": "Fees (deducted)",
+      "totalCost": "Total Cost",
+      "totalProceeds": "Total Proceeds",
+      "viewChart": "View Chart",
+      "hideChart": "Hide Chart",
+      "lowLabel": "Low",
+      "highLabel": "High",
+      "closeLabel": "Close",
+      "useClosePrice": "Set to Close: {price}",
+      "invalidPriceWarningLive": "Price is outside the valid range (±10% buffer allowed for live fluctuations)!",
+      "invalidPriceWarningHistorical": "Price must be strictly within the daily high-low trading range!",
+      "livePrice": "Live Price",
+      "historicalRange": "{symbol} Range on {date}: {range}"
+    },
+    "EditPortfolioDialog": {
+      "title": "Edit Portfolio",
+      "nameLabel": "Portfolio Name",
+      "placeholder": "e.g. Retirement, High Growth",
+      "submit": "Save Changes",
+      "saving": "Saving..."
+    },
+    "Page": {
+      "accessDenied": "Access Denied",
+      "loginToView": "Please log in to view your portfolios.",
+      "confirmDelete": "Are you sure you want to delete this portfolio and all its transactions?",
+      "myPortfolios": "My Portfolios",
+      "manageSubtitle": "Manage and track your investment performance.",
+      "newPortfolio": "New Portfolio",
+      "addTransaction": "Add Transaction",
+      "totalMarketValue": "Total Market Value",
+      "baseCurrency": "Base Currency",
+      "unrealizedPnL": "Unrealized PnL",
+      "assetAllocation": "Asset Allocation",
+      "diversifiedAssets": "Diversified across {count} assets",
+      "yourPortfolios": "Your Portfolios",
+      "editName": "Edit Name",
+      "delete": "Delete",
+      "positions": "Positions",
+      "history": "History",
+      "tableAsset": "Asset",
+      "tableQuantity": "Quantity",
+      "tableAvgCost": "Avg Cost",
+      "tableMarketValue": "Market Value",
+      "tablePnL": "PnL",
+      "noPositions": "No positions yet",
+      "addFirstTransaction": "Add your first transaction to see holdings",
+      "tableDate": "Date",
+      "tableType": "Type",
+      "tablePrice": "Price",
+      "tableTotal": "Total",
+      "noTransactionHistory": "No transaction history",
+      "noPortfoliosFound": "No portfolios found",
+      "createFirstPortfolioDesc": "Create your first portfolio to start tracking your investments and calculating PnL in real-time.",
+      "createFirstPortfolioBtn": "Create Your First Portfolio"
+    }
   }
 }
