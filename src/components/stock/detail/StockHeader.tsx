@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { AddToPortfolioButton } from '@/components/portfolio/AddToPortfolioButton';
+import { AssetSummary } from '@/types/portfolio';
 
 interface StockHeaderProps {
     symbol: string;
@@ -39,7 +40,7 @@ export function StockHeader({ symbol, name, sector, industry, primaryExchange, a
                     {assetId && (
                         <AddToPortfolioButton 
                             asset={{
-                                id: assetId,
+                                id: assetId as unknown as AssetSummary['id'],
                                 symbol: symbol,
                                 name: name,
                                 type: 'stock'

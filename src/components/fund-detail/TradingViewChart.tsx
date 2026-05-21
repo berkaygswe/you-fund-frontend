@@ -38,8 +38,8 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
 }) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<IChartApi | null>(null);
-    const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | any>(null);
-    const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | any>(null);
+    const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+    const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
     const [activeIndicators, setActiveIndicators] = React.useState<Set<string>>(new Set());
     const [showMenu, setShowMenu] = React.useState(false);
@@ -306,8 +306,8 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
                     isUp: last.close >= (last.open || last.close)
                 });
             } else {
-                const candle = param.seriesData.get(candlestickSeries) as any;
-                const volume = param.seriesData.get(volumeSeries) as any;
+                const candle = param.seriesData.get(candlestickSeries) as CandlestickData<Time> | undefined;
+                const volume = param.seriesData.get(volumeSeries) as HistogramData<Time> | undefined;
                 
                 if (candle) {
                     setLegendData({
@@ -328,7 +328,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
             window.removeEventListener('resize', handleResize);
             chart.remove();
         };
-    }, [candlestickData, volumeData, indicatorData, activeIndicators, theme, data]);
+    }, [candlestickData, volumeData, indicatorData, activeIndicators, theme, data, height]);
 
     if (!data || data.length === 0) {
         return (

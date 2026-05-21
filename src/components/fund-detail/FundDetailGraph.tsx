@@ -258,7 +258,7 @@ export default function FundDetailGraph({ className, code, assetId, chartClassNa
     const [pendingRange, setPendingRange] = useState<DateRange | undefined>(undefined);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [chartView, setChartView] = useState<"simple" | "advanced">("simple");
-    const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ symbol: code, name: '', type: type, icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
+    const [selectedAssets, setSelectedAssets] = useState<Array<AssetSearchResult>>([{ id: assetId as unknown as AssetSearchResult['id'], symbol: code, name: '', type: type, icon_url: '', exchange_icon_url: '' }]); // Start with minimal info if needed
     const assets = useMemo(() => {
         return selectedAssets.map(asset => ({ type: (asset.type || type) as AssetType, symbol: asset.symbol }));
     }, [selectedAssets, type]);
@@ -310,12 +310,12 @@ export default function FundDetailGraph({ className, code, assetId, chartClassNa
         { key: "1y", label: "1 year" },
     ]
 
-    const popularAssets = [
-        { symbol: 'XAU', name: 'GOLD', type: 'commodity' as AssetType, icon_url: '', exchange_icon_url: '' },
-        { symbol: 'XAG', name: 'SILVER', type: 'commodity' as AssetType, icon_url: '', exchange_icon_url: '' },
-        { symbol: 'XU100', name: 'BIST 100', type: 'index' as AssetType, icon_url: '', exchange_icon_url: '' },
-        { symbol: 'IXIC', name: 'NASDAQ', type: 'index' as AssetType, icon_url: '', exchange_icon_url: '' },
-        { symbol: 'GSPC', name: 'S&P 500', type: 'index' as AssetType, icon_url: '', exchange_icon_url: '' },
+    const popularAssets: AssetSearchResult[] = [
+        { id: '00000000-0000-0000-0000-000000000001' as unknown as AssetSearchResult['id'], symbol: 'XAU', name: 'GOLD', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+        { id: '00000000-0000-0000-0000-000000000002' as unknown as AssetSearchResult['id'], symbol: 'XAG', name: 'SILVER', type: 'commodity', icon_url: '', exchange_icon_url: '' },
+        { id: '00000000-0000-0000-0000-000000000003' as unknown as AssetSearchResult['id'], symbol: 'XU100', name: 'BIST 100', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { id: '00000000-0000-0000-0000-000000000004' as unknown as AssetSearchResult['id'], symbol: 'IXIC', name: 'NASDAQ', type: 'index', icon_url: '', exchange_icon_url: '' },
+        { id: '00000000-0000-0000-0000-000000000005' as unknown as AssetSearchResult['id'], symbol: 'GSPC', name: 'S&P 500', type: 'index', icon_url: '', exchange_icon_url: '' },
     ]
 
     return (
@@ -328,7 +328,7 @@ export default function FundDetailGraph({ className, code, assetId, chartClassNa
                     </div>
 
                     {!isComparisonMode && (
-                        <Tabs value={chartView} onValueChange={(v) => setChartView(v as any)} className="w-auto">
+                        <Tabs value={chartView} onValueChange={(v) => setChartView(v as "simple" | "advanced")} className="w-auto">
                             <TabsList className="grid w-full grid-cols-2 h-8 p-1">
                                 <TabsTrigger value="simple" className="px-3 text-xs flex items-center gap-1.5">
                                     <AreaChartIcon className="w-3.5 h-3.5" />

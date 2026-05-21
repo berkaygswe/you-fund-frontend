@@ -27,6 +27,7 @@ export default function NewsImage({ src, alt, className = '' }: NewsImageProps) 
         Next.js <Image> component requires all hostnames to be whitelisted in next.config.ts,
         which is not feasible for dynamic news sources.
       */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}

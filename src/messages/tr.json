@@ -158,7 +158,7 @@
     "EditPortfolioDialog": {
       "title": "Portföyü Düzenle",
       "nameLabel": "Portföy Adı",
-      "placeholder": "Örn. Emeklilik, Yüksek Büyüme",
+      "placeholder": "Örneğin: Emeklilik, Bileşik Kazanç",
       "submit": "Değişiklikleri Kaydet",
       "saving": "Kaydediliyor..."
     },

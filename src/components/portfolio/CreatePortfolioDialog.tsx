@@ -51,7 +51,7 @@ export function CreatePortfolioDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px] p-0 overflow-hidden bg-background/95 backdrop-blur-xl border-white/10 shadow-2xl">
+      <DialogContent className="sm:max-w-[400px] p-0 overflow-hidden bg-background backdrop-blur-xl border-white/10 shadow-2xl">
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
             New Portfolio
