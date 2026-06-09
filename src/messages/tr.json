@@ -11,7 +11,7 @@
     "crypto": "Kripto",
     "watchlist": "İzleme Listesi",
     "portfolios": "Portföylerim",
-    "appName": "You Fund"
+    "appName": "Fnancal"
   },
   "Header": {
     "loginSignup": "Giriş Yap / Kayıt Ol",
@@ -195,6 +195,73 @@
       "noPortfoliosFound": "Portföy bulunamadı",
       "createFirstPortfolioDesc": "Yatırımlarınızı takip etmeye başlamak ve gerçek zamanlı Kar/Zarar hesaplamak için ilk portföyünüzü oluşturun.",
       "createFirstPortfolioBtn": "İlk Portföyümü Oluştur"
+    }
+  },
+  "Landing": {
+    "Hero": {
+      "badge": "🚀 Küresel piyasalarda 1.000'den fazla varlık desteği",
+      "titleLine1": "Eksiksiz",
+      "titleLine2": "Finansal Dünyanız",
+      "subtitle": "Hisse senetlerini, ETF'leri, kripto paraları ve yatırım fonlarını gerçek zamanlı karşılaştırın. Gelişmiş analitik araçlarıyla portföy simülasyonu yapın, stratejilerinizi geriye dönük test edin ve daha akıllıca yatırım kararları alın.",
+      "exploreBtn": "Piyasaları Keşfetmeye Başlayın"
+    },
+    "Features": {
+      "badge": "Güçlü Özellikler",
+      "title": "İhtiyacınız Olan Her Şey",
+      "subtitle": "Modern yatırımcılar, traderlar ve finansal analistler için tasarlanmış profesyonel düzeyde araçlar",
+      "feature1Title": "Çeşitlendirilmiş Piyasa Verileri",
+      "feature1Desc": "Hisse senetleri, ETF'ler, kripto paralar ve fonlar genelindeki fiyatlara ve piyasa hareketlerine erişin.",
+      "feature2Title": "Gelişmiş Analitik",
+      "feature2Desc": "Bilinçli yatırım kararları almak için farklı varlık sınıflarını karşılaştıran temel analizler.",
+      "feature3Title": "Portföy Geçmiş Testi",
+      "feature3Desc": "Yatırım stratejilerini geçmiş verilerle test edin. Performans ve risk metriklerini analiz edin, dağılımları optimize edin.",
+      "feature3Soon": "Yakında",
+      "feature4Title": "TEFAS Fon Takibi",
+      "feature4Desc": "Detaylı portföy dağılımları ve performans analizleriyle Türk hisse senedi fonlarının kapsamlı takibi.",
+      "feature5Title": "ETF Detaylı Analiz",
+      "feature5Desc": "Küresel ETF'ler için portföy varlıkları, yönetim ücretleri, sektör ağırlıkları ve takip hatasını analiz edin.",
+      "feature6Title": "Işık Hızında Platform",
+      "feature6Desc": "Optimize edilmiş altyapımızla piyasa fırsatlarını asla kaçırmamanızı sağlayan üstün performans."
+    },
+    "Compare": {
+      "badge": "Zengin Piyasa Verileri",
+      "title": "Her Şeyi Karşılaştırın",
+      "subtitle": "Tüm ana varlık sınıfları tek bir güçlü platformda",
+      "tabStock": "Hisse",
+      "tabEtf": "ETF",
+      "tabCrypto": "Kripto Para",
+      "tabFund": "Yatırım Fonu",
+      "volume": "Hacim",
+      "noData": "Mevcut {type} verisi bulunmuyor",
+      "trySelect": "Farklı bir varlık türü seçmeyi deneyin",
+      "error": "Piyasa verileri yüklenemedi",
+      "tryAgain": "Lütfen daha sonra tekrar deneyin"
+    },
+    "Simulation": {
+      "badge": "Yakında",
+      "title": "Portföy Simülasyonu",
+      "subtitle": "& Geçmiş Testi",
+      "desc": "Gelişmiş portföy simülatörümüzle yatırım stratejilerinizi test edin. Gerçek sermaye riske atmadan önce performansınızı ve risk metriklerinizi analiz edin, dağılımınızı optimize edin.",
+      "check1": "20 yılı aşkın veriyle geçmişe dönük test",
+      "check2": "Gelişmiş risk analizi ve metrikleri",
+      "check3": "Gerçek zamanlı performans takibi",
+      "check4": "Yapay zeka destekli varlık dağılımı optimizasyonu",
+      "btn": "Bekleme Listesine Katıl",
+      "cardTitle": "Simüle Portföy",
+      "cardRisk": "Risk Skoru",
+      "cardRiskLevel": "Orta Risk",
+      "cardStocks": "Hisse",
+      "cardEtfs": "ETF'ler",
+      "cardCrypto": "Kripto"
+    },
+    "Footer": {
+      "desc": "Eksiksiz finansal dünyanız tek bir güçlü platformda.",
+      "rights": "© 2025 Fnancal. Tüm hakları saklıdır. | Gizlilik Politikası | Hizmet Şartları"
+    },
+    "Nav": {
+      "features": "Özellikler",
+      "login": "Giriş Yap",
+      "signup": "Ücretsiz Kayıt Ol"
     }
   }
 }

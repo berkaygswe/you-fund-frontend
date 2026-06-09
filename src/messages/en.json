@@ -11,7 +11,7 @@
     "crypto": "Crypto",
     "watchlist": "Watchlist",
     "portfolios": "Portfolios",
-    "appName": "You Fund"
+    "appName": "Fnancal"
   },
   "Header": {
     "loginSignup": "Login / Signup",
@@ -195,6 +195,73 @@
       "noPortfoliosFound": "No portfolios found",
       "createFirstPortfolioDesc": "Create your first portfolio to start tracking your investments and calculating PnL in real-time.",
       "createFirstPortfolioBtn": "Create Your First Portfolio"
+    }
+  },
+  "Landing": {
+    "Hero": {
+      "badge": "🚀 Now supporting 1,000+ assets across global markets",
+      "titleLine1": "Your Complete",
+      "titleLine2": "Financial Universe",
+      "subtitle": "Compare stocks, ETFs, cryptocurrencies, and funds in real-time. Simulate portfolios, backtest strategies, and make smarter investment decisions with advanced analytics.",
+      "exploreBtn": "Start Exploring Markets"
+    },
+    "Features": {
+      "badge": "Powerful Features",
+      "title": "Everything You Need",
+      "subtitle": "Professional-grade tools designed for modern investors, traders, and financial analysts",
+      "feature1Title": "Diversified Market Data",
+      "feature1Desc": "Access prices and market movements across stocks, ETFs, cryptocurrencies, and funds.",
+      "feature2Title": "Advanced Analytics",
+      "feature2Desc": "Fundamental analysis, comparing different asset classes to make informed investment decisions.",
+      "feature3Title": "Portfolio Backtesting",
+      "feature3Desc": "Test investment strategies with historical data. Analyze performance, risk metrics, and optimize allocations.",
+      "feature3Soon": "Soon",
+      "feature4Title": "TEFAS Fund Tracking",
+      "feature4Desc": "Comprehensive coverage of Turkish equity funds with detailed holdings and performance analysis.",
+      "feature5Title": "ETF Deep Analysis",
+      "feature5Desc": "Break down holdings, expense ratios, sector weights, and tracking error for global ETFs.",
+      "feature6Title": "Lightning Fast Platform",
+      "feature6Desc": "Optimized performance ensures you never miss market opportunities with our ultra-fast infrastructure."
+    },
+    "Compare": {
+      "badge": "Rich Market Data",
+      "title": "Compare Everything",
+      "subtitle": "All major asset classes in one powerful platform",
+      "tabStock": "Stock",
+      "tabEtf": "ETF",
+      "tabCrypto": "Cryptocurrency",
+      "tabFund": "Fund",
+      "volume": "Volume",
+      "noData": "No {type} data available",
+      "trySelect": "Try selecting a different asset type",
+      "error": "Unable to load market data",
+      "tryAgain": "Please try again later"
+    },
+    "Simulation": {
+      "badge": "Coming Soon",
+      "title": "Portfolio Simulation",
+      "subtitle": "& Backtesting",
+      "desc": "Test your investment strategies with our advanced portfolio simulator. Analyze performance, risk metrics, and optimize your allocations before committing real capital.",
+      "check1": "Historical backtesting with 20+ years of data",
+      "check2": "Advanced risk analysis & metrics",
+      "check3": "Real-time performance tracking",
+      "check4": "AI-powered asset allocation optimization",
+      "btn": "Join Waitlist",
+      "cardTitle": "Simulated Portfolio",
+      "cardRisk": "Risk Score",
+      "cardRiskLevel": "Moderate Risk",
+      "cardStocks": "Stocks",
+      "cardEtfs": "ETFs",
+      "cardCrypto": "Crypto"
+    },
+    "Footer": {
+      "desc": "Your complete financial universe in one powerful platform.",
+      "rights": "© 2025 Fnancal. All rights reserved. | Privacy Policy | Terms of Service"
+    },
+    "Nav": {
+      "features": "Features",
+      "login": "Login",
+      "signup": "Sign Up Free"
     }
   }
 }

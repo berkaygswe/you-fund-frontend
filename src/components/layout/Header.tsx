@@ -1,8 +1,9 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { CurrencySwitcher } from "./currency-switcher";
-import LoginButton from "./header/LoginButton";
+import { CurrencySwitcher } from "./CurrencySwitcher";
+import LoginButton from "./LoginButton";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import HeaderAssetSearch from "./header/HeaderAssetSearch";
+import HeaderAssetSearch from "./HeaderAssetSearch";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 export function Header() {
     return (
@@ -17,7 +18,9 @@ export function Header() {
                 <LoginButton />
                 <CurrencySwitcher />
                 <LanguageSwitcher />
+                <ThemeSwitcher />
             </div>
         </header>
     )
 }
+
