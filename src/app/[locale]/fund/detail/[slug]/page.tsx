@@ -1,12 +1,12 @@
 "use client";
 
-import AssetComparison from '@/components/fund-detail/AssetComparsion';
-import FundAllocation from '@/components/fund-detail/FundAllocation';
-import FundDetailGraph from '@/components/fund-detail/FundDetailGraph';
-import FundGrowth from '@/components/fund-detail/FundGrowth';
-import FundInfo from '@/components/fund-detail/FundInfo';
-import RiskScale from '@/components/fund-detail/Risk';
-import ImageWrap from '@/components/ImageWrap';
+import AssetComparison from '@/components/asset-detail/AssetComparison';
+import FundAllocation from '@/components/asset-detail/FundAllocation';
+import AssetDetailGraph from '@/components/asset-detail/AssetDetailGraph';
+import FundGrowth from '@/components/asset-detail/FundGrowth';
+import FundInfo from '@/components/asset-detail/FundInfo';
+import RiskScale from '@/components/asset-detail/Risk';
+import ImageWrap from '@/components/shared/ImageWrap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AddToWatchlistButton from '@/components/watchlist/AddToWatchlistButton';
 import { AddToPortfolioButton } from '@/components/portfolio/AddToPortfolioButton';
@@ -116,7 +116,7 @@ export default function Page() {
             </div>
             <div className='flex flex-col md:grid md:grid-cols-3 gap-6'>
                 <div className='col-span-2 flex flex-col gap-4'>
-                    <FundDetailGraph chartClassName='-ms-5' code={slug} assetId={fund.assetId} type="fund"></FundDetailGraph>
+                    <AssetDetailGraph chartClassName='-ms-5' code={slug} assetId={fund.assetId} type="fund"></AssetDetailGraph>
                     <RiskScale riskLevel={fund.risk}></RiskScale>
                     <AssetComparison code={slug} type='fund'></AssetComparison>
                 </div>

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/table";
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DataTablePagination } from './DataTablePagination';
+import { DataTablePagination } from '@/components/shared/DataTablePagination';
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> {

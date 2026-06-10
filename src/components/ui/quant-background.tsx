@@ -3,11 +3,11 @@ import React from "react";
 export const QuantBackground = () => {
     return (
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none aria-hidden:true">
-            {/* Blue center fading to almost-white blue at the ends */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#f5f8ff] via-[#e6efff] to-[#f5f8ff] dark:from-background dark:via-background/95 dark:to-background" />
+            {/* Blue center fading to almost-white blue at the ends (rich deep navy gradient in dark mode) */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#f5f8ff] via-[#e6efff] to-[#f5f8ff] dark:from-[#0b0f19] dark:via-[#080c16] dark:to-[#0b0f19]" />
 
             {/* Ambient Gradient Mesh - Concentrated in the Core */}
-            <div className="absolute inset-0 opacity-[0.22] dark:opacity-[0.28]">
+            <div className="absolute inset-0 opacity-[0.22] dark:opacity-[0.45]">
                 {/* Primary Blob: Top-Right - Blue/Indigo */}
                 <div
                     className="absolute top-[5%] -right-[5%] w-[90%] h-[40%] rounded-[100%] bg-blue-500/20 blur-[130px] animate-float"
@@ -31,7 +31,7 @@ export const QuantBackground = () => {
 
             {/* Precision Grid: Watermark professional aesthetic */}
             <div
-                className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]"
+                className="absolute inset-0 opacity-[0.04] dark:opacity-[0.09]"
                 style={{
                     backgroundImage: `
                         linear-gradient(to right, currentColor 1px, transparent 1px),
@@ -44,7 +44,7 @@ export const QuantBackground = () => {
 
             {/* Fine Dot Overlay */}
             <div
-                className="absolute inset-0 opacity-[0.06] dark:opacity-[0.1]"
+                className="absolute inset-0 opacity-[0.06] dark:opacity-[0.15]"
                 style={{
                     backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
                     backgroundSize: '32px 32px',
@@ -52,9 +52,9 @@ export const QuantBackground = () => {
                 }}
             />
 
-            {/* Fades to near-white blue (#f5f8ff) so it's smooth but not completely white */}
-            <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[#f5f8ff] via-[#f5f8ff]/60 to-transparent dark:from-background dark:via-background/40 opacity-95" />
-            <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#f5f8ff] via-[#f5f8ff]/60 to-transparent dark:from-background dark:via-background/40 opacity-95" />
+            {/* Fades to near-white blue (#f5f8ff) / dark navy base so it's smooth but not completely white/black */}
+            <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[#f5f8ff] via-[#f5f8ff]/60 to-transparent dark:from-[#0b0f19] dark:via-[#0b0f19]/40 opacity-95" />
+            <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#f5f8ff] via-[#f5f8ff]/60 to-transparent dark:from-[#0b0f19] dark:via-[#0b0f19]/40 opacity-95" />
 
             {/* Premium Grain Texture Overlay */}
             <div className="absolute inset-0 opacity-[0.18] dark:opacity-[0.25] pointer-events-none mix-blend-overlay">

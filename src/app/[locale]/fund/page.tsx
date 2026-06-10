@@ -1,4 +1,4 @@
-import { FundListv5 } from '@/components/asset-listing/fund/FundListv5';
+import { FundListing } from '@/components/asset-listing/fund/FundListing';
 import { getTranslations } from 'next-intl/server';
 
 export default async function FundsPage() {
@@ -10,7 +10,7 @@ export default async function FundsPage() {
         <h1 className="text-2xl font-bold">{t('title')}</h1>
         <p className="text-gray-600">{t('subtitle')}</p>
       </div>
-      <FundListv5 />
+      <FundListing />
     </>
   );
 }

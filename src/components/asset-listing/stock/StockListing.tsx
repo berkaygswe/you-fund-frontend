@@ -4,11 +4,11 @@ import { ColumnDef, PaginationState, Row, SortingState } from "@tanstack/react-t
 import { Link } from "@/i18n/routing";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import Image from 'next/image';
-import ImageWrap from "../../ImageWrap";
+import ImageWrap from "@/components/shared/ImageWrap";
 import { Etf } from "@/types/etf";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import debounce from "lodash.debounce";
-import { DataTable } from "../../DataTable";
+import { DataTable } from "@/components/shared/DataTable";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useStockList } from "@/hooks/useStockList";

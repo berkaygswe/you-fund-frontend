@@ -1,5 +1,5 @@
 import { AssetSearchResult } from "@/types/assetSearchResult";
-import ImageWrap from "@/components/ImageWrap";
+import ImageWrap from "@/components/shared/ImageWrap";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 

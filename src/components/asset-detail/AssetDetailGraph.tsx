@@ -249,7 +249,7 @@ type FundGraphProps = {
     type?: AssetType;
 }
 
-export default function FundDetailGraph({ className, code, assetId, chartClassName, type = 'fund' }: FundGraphProps) {
+export default function AssetDetailGraph({ className, code, assetId, chartClassName, type = 'fund' }: FundGraphProps) {
 
     const currency = useCurrency();
 

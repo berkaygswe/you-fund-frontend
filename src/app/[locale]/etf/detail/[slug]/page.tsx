@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useFormatCurrency } from '@/utils/formatCurrency';
 import { formatPercent } from '@/utils/formatPercent';
-import FundDetailGraph from '@/components/fund-detail/FundDetailGraph';
+import AssetDetailGraph from '@/components/asset-detail/AssetDetailGraph';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,7 +18,7 @@ import { useEtfMetada } from '@/hooks/useEtfMetada';
 import { useParams } from 'next/navigation';
 import { useAssetPriceChanges } from '@/hooks/useAssetPriceChanges';
 import { useCurrency } from '@/hooks/useCurrency';
-import ImageWrap from '@/components/ImageWrap';
+import ImageWrap from '@/components/shared/ImageWrap';
 import { EtfMetadata, EtfTopHolding } from '@/types/etfMetada';
 
 const GlassCard = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
@@ -264,7 +264,7 @@ export default function EtfDetailPage() {
 
             {/* Price Action Chart Area */}
             <div className="mb-10 w-full overflow-hidden rounded-3xl border border-white/40 dark:border-slate-800 bg-white/40 dark:bg-slate-900/30 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 dark:ring-white/5">
-                <FundDetailGraph className="border-0 bg-transparent" code={slug} assetId={etfMetadata.assetId} type="etf" />
+                <AssetDetailGraph className="border-0 bg-transparent" code={slug} assetId={etfMetadata.assetId} type="etf" />
             </div>
 
             {/* Deep Dive Tabs */}

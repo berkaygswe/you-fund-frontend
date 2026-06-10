@@ -1,7 +1,7 @@
 import fetchNews from "@/services/newsApi";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Clock, Building2, TrendingUp, ImageIcon, ArrowUpRight } from "lucide-react";
-import NewsImage from "./news-image";
+import NewsImage from "./NewsImage";
 import { getTranslations } from "next-intl/server";
 
 export default async function FinanceNews() {

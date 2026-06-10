@@ -1,6 +1,6 @@
 "use client"
 
-import FundDetailGraph from '@/components/fund-detail/FundDetailGraph';
+import AssetDetailGraph from '@/components/asset-detail/AssetDetailGraph';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useParams } from 'next/navigation';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -58,7 +58,7 @@ export default function StockDetailPage() {
             />
 
             <div className='mb-8'>
-                <FundDetailGraph className="border-0 bg-white shadow-md" code={slug} assetId={stockMetadata.assetId} type='stock'/>
+                <AssetDetailGraph className="border-0 bg-white shadow-md" code={slug} assetId={stockMetadata.assetId} type='stock'/>
             </div>
 
             <Tabs defaultValue="overview" className="w-full">

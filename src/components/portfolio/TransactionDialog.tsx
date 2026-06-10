@@ -37,7 +37,7 @@ import { SUPPORTED_CURRENCIES, Currency } from "@/types/currency";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useFetchFundGraph } from "@/hooks/useFetchFundPrice";
-import { TradingViewChart } from "@/components/fund-detail/TradingViewChart";
+import { TradingViewChart } from "@/components/asset-detail/TradingViewChart";
 
 
 interface TransactionDialogProps {

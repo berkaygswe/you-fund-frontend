@@ -1,5 +1,5 @@
-import { GalleryVerticalEnd } from "lucide-react"
-import { SignupForm } from "@/components/auth/signup-form"
+import { FnancalLogo } from "@/components/layout/FnancalLogo"
+import { SignupForm } from "@/components/auth/SignupForm"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 
@@ -9,10 +9,8 @@ export default function SignupPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <Link href="/market-overview" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            YouFund
+            <FnancalLogo className="size-6 text-primary" />
+            Fnancal
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

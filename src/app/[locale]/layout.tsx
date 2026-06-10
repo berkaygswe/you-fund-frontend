@@ -6,11 +6,12 @@ import "../globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from '@vercel/analytics/next';
-import QueryProvider from "@/components/QueryProvider";
+import QueryProvider from "@/components/providers/QueryProvider";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
+import { ThemeInitializer } from "@/components/providers/ThemeInitializer";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -27,10 +28,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "You Fund",
-    description: "You fund",
+    title: "Fnancal",
+    description: "Fnancal",
     icons: {
-        icon: '/you-fund-icon.svg',
+        icon: '/site_logo.webp',
     }
 };
 
@@ -59,11 +60,37 @@ export default async function LocaleLayout({
     const messages = await getMessages();
 
     return (
-        <html lang={locale}>
+        <html lang={locale} suppressHydrationWarning>
+            <head>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            (function() {
+                                try {
+                                    var storage = localStorage.getItem('theme-storage');
+                                    var theme = 'light';
+                                    if (storage) {
+                                        var parsed = JSON.parse(storage);
+                                        if (parsed && parsed.state && parsed.state.theme) {
+                                            theme = parsed.state.theme;
+                                        }
+                                    }
+                                    if (theme === 'dark') {
+                                        document.documentElement.classList.add('dark');
+                                    } else {
+                                        document.documentElement.classList.remove('dark');
+                                    }
+                                } catch (e) {}
+                            })();
+                        `
+                    }}
+                />
+            </head>
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <NextIntlClientProvider messages={messages}>
                     <QueryProvider>
                         <AuthProvider initialSessionHint={hasSessionHint}>
+                            <ThemeInitializer />
                             {children}
                             <SpeedInsights />
                             <Analytics />
@@ -74,3 +101,4 @@ export default async function LocaleLayout({
         </html>
     );
 }
+

@@ -3,9 +3,9 @@
 
 "use client"
 import { usePathname } from "@/i18n/routing";
-import { AppSidebar } from "@/components/AppSideBar";
+import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Header } from "@/components/header";
+import { Header } from "@/components/layout/Header";
 import { WebSocketProvider } from "@/providers/WebSocketProvider";
 import { QuantBackground } from "@/components/ui/quant-background";
 

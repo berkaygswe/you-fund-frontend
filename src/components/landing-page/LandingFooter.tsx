@@ -2,42 +2,46 @@
 
 import React from 'react';
 import { TrendingUp, Globe, Activity, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import { FnancalLogo } from '@/components/layout/FnancalLogo';
 
 export function LandingFooter() {
+    const t = useTranslations('Landing.Footer');
+
     return (
-        <footer className="bg-black/30 backdrop-blur-sm border-t border-white/10 py-12 px-4 sm:px-6 lg:px-8">
+        <footer className="bg-card/10 dark:bg-card/5 backdrop-blur-md border-t border-border/40 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-8 text-center">
                     <div>
                         <div className="flex justify-center items-center space-x-3 mb-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                                <TrendingUp className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                YouFund
+                            <FnancalLogo className="w-9 h-9 text-primary" />
+                            <span className="text-lg font-black tracking-tight text-foreground">
+                                Fnancal
                             </span>
                         </div>
-                        <p className="text-gray-400 mb-4">
-                            Your complete financial universe in one powerful platform.
+                        <p className="text-muted-foreground text-sm font-semibold mb-6">
+                            {t('desc')}
                         </p>
                         <div className="flex justify-center space-x-4">
-                            <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                            <div className="w-8 h-8 bg-secondary/50 border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors cursor-pointer">
                                 <Globe className="w-4 h-4" />
                             </div>
-                            <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                            <div className="w-8 h-8 bg-secondary/50 border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors cursor-pointer">
                                 <Activity className="w-4 h-4" />
                             </div>
-                            <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                            <div className="w-8 h-8 bg-secondary/50 border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors cursor-pointer">
                                 <Users className="w-4 h-4" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="border-t border-white/10 pt-8 text-center text-gray-400">
-                    <p>&copy; 2025 YouFund. All rights reserved. | Privacy Policy | Terms of Service</p>
+                <div className="border-t border-border/40 pt-8 text-center text-muted-foreground text-xs font-semibold">
+                    <p>{t('rights')}</p>
                 </div>
             </div>
         </footer>
     );
 }
+

@@ -26,8 +26,8 @@ import { useTefasFunds } from '@/hooks/useTefasFunds';
 import { useFundUmbrellaTypes } from '@/hooks/useFundUmbrellaTypes';
 import { Link } from "@/i18n/routing";
 import Image from 'next/image';
-import ImageWrap from '../../ImageWrap';
-import { DataTable } from '../../DataTable';
+import ImageWrap from '@/components/shared/ImageWrap';
+import { DataTable } from '@/components/shared/DataTable';
 import { useFormatCurrency } from '@/utils/formatCurrency';
 
 // Move outside component to prevent recreation on each render
@@ -42,7 +42,7 @@ const periodToFieldMap: Record<string, string> = {
     yearly: 'yearlyChange'
 };
 
-export function FundListv5() {
+export function FundListing() {
     // States
     const [isPending, startTransition] = useTransition();
     const [sorting, setSorting] = useState<SortingState>([
