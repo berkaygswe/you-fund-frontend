@@ -186,7 +186,7 @@ export default function HeaderAssetSearch() {
             <button
                 id="header-search-trigger"
                 onClick={() => setIsOpen(true)}
-                className="flex items-center justify-center sm:justify-start gap-2 h-9 w-9 sm:w-auto sm:px-3 rounded-lg border border-border/60 bg-muted/40 hover:bg-muted/80 text-muted-foreground text-sm transition-all duration-200 hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-w-[200px] lg:min-w-[240px]"
+                className="flex items-center justify-center sm:justify-start gap-2 h-9 w-9 sm:w-auto sm:px-3 rounded-lg border border-border/60 bg-muted/40 hover:bg-muted/80 text-muted-foreground text-sm transition-all duration-200 cursor-pointer hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-w-[200px] lg:min-w-[240px]"
                 title="Search assets (Cmd+K)"
             >
                 <Search className="h-4 w-4 sm:h-3.5 sm:w-3.5 flex-shrink-0" />

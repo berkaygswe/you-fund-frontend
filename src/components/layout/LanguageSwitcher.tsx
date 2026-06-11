@@ -20,7 +20,7 @@ export function LanguageSwitcher() {
       variant="ghost" 
       size="sm" 
       onClick={toggleLocale}
-      className="uppercase"
+      className="uppercase cursor-pointer"
     >
       {locale === 'en' ? 'TR' : 'EN'}
     </Button>

@@ -57,7 +57,7 @@ export default function LoginButton() {
             {status === 'authenticated' && user && (
                 <div className="flex items-center gap-2">
                     <Link href="/profile">
-                        <Button variant="ghost">
+                        <Button variant="ghost" className="cursor-pointer">
                             <UserCircle className="w-5 h-5 mr-1" />
                             {t("profile")}
                         </Button>
