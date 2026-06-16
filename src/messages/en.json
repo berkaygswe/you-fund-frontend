@@ -256,12 +256,78 @@
     },
     "Footer": {
       "desc": "Your complete financial universe in one powerful platform.",
-      "rights": "© 2025 Fnancal. All rights reserved. | Privacy Policy | Terms of Service"
+      "allRightsReserved": "All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "disclaimer": "Disclaimer: Fnancal is a non-commercial educational project. The data displayed on this platform, including mutual funds and stock prices, is retrieved from public sources for informational purposes only. Users should verify all data independently before making any investment decisions."
     },
     "Nav": {
       "features": "Features",
       "login": "Login",
       "signup": "Sign Up Free"
     }
+  },
+  "Metadata": {
+    "Default": {
+      "brandName": "Fnancal",
+      "title": "Fnancal - Global Portfolio Tracker & Market Analysis Tool",
+      "description": "Compare stocks, ETFs, cryptocurrencies, and funds in real-time. Simulate portfolios, track asset allocations, and make smarter investment decisions."
+    },
+    "Home": {
+      "title": "Fnancal - Your Complete Financial Universe",
+      "description": "Compare stocks, ETFs, cryptocurrencies, and funds in real-time. Simulate portfolios, backtest strategies, and track asset allocations."
+    },
+    "MarketOverview": {
+      "title": "Market Overview & Real-Time Financial Intelligence",
+      "description": "Get real-time financial intelligence, global asset trends, top gainers, top losers, and live financial news."
+    },
+    "Crypto": {
+      "title": "Real-Time Cryptocurrency Market Data & Prices",
+      "description": "Browse and analyze prices, volumes, and returns for 1,000+ cryptocurrencies. Follow market caps and track volatility in real-time."
+    },
+    "Stocks": {
+      "title": "US Stock Market Prices, Returns & Financials",
+      "description": "Explore US equities. Compare stock performance, examine historical price ranges, and add assets to your portfolio."
+    },
+    "Etf": {
+      "title": "Global ETF Listing, Performance & Returns",
+      "description": "Analyze and compare global exchange-traded funds (ETFs). Break down returns across daily, monthly, and yearly intervals."
+    },
+    "Fund": {
+      "title": "TEFAS Mutual Funds Performance & Returns",
+      "description": "Track Turkish mutual funds (TEFAS). Compare umbrella types, yearly returns, and historical performance."
+    }
+  },
+  "PrivacyPolicy": {
+    "title": "Privacy Policy",
+    "backToHome": "Back to Home",
+    "lastUpdated": "Last updated: June 2026",
+    "intro": "Fnancal is an educational, non-commercial portfolio tracking platform. Your privacy is important to us. This policy explains what data we collect and how we handle it.",
+    "section1Title": "1. Information We Collect",
+    "section1Text": "We collect minimal information required to run the service. This includes: (a) Authentication Data: your email and hashed password if you choose to sign up; (b) Portfolio Data: the assets, quantities, and transaction histories you input to calculate P&L. We do not track your real financial bank accounts or balances.",
+    "section2Title": "2. How We Use Information",
+    "section2Text": "The information we collect is used solely to: (a) authenticating your user session; (b) calculate and display portfolio returns, charts, and asset comparisons on your dashboard. We do not sell, rent, or monetize your personal or financial data.",
+    "section3Title": "3. Data Source & Accuracy",
+    "section3Text": "All market prices, stock feeds, and fund returns shown on Fnancal are pulled from publicly available online sources. We do not claim ownership of these data feeds. Sourced data is processed locally to display metrics for informational and educational use.",
+    "section4Title": "4. Third-Party Services",
+    "section4Text": "Fnancal utilizes various tools to optimize platform performance and loading speeds. No personally identifiable financial data is shared with these services.",
+    "section5Title": "5. Contact Us",
+    "section5Text": "Since this is an educational project, if you have questions or wish to delete your account data, please contact the authorized person."
+  },
+  "TermsOfService": {
+    "title": "Terms of Service",
+    "backToHome": "Back to Home",
+    "lastUpdated": "Last updated: June 2026",
+    "intro": "Welcome to Fnancal. By using this educational, non-commercial website, you agree to comply with the following terms.",
+    "section1Title": "1. Non-Commercial & Educational Platform",
+    "section1Text": "Fnancal is a personal, educational portfolio tracking tool. It is offered free of charge and does not seek commercial gain or generate revenue. Sourced data (including TEFAS mutual funds) is fetched from public endpoints for informational presentation.",
+    "section2Title": "2. No Financial or Investment Advice",
+    "section2Text": "The content, calculations, portfolio simulations, and charts on Fnancal are for illustrative and educational purposes only. They do not constitute financial, investment, or tax advice. Always consult a qualified professional before making real-world financial investments.",
+    "section3Title": "3. Accuracy of Sourced Data",
+    "section3Text": "We attempt to display accurate pricing and return data, but since it is gathered from public feeds, we do not warrant the timeliness, completeness, or absolute accuracy of any financial information. Sourced data is presented 'as-is'.",
+    "section4Title": "4. User Accounts & Responsibilities",
+    "section4Text": "You are responsible for keeping your login credentials confidential. You agree to use the site in compliance with applicable local and international laws.",
+    "section5Title": "5. Limitation of Liability",
+    "section5Text": "In no event shall Fnancal or its developers be liable for any financial losses, damages, or errors resulting from the use or inability to use this platform."
   }
 }

@@ -3,6 +3,7 @@
 import React from 'react';
 import { TrendingUp, Globe, Activity, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 
 import { FnancalLogo } from '@/components/layout/FnancalLogo';
 
@@ -37,8 +38,22 @@ export function LandingFooter() {
                     </div>
                 </div>
 
-                <div className="border-t border-border/40 pt-8 text-center text-muted-foreground text-xs font-semibold">
-                    <p>{t('rights')}</p>
+                <div className="max-w-3xl mx-auto mb-6 text-center text-[10px] text-muted-foreground/60 leading-relaxed">
+                    {t('disclaimer')}
+                </div>
+
+                <div className="border-t border-border/40 pt-8 text-center text-muted-foreground text-xs font-semibold flex flex-col sm:flex-row items-center justify-center gap-2">
+                    <p>© {new Date().getFullYear()} Fnancal. {t('allRightsReserved')}</p>
+                    <span className="hidden sm:inline text-border/60">|</span>
+                    <div className="flex gap-2">
+                        <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
+                            {t('privacyPolicy')}
+                        </Link>
+                        <span className="text-border/60">|</span>
+                        <Link href="/terms-of-service" className="hover:text-foreground transition-colors">
+                            {t('termsOfService')}
+                        </Link>
+                    </div>
                 </div>
             </div>
         </footer>

@@ -10,8 +10,34 @@ import { SlidingMarketTicker } from "./components/sliding-ticker"
 import { Card, CardContent } from "@/components/ui/card"
 import { getTranslations } from "next-intl/server"
 
-export default async function MarketOverview() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata.MarketOverview" });
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
+
+export default async function MarketOverview({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}) {
+    const { locale } = await params;
     const t = await getTranslations('Dashboard.MarketOverview');
+    const tMeta = await getTranslations({ locale, namespace: "Metadata.MarketOverview" });
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": tMeta("title"),
+        "description": tMeta("description"),
+    };
 
     const stats = [
         { labelKey: "totalAssets", val: "1,247", change: "+12.5%", icon: Globe, color: "text-blue-500" },
@@ -28,7 +54,12 @@ export default async function MarketOverview() {
     ];
 
     return (
-        <div className="min-h-screen w-full pb-12">
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <div className="min-h-screen w-full pb-12">
             <div className="relative z-10 flex flex-col space-y-6 w-full max-w-[1600px] mx-auto pt-2">
                 {/* Header */}
                 <div className="px-1 sm:px-2">
@@ -174,5 +205,6 @@ export default async function MarketOverview() {
                 </div>
             </div>
         </div>
+    </>
     )
 }

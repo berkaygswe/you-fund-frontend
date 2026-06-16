@@ -8,7 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from '@vercel/analytics/next';
 import QueryProvider from "@/components/providers/QueryProvider";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, setRequestLocale, getTranslations } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
 import { ThemeInitializer } from "@/components/providers/ThemeInitializer";
@@ -27,13 +27,42 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-    title: "Fnancal",
-    description: "Fnancal",
-    icons: {
-        icon: '/site_logo.webp',
-    }
-};
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: "Metadata.Default" });
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fnancal.com';
+
+    return {
+        title: {
+            default: t("title"),
+            template: `%s | ${t("brandName")}`,
+        },
+        description: t("description"),
+        metadataBase: new URL(baseUrl),
+        alternates: {
+            canonical: `${baseUrl}/${locale}`,
+            languages: {
+                en: `${baseUrl}/en`,
+                tr: `${baseUrl}/tr`,
+            },
+        },
+        icons: {
+            icon: '/site_logo.webp',
+        },
+        openGraph: {
+            title: t("title"),
+            description: t("description"),
+            url: `${baseUrl}/${locale}`,
+            siteName: t("brandName"),
+            locale: locale === 'tr' ? 'tr_TR' : 'en_US',
+            type: 'website',
+        },
+    };
+}
 
 export default async function LocaleLayout({
     children,

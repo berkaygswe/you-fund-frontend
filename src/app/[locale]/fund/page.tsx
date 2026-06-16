@@ -1,6 +1,19 @@
 import { FundListing } from '@/components/asset-listing/fund/FundListing';
 import { getTranslations } from 'next-intl/server';
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata.Fund" });
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
+
 export default async function FundsPage() {
   const t = await getTranslations('Fund');
 

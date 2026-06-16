@@ -256,12 +256,78 @@
     },
     "Footer": {
       "desc": "Eksiksiz finansal dünyanız tek bir güçlü platformda.",
-      "rights": "© 2025 Fnancal. Tüm hakları saklıdır. | Gizlilik Politikası | Hizmet Şartları"
+      "allRightsReserved": "Tüm hakları saklıdır.",
+      "privacyPolicy": "Gizlilik Politikası",
+      "termsOfService": "Hizmet Şartları",
+      "disclaimer": "Yasal Uyarı: Fnancal, ticari amaç gütmeyen eğitim amaçlı bir projedir. Bu platformda gösterilen yatırım fonu ve hisse senedi fiyatları da dahil olmak üzere tüm veriler, bilgilendirme amacıyla kamuya açık kaynaklardan çekilmektedir. Yatırım kararı almadan önce tüm verileri bağımsız olarak doğrulamanız önerilir."
     },
     "Nav": {
       "features": "Özellikler",
       "login": "Giriş Yap",
       "signup": "Ücretsiz Kayıt Ol"
     }
+  },
+  "Metadata": {
+    "Default": {
+      "brandName": "Fnancal",
+      "title": "Fnancal - Küresel Portföy Takip ve Piyasa Analiz Platformu",
+      "description": "Hisse senetlerini, ETF'leri, kripto paraları ve yatırım fonlarını gerçek zamanlı karşılaştırın. Portföy simülasyonu yapın ve yatırımlarınızı kolayca takip edin."
+    },
+    "Home": {
+      "title": "Fnancal - Eksiksiz Finansal Dünyanız",
+      "description": "Hisse senetlerini, ETF'leri, kripto paraları ve yatırım fonlarını gerçek zamanlı karşılaştırın. Portföy simülasyonu yapın, stratejileri test edin ve varlık dağılımlarını takip edin."
+    },
+    "MarketOverview": {
+      "title": "Piyasa Özeti ve Gerçek Zamanlı Finansal Zeka",
+      "description": "Gerçek zamanlı finansal zeka, küresel varlık trendleri, en çok yükselenler/düşenler ve canlı finans haberlerine ulaşın."
+    },
+    "Crypto": {
+      "title": "Gerçek Zamanlı Kripto Para Fiyatları ve Piyasa Verileri",
+      "description": "1.000'den fazla kripto para biriminin fiyatlarını, hacimlerini ve getirilerini analiz edin. Piyasa değerlerini ve dalgalanmaları canlı takip edin."
+    },
+    "Stocks": {
+      "title": "ABD Hisse Senedi Fiyatları, Getirileri ve Verileri",
+      "description": "ABD hisse senetlerini keşfedin. Hisse performanslarını karşılaştırın, geçmiş fiyat aralıklarını inceleyin ve portföyünüze ekleyin."
+    },
+    "Etf": {
+      "title": "Küresel ETF Listesi, Getirileri ve Performansı",
+      "description": "Küresel borsa yatırım fonlarını (ETF'ler) analiz edin ve karşılaştırın. Günlük, aylık ve yıllık vadelerdeki getirileri inceleyin."
+    },
+    "Fund": {
+      "title": "TEFAS Yatırım Fonları Performansı ve Getirileri",
+      "description": "Türkiye TEFAS yatırım fonlarını takip edin. Şemsiye fon türlerini, yıllık getirileri ve geçmiş performansları karşılaştırın."
+    }
+  },
+  "PrivacyPolicy": {
+    "title": "Gizlilik Politikası",
+    "backToHome": "Anasayfaya Dön",
+    "lastUpdated": "Son Güncelleme: Haziran 2026",
+    "intro": "Fnancal, ticari amaç gütmeyen eğitim odaklı bir portföy takip platformudur. Gizliliğiniz bizim için önemlidir. Bu politika, hangi verileri topladığımızı ve bunları nasıl işlediğimizi açıklar.",
+    "section1Title": "1. Toplanan Veriler",
+    "section1Text": "Hizmeti sunabilmek için minimum düzeyde veri topluyoruz. Bunlar: (a) Kimlik Doğrulama Verileri: Kayıt olmayı seçerseniz e-posta adresiniz ve şifrelenmiş parolanız; (b) Portföy Verileri: Kar/Zarar durumunuzu hesaplamak için kendi isteğinizle girdiğiniz varlık türleri, miktarları ve işlem geçmişleri. Gerçek banka veya yatırım hesaplarınıza erişim sağlamayız.",
+    "section2Title": "2. Verilerin Kullanım Amacı",
+    "section2Text": "Topladığımız veriler yalnızca şunlar için kullanılır: (a) Oturum açma işlemlerinizi güvenli şekilde yönetmek; (b) Dashboard sayfanızda portföy getirilerini, grafikleri ve varlık karşılaştırmalarını hesaplayıp göstermek. Verilerinizi kesinlikle satmayız, kiralamayız veya ticari amaçla kullanmayız.",
+    "section3Title": "3. Veri Kaynağı ve Doğruluk",
+    "section3Text": "Fnancal üzerinde gösterilen tüm piyasa fiyatları, hisse ve fon getirileri kamuya açık kaynaklardan çekilmektedir. Bu veri akışlarının mülkiyetini iddia etmeyiz. Kaynak veriler, bilgilendirme ve eğitim amacıyla işlenerek gösterilir.",
+    "section4Title": "4. Üçüncü Taraf Servisler",
+    "section4Text": "Fnancal, platform performansını ve yükleme hızlarını optimize etmek amacıyla çeşitli araçlar kullanır. Bu araçlarla hiçbir kişisel veya finansal veri paylaşılmaz.",
+    "section5Title": "5. İletişim",
+    "section5Text": "Bu bir eğitim projesi olduğundan, sorularınız veya hesabınızı/verilerinizi silme talepleriniz için lütfen yetkili ile iletişime geçin."
+  },
+  "TermsOfService": {
+    "title": "Hizmet Şartları",
+    "backToHome": "Anasayfaya Dön",
+    "lastUpdated": "Son Güncelleme: Haziran 2026",
+    "intro": "Fnancal'a hoş geldiniz. Eğitim amaçlı ve ticari olmayan bu web sitesini kullanarak aşağıdaki şartlara uymayı kabul etmiş olursunuz.",
+    "section1Title": "1. Ticari Olmayan ve Eğitim Amaçlı Kullanım",
+    "section1Text": "Fnancal, kişisel ve eğitim odaklı bir portföy takip aracıdır. Ücretsiz olarak sunulur; herhangi bir ticari kazanç amacı gütmez veya gelir üretmez. Kaynak veriler (TEFAS yatırım fonları dahil) bilgilendirme amacıyla kamuya açık kaynaklardan çekilir.",
+    "section2Title": "2. Yatırım Tavsiyesi Değildir",
+    "section2Text": "Fnancal'daki içerikler, hesaplamalar, portföy simülasyonları ve grafikler yalnızca bilgilendirme ve eğitim amaçlıdır. Finansal, yatırım veya vergi tavsiyesi niteliği taşımaz. Gerçek dünyada yatırım kararı almadan önce mutlaka yetkili bir uzmana danışın.",
+    "section3Title": "3. Verilerin Doğruluğu",
+    "section3Text": "Fiyat ve getiri verilerinin doğru olması için çaba gösteriyoruz ancak veriler kamu kaynaklı olduğundan, bu bilgilerin güncelliğini, eksiksizliğini veya mutlak doğruluğunu garanti etmeyiz. Tüm veriler 'olduğu gibi' sunulur.",
+    "section4Title": "4. Kullanıcı Hesapları ve Sorumluluklar",
+    "section4Text": "Giriş bilgilerinizi gizli tutmaktan kendiniz sorumlusunuz. Sitenin kullanımında yürürlükteki yerel ve uluslararası yasalara uymayı kabul edersiniz.",
+    "section5Title": "5. Sorumluluk Sınırı",
+    "section5Text": "Fnancal veya geliştiricileri, sitenin kullanımından ya da kullanılamamasından kaynaklanan hiçbir finansal kayıp, zarar veya hatadan dolayı sorumlu tutulamaz."
   }
 }
