@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { UUID } from "crypto";
+import ImageWrap from "@/components/shared/ImageWrap";
 
 interface WatchlistTableProps {
     assets?: WatchlistAssetWithPriceResponse[];
@@ -103,8 +104,8 @@ export default function WatchlistTable({ assets, isLoading, period, onRemoveAsse
                                     <Link href={`/${asset.assetType?.toLowerCase() || 'fund'}/detail/${asset.symbol}`} className="flex items-center gap-4">
                                         <div className="relative h-9 w-9 flex-shrink-0 bg-background rounded-lg border border-border/50 flex items-center justify-center p-1.5 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
                                             {asset.iconUrl ? (
-                                                <Image
-                                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/${asset.assetType?.toLowerCase() || 'fund'}/${asset.iconUrl}`}
+                                                <ImageWrap
+                                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${asset.iconUrl}.webp`}
                                                     alt={asset.assetName}
                                                     width={24}
                                                     height={24}

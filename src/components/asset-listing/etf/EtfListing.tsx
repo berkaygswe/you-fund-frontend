@@ -135,7 +135,7 @@ export function EtfListing() {
                         {row.original.iconUrl ? (
                             <div className="flex justify-center">
                                 <ImageWrap
-                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/etf/${row.original.iconUrl}`}
+                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${row.original.iconUrl}.webp`}
                                     width={20}
                                     height={20}
                                     className='rounded-md'

@@ -81,8 +81,15 @@ export function StockListing() {
             // Wrap the state update that triggers the fetch/heavy re-render
             startTransition(() => {
                 setGlobalFilter(value);
+                setPagination(prev => ({ ...prev, pageIndex: 0 }));
             });
-        }, 150), [startTransition]); // 1500 ms delay (adjust as needed)
+        }, 150), [startTransition]); // 150 ms delay (adjust as needed)
+
+    useEffect(() => {
+        return () => {
+            debouncedSetGlobalFilter.cancel();
+        };
+    }, [debouncedSetGlobalFilter]);
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -124,7 +131,7 @@ export function StockListing() {
                         {row.original.iconUrl ? (
                             <div className="flex justify-center">
                                 <ImageWrap
-                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/logo/stock/${row.original.iconUrl}`}
+                                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${row.original.iconUrl}.webp`}
                                     width={20}
                                     height={20}
                                     className='rounded-md'
