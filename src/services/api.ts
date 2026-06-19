@@ -16,6 +16,7 @@ import { AssetPriceChanges } from '@/types/assetPriceChanges';
 import { Currency } from '@/types/currency';
 import { AssetIdentifier } from '@/types/asset';
 import { StockMetadata } from '@/types/stockMetadata';
+import { MarketOverviewData } from '@/types/marketOverview';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -248,6 +249,10 @@ export const fundsApi = {
 
     getStockMetadata: async (symbol: string): Promise<StockMetadata> => {
         return fetchData<StockMetadata>(`/stock/metadata/${symbol}`);
+    },
+
+    getMarketOverview: async (): Promise<MarketOverviewData> => {
+        return fetchData<MarketOverviewData>('/market/overview');
     },
 
     // Add more API methods as needed

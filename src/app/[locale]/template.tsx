@@ -8,6 +8,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Header } from "@/components/layout/Header";
 import { WebSocketProvider } from "@/providers/WebSocketProvider";
 import { QuantBackground } from "@/components/ui/quant-background";
+import { LandingFooter } from "@/components/landing-page/LandingFooter";
 
 export default function Template({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -23,10 +24,12 @@ export default function Template({ children }: { children: React.ReactNode }) {
                 <AppSidebar />
                 <SidebarInset className="bg-background min-w-0 overflow-x-hidden relative">
                     <Header />
-                    <main className="w-full relative min-h-screen">
+                    <main className="w-full relative min-h-screen flex flex-col justify-between">
                         <QuantBackground />
-                        <div className="m-3 md:m-6 relative z-10">{children}</div>
-                        <div className="mt-10"></div>
+                        <div className="flex-grow relative z-10 m-3 md:m-6">{children}</div>
+                        <div className="relative z-10">
+                            <LandingFooter />
+                        </div>
                     </main>
                 </SidebarInset>
             </SidebarProvider>

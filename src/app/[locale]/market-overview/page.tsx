@@ -4,9 +4,10 @@ import AssetTopMovers from "@/components/homepage/AssetTopMovers"
 import FinanceNews from "@/components/homepage/FinanceNews"
 import FundTypePerformance from "@/components/homepage/FundTypePerformance"
 import { SectionCards } from "@/components/homepage/SectionCards"
-import { Search, Calendar, LineChart, TrendingUp, BarChart3, Globe, Activity, DollarSign, ArrowUpRight } from "lucide-react"
+import { Search, Calendar, TrendingUp, BarChart3, ArrowUpRight } from "lucide-react"
 import PageHeader from "@/components/homepage/PageHeader"
 import { SlidingMarketTicker } from "./components/sliding-ticker"
+import { QuickStats } from "./components/quick-stats"
 import { Card, CardContent } from "@/components/ui/card"
 import { getTranslations } from "next-intl/server"
 
@@ -39,13 +40,6 @@ export default async function MarketOverview({
         "description": tMeta("description"),
     };
 
-    const stats = [
-        { labelKey: "totalAssets", val: "1,247", change: "+12.5%", icon: Globe, color: "text-blue-500" },
-        { labelKey: "activeMarkets", val: "24", change: "+2", icon: Activity, color: "text-indigo-500" },
-        { labelKey: "volume24h", val: "$2.4B", change: "+8.2%", icon: DollarSign, color: "text-emerald-500" },
-        { labelKey: "marketSentiment", valKey: "bullish", change: "65%", icon: LineChart, color: "text-amber-500" }
-    ];
-
     const quickLinks = [
         { href: "/fund", icon: TrendingUp, labelKey: "exploreFunds" },
         { href: "/etf", icon: BarChart3, labelKey: "exploreEtfs" },
@@ -72,31 +66,7 @@ export default async function MarketOverview({
                 </div>
 
                 {/* Data-Dense Quick Stats */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {stats.map((stat, i) => (
-                        <Card key={i} hoverable className="p-0 border-none sm:border">
-                            <CardContent className="p-6 flex flex-col justify-between h-full">
-                                <div className="flex justify-between items-start mb-4">
-                                    <span className="text-[10px] font-bold tracking-[0.15em] text-muted-foreground uppercase">{t(stat.labelKey)}</span>
-                                    <stat.icon className={`h-4 w-4 ${stat.color}/80`} />
-                                </div>
-                                <div>
-                                    <div className={`text-2xl font-mono font-bold tracking-tight ${stat.labelKey === 'marketSentiment' ? 'text-emerald-500' : 'text-foreground'}`}>
-                                        {'valKey' in stat && stat.valKey ? t(stat.valKey) : stat.val}
-                                    </div>
-                                    <div className="flex items-center mt-2 text-[10px] font-mono font-bold">
-                                        <span className={stat.labelKey === 'marketSentiment' ? 'text-foreground/60' : 'text-emerald-500 flex items-center bg-emerald-500/10 px-1.5 py-0.5 rounded-sm'}>
-                                            {stat.labelKey !== 'marketSentiment' && <TrendingUp className="h-3 w-3 mr-1" />} {stat.change}
-                                        </span>
-                                        <span className="text-muted-foreground/40 ml-2 uppercase tracking-tighter">
-                                            {stat.labelKey === 'marketSentiment' ? t('positiveMetrics') : t('vsLastPeriod')}
-                                        </span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <QuickStats />
 
                 {/* Market Movers */}
                 <div className="flex flex-col space-y-3">

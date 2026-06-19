@@ -11,7 +11,7 @@ export function LandingFooter() {
     const t = useTranslations('Landing.Footer');
 
     return (
-        <footer className="bg-card/10 dark:bg-card/5 backdrop-blur-md border-t border-border/40 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+        <footer className="bg-muted/30 dark:bg-muted/10 backdrop-blur-xl border-t border-border py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-8 text-center">
                     <div>
