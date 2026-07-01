@@ -347,5 +347,27 @@
     "section4Text": "You are responsible for keeping your login credentials confidential. You agree to use the site in compliance with applicable local and international laws.",
     "section5Title": "5. Limitation of Liability",
     "section5Text": "In no event shall Fnancal or its developers be liable for any financial losses, damages, or errors resulting from the use or inability to use this platform."
+  },
+  "AssetTypes": {
+    "all": "All",
+    "stock": "Stock",
+    "etf": "ETF",
+    "cryptocurrency": "Cryptocurrency",
+    "commodity": "Commodity",
+    "fund": "Fund",
+    "index": "Index",
+    "stocks": "Stocks",
+    "etfs": "ETFs",
+    "cryptocurrencies": "Cryptocurrencies",
+    "commodities": "Commodities",
+    "funds": "Funds",
+    "indices": "Indices",
+    "us_stock": "US Stock",
+    "us_etf": "US ETF",
+    "tr_fund": "TEFAS Fund"
+  },
+  "AssetNames": {
+    "GOLD": "Gold",
+    "SILVER": "Silver"
   }
 }

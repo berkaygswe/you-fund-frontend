@@ -4,6 +4,8 @@ import { useAssetBulkPriceChanges } from "@/hooks/useAssetBulkPriceChanges";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { getLocalizedAssetName } from "@/utils/assetTranslation";
 import { useMemo, useRef } from "react";
 import { useRealtimePrices } from '@/hooks/useRealtimePrices';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -57,6 +59,7 @@ interface TickerItemProps {
 
 function TickerItem({ symbol, name, initialValue, initialChange, realtimePrice, realtimeChange }: TickerItemProps) {
     const formatCurrency = useFormatCurrency();
+    const tNames = useTranslations("AssetNames");
     const { key: flashKey, direction } = useFlash(realtimePrice, initialValue);
 
     const displayPrice = realtimePrice ?? initialValue;
@@ -66,7 +69,9 @@ function TickerItem({ symbol, name, initialValue, initialChange, realtimePrice, 
     return (
         <div className="relative flex items-center gap-2 flex-shrink-0 group cursor-pointer px-4 py-1 rounded transition-colors hover:bg-muted/30">
             <FlashOverlay flashKey={flashKey} direction={direction} />
-            <span className="relative z-[1] text-sm font-medium tracking-tight group-hover:text-primary transition-colors text-muted-foreground" title={name}>{name}</span>
+            <span className="relative z-[1] text-sm font-medium tracking-tight group-hover:text-primary transition-colors text-muted-foreground" title={getLocalizedAssetName(tNames, name)}>
+                {getLocalizedAssetName(tNames, name)}
+            </span>
             <span className="relative z-[1] text-sm font-mono tabular-nums font-semibold">{formatCurrency(displayPrice)}</span>
             <div className={`relative z-[1] flex items-center text-xs font-mono font-medium ${isUp ? 'text-emerald-500' : 'text-rose-500'}`}>
                 {isUp ? <ArrowUpRight className="h-3 w-3 mr-0.5" /> : <ArrowDownRight className="h-3 w-3 mr-0.5" />}

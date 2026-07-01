@@ -347,5 +347,27 @@
     "section4Text": "Giriş bilgilerinizi gizli tutmaktan kendiniz sorumlusunuz. Sitenin kullanımında yürürlükteki yerel ve uluslararası yasalara uymayı kabul edersiniz.",
     "section5Title": "5. Sorumluluk Sınırı",
     "section5Text": "Fnancal veya geliştiricileri, sitenin kullanımından ya da kullanılamamasından kaynaklanan hiçbir finansal kayıp, zarar veya hatadan dolayı sorumlu tutulamaz."
+  },
+  "AssetTypes": {
+    "all": "Tümü",
+    "stock": "Hisse Senedi",
+    "etf": "ETF",
+    "cryptocurrency": "Kripto Para",
+    "commodity": "Emtia",
+    "fund": "Fon",
+    "index": "Endeks",
+    "stocks": "Hisse Senetleri",
+    "etfs": "ETF'ler",
+    "cryptocurrencies": "Kripto Paralar",
+    "commodities": "Emtialar",
+    "funds": "Yatırım Fonları",
+    "indices": "Endeksler",
+    "us_stock": "ABD Hisse Senedi",
+    "us_etf": "ABD ETF",
+    "tr_fund": "TEFAS Fonu"
+  },
+  "AssetNames": {
+    "GOLD": "Altın",
+    "SILVER": "Gümüş"
   }
 }

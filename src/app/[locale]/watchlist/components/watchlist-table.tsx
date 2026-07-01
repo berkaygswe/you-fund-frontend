@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { UUID } from "crypto";
 import ImageWrap from "@/components/shared/ImageWrap";
+import { useTranslations } from "next-intl";
+import { getLocalizedAssetName } from "@/utils/assetTranslation";
 
 interface WatchlistTableProps {
     assets?: WatchlistAssetWithPriceResponse[];
@@ -29,6 +31,7 @@ interface WatchlistTableProps {
 
 export default function WatchlistTable({ assets, isLoading, period, onRemoveAsset, isRemoving }: WatchlistTableProps) {
     const formatCurrency = useFormatCurrency();
+    const tNames = useTranslations("AssetNames");
 
     if (isLoading) {
         return (
@@ -117,7 +120,7 @@ export default function WatchlistTable({ assets, isLoading, period, onRemoveAsse
                                         </div>
                                         <div className="flex flex-col min-w-0">
                                             <span className="text-sm font-semibold tracking-tight truncate group-hover:text-primary transition-colors">{asset.symbol}</span>
-                                            <span className="text-[12px] text-muted-foreground truncate">{asset.assetName}</span>
+                                            <span className="text-[12px] text-muted-foreground truncate">{getLocalizedAssetName(tNames, asset.assetName)}</span>
                                         </div>
                                     </Link>
                                 </TableCell>

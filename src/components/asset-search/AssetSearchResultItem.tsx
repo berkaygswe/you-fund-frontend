@@ -2,6 +2,8 @@ import { AssetSearchResult } from "@/types/assetSearchResult";
 import ImageWrap from "@/components/shared/ImageWrap";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
+import { getLocalizedAssetName } from "@/utils/assetTranslation";
 
 type AssetSearchResultItemProps = {
     asset: AssetSearchResult;
@@ -39,7 +41,9 @@ export function AssetSearchResultItem({
     showTypeBadge = false,
     className = "",
 }: AssetSearchResultItemProps) {
-    const typeLabel = ASSET_TYPE_LABELS[asset.type] ?? asset.type;
+    const t = useTranslations("AssetTypes");
+    const tNames = useTranslations("AssetNames");
+    const typeLabel = asset.type ? t(asset.type.toLowerCase() as any) : "";
 
     return (
         <div
@@ -84,7 +88,7 @@ export function AssetSearchResultItem({
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                     <span className="font-semibold text-sm text-foreground truncate">
-                        {asset.name}
+                        {getLocalizedAssetName(tNames, asset.name)}
                     </span>
                 </div>
                 <div className="flex items-center gap-1.5">

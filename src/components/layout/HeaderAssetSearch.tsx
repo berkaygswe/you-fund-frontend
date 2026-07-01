@@ -9,6 +9,7 @@ import { AssetSearchResult } from "@/types/assetSearchResult";
 import { AssetSearchResultItem } from "@/components/asset-search/AssetSearchResultItem";
 import { getAssetDetailPath, hasDetailPage } from "@/utils/assetRoutes";
 import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import debounce from "lodash.debounce";
 import { Loader2, Search, ArrowRight, Command } from "lucide-react";
 import {
@@ -53,6 +54,7 @@ const ASSET_TYPES = [
  */
 export default function HeaderAssetSearch() {
     const router = useRouter();
+    const t = useTranslations("AssetTypes");
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -251,7 +253,7 @@ export default function HeaderAssetSearch() {
                                 className="rounded-full h-7 text-xs px-3 flex-shrink-0"
                                 onClick={() => setType(assetType.type)}
                             >
-                                {assetType.name}
+                                {assetType.type ? t(assetType.type) : t("all")}
                             </Button>
                         ))}
                     </div>

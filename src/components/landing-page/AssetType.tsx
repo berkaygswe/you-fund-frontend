@@ -77,15 +77,9 @@ const assetTypeColors = {
     cryptocurrency: 'bg-amber-600 dark:bg-amber-500'
 };
 
-const tabTranslationKeys = {
-    stock: 'tabStock',
-    etf: 'tabEtf',
-    cryptocurrency: 'tabCrypto',
-    fund: 'tabFund'
-} as const;
-
 export default function AssetType() {
     const t = useTranslations('Landing.Compare');
+    const tAsset = useTranslations('AssetTypes');
     const formatCurrency = useFormatCurrency();
     const currency = useCurrency();
 
@@ -130,7 +124,7 @@ export default function AssetType() {
                                 : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/70 border border-border/40 hover:text-foreground'
                             }`}
                     >
-                        {t(tabTranslationKeys[type as keyof typeof tabTranslationKeys])}
+                        {tAsset(type)}
                     </button>
                 ))}
             </div>
@@ -203,7 +197,7 @@ export default function AssetType() {
 
                 {!comparisonLoading && !comparisonError && filteredAssets.length === 0 && (
                     <div className="col-span-full text-center py-8">
-                        <div className="text-muted-foreground font-bold mb-2">{t('noData', { type: activeTab })}</div>
+                        <div className="text-muted-foreground font-bold mb-2">{t('noData', { type: tAsset(activeTab) })}</div>
                         <div className="text-muted-foreground/60 text-sm font-semibold">{t('trySelect')}</div>
                     </div>
                 )}

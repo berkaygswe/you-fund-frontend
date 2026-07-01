@@ -7,9 +7,13 @@ import { Flame, Snowflake, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { getAssetTypeLabel } from "@/utils/assetType";
+import { getLocalizedAssetName } from "@/utils/assetTranslation";
 
 export default function AssetTopMovers() {
     const t = useTranslations('Dashboard.MarketOverview');
+    const tAsset = useTranslations('AssetTypes');
+    const tNames = useTranslations('AssetNames');
     const formatCurrency = useFormatCurrency();
     const currency = useCurrency();
     const router = useRouter();
@@ -102,9 +106,13 @@ export default function AssetTopMovers() {
                                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
                                 <div className="flex justify-between items-start mb-2 relative z-10">
                                     <div className="font-bold text-foreground">{asset.symbol}</div>
-                                    <div className="text-xs text-muted-foreground bg-background/50 px-2 py-0.5 rounded-full border border-border/50 uppercase">{asset.type || t('asset')}</div>
+                                    <div className="text-xs text-muted-foreground bg-background/50 px-2 py-0.5 rounded-full border border-border/50 uppercase">
+                                        {asset.type ? getAssetTypeLabel(tAsset, asset.type, asset.country) : t('asset')}
+                                    </div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mb-4 relative z-10 line-clamp-1">{asset.name}</div>
+                                <div className="text-xs text-muted-foreground mb-4 relative z-10 line-clamp-1">
+                                    {getLocalizedAssetName(tNames, asset.name)}
+                                </div>
                                 <div className="flex justify-between items-end relative z-10">
                                     <div className="font-mono font-medium text-foreground">{formatCurrency(Number(asset.currentClose))}</div>
                                     <div className="flex items-center text-xs font-mono font-bold text-emerald-500">
@@ -136,9 +144,13 @@ export default function AssetTopMovers() {
                                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
                                 <div className="flex justify-between items-start mb-2 relative z-10">
                                     <div className="font-bold text-foreground">{asset.symbol}</div>
-                                    <div className="text-xs text-muted-foreground bg-background/50 px-2 py-0.5 rounded-full border border-border/50 uppercase">{asset.type || t('asset')}</div>
+                                    <div className="text-xs text-muted-foreground bg-background/50 px-2 py-0.5 rounded-full border border-border/50 uppercase">
+                                        {asset.type ? getAssetTypeLabel(tAsset, asset.type, asset.country) : t('asset')}
+                                    </div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mb-4 relative z-10 line-clamp-1">{asset.name}</div>
+                                <div className="text-xs text-muted-foreground mb-4 relative z-10 line-clamp-1">
+                                    {getLocalizedAssetName(tNames, asset.name)}
+                                </div>
                                 <div className="flex justify-between items-end relative z-10">
                                     <div className="font-mono font-medium text-foreground">{formatCurrency(Number(asset.currentClose))}</div>
                                     <div className="flex items-center text-xs font-mono font-bold text-rose-500">

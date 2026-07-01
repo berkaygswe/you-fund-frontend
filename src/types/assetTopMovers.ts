@@ -2,6 +2,8 @@ export interface AssetTopMovers {
     symbol: string;
     name: string;
     type: string;
-    percentageChange: number,
-    currentClose: number
+    exchange?: string;
+    country?: string;
+    percentageChange: number;
+    currentClose: number;
 }

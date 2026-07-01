@@ -49,6 +49,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 
 export default function PortfoliosPage() {
   const t = useTranslations("Portfolio.Page");
+  const tAsset = useTranslations("AssetTypes");
   const { status } = useAuth();
   const { data: portfolios, isLoading: loadingPortfolios } = usePortfolios();
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>(null);
@@ -296,7 +297,9 @@ export default function PortfoliosPage() {
                                   </div>
                                   <div>
                                     <div className="font-bold text-sm">{position.assetSymbol}</div>
-                                    <div className="text-[10px] text-muted-foreground uppercase">{position.assetType}</div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">
+                                      {position.assetType ? tAsset(position.assetType.toLowerCase() as any) : ""}
+                                    </div>
                                   </div>
                                 </div>
                               </TableCell>
