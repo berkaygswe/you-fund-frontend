@@ -29,6 +29,7 @@ export function QuickStats() {
     if (normalized === 'forex') return 'forex';
     if (normalized === 'indices' || normalized === 'index') return 'indices';
     if (normalized === 'funds' || normalized === 'fund') return 'fund';
+    if (normalized === 'etfs' || normalized === 'etf') return 'etf';
     return cat;
   };
 
@@ -88,7 +89,7 @@ export function QuickStats() {
               {t(getFearGreedKey(fearGreed.label))}
             </div>
             <div className="text-[9px] text-muted-foreground/80 line-clamp-1 mt-0.5">
-              {fearGreed.description}
+              {t('fearGreedDescription')}
             </div>
           </div>
         </CardContent>

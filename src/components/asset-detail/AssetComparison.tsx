@@ -29,6 +29,7 @@ import { CirclePlus, TrendingUp } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
+import { getLocalizedAssetName } from "@/utils/assetTranslation";
 
 const getStartDateFromRange = (range: string) => {
     const today = new Date();
@@ -61,6 +62,7 @@ import { AssetType } from "@/types/asset";
 
 export default function AssetComparison({ code, type = 'etf', standalone = true }: { code: string; type?: AssetType; standalone?: boolean }) {
     const t = useTranslations('Dashboard.MarketOverview');
+    const tNames = useTranslations('AssetNames');
     const currency = useCurrency();
 
     const ranges = [
@@ -147,6 +149,7 @@ export default function AssetComparison({ code, type = 'etf', standalone = true 
                                 const isTooLong = label.length > 15;
                                 const item = chartData.find(d => d.name === label);
                                 const display = isTooLong && item ? item.symbol : label;
+                                const localizedDisplay = getLocalizedAssetName(tNames, display);
 
                                 return (
                                     <text
@@ -156,7 +159,7 @@ export default function AssetComparison({ code, type = 'etf', standalone = true 
                                         fontSize={12}
                                         fill="#666"
                                     >
-                                        {display}
+                                        {localizedDisplay}
                                     </text>
                                 );
                             }}
@@ -168,7 +171,7 @@ export default function AssetComparison({ code, type = 'etf', standalone = true 
                                     const { name, percentChangeFromStart } = payload[0].payload;
                                     return (
                                         <div className="bg-white p-2 rounded shadow text-sm border">
-                                            <div className="font-medium text-black">{name}</div>
+                                            <div className="font-medium text-black">{getLocalizedAssetName(tNames, name)}</div>
                                             <div className={percentChangeFromStart >= 0 ? "text-green-600" : "text-red-600"}>
                                                 {percentChangeFromStart >= 0 ? "+" : ""}
                                                 {percentChangeFromStart.toFixed(2)}%

@@ -33,6 +33,8 @@ import { cn } from "@/lib/utils";
 import { useAssetGraphComparison } from "@/hooks/useAssetGraphComparison";
 import { AssetType } from "@/types/asset";
 import { FundPrices } from "@/types/fundPrices";
+import { useTranslations } from "next-intl";
+import { getLocalizedAssetName } from "@/utils/assetTranslation";
 
 // Colors for different assets in comparison chart
 const COLORS = [
@@ -252,6 +254,8 @@ type FundGraphProps = {
 export default function AssetDetailGraph({ className, code, assetId, chartClassName, type = 'fund' }: FundGraphProps) {
 
     const currency = useCurrency();
+    const t = useTranslations("AssetDetailGraph");
+    const tNames = useTranslations("AssetNames");
 
     const [timeRange, setTimeRange] = useState("1y");
     const [customRange, setCustomRange] = useState<DateRange | undefined>(undefined);
@@ -303,11 +307,11 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
     };
 
     const ranges = [
-        { key: "1w", label: "7 days" },
-        { key: "1m", label: "30 days" },
-        { key: "3m", label: "3 months" },
-        { key: "6m", label: "6 months" },
-        { key: "1y", label: "1 year" },
+        { key: "1w", label: t("w1") },
+        { key: "1m", label: t("m1") },
+        { key: "3m", label: t("m3") },
+        { key: "6m", label: t("m6") },
+        { key: "1y", label: t("y1") },
     ]
 
     const popularAssets: AssetSearchResult[] = [
@@ -324,7 +328,7 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
                 <CardTitle className="flex items-center justify-between gap-2 w-full">
                     <div className="flex items-center gap-2">
                         <BarChart3 className="w-5 h-5 text-blue-600" />
-                        Price History
+                        {t('priceHistory')}
                     </div>
 
                     {!isComparisonMode && (
@@ -332,11 +336,11 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
                             <TabsList className="grid w-full grid-cols-2 h-8 p-1">
                                 <TabsTrigger value="simple" className="px-3 text-xs flex items-center gap-1.5">
                                     <AreaChartIcon className="w-3.5 h-3.5" />
-                                    Simple
+                                    {t('simple')}
                                 </TabsTrigger>
                                 <TabsTrigger value="advanced" className="px-3 text-xs flex items-center gap-1.5">
                                     <CandlestickChart className="w-3.5 h-3.5" />
-                                    Advanced
+                                    {t('advanced')}
                                 </TabsTrigger>
                             </TabsList>
                         </Tabs>
@@ -377,7 +381,7 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
                                         customRange.to ? (
                                             `${customRange.from.toLocaleDateString()} – ${customRange.to.toLocaleDateString()}`
                                         ) : customRange.from.toLocaleDateString()
-                                    ) : "Custom…"}
+                                    ) : t("custom")}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
@@ -395,7 +399,7 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
                                             size="sm"
                                             onClick={() => setIsPopoverOpen(false)}
                                         >
-                                            Cancel
+                                            {t('cancel')}
                                         </Button>
                                         <Button
                                             size="sm"
@@ -407,7 +411,7 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
                                                 setIsPopoverOpen(false);
                                             }}
                                         >
-                                            Confirm
+                                            {t('confirm')}
                                         </Button>
                                     </div>
                                 </div>
@@ -434,7 +438,7 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
                                     const isSelected = selectedAssets.some(a => a.symbol === asset.symbol);
 
                                     if (!isSelected && selectedAssets.length >= 6) {
-                                        alert("You can only compare up to 6 assets at a time.");
+                                        alert(t("compareLimitAlert"));
                                         return;
                                     }
 
@@ -445,21 +449,21 @@ export default function AssetDetailGraph({ className, code, assetId, chartClassN
                                     );
                                 }}
                             >
-                                {asset.name}
+                                {getLocalizedAssetName(tNames, asset.name)}
                             </Button>
                         ))}
 
                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" className="cursor-pointer"><GitCompare /> Compare Assets</Button>
+                                <Button variant="outline" size="sm" className="cursor-pointer"><GitCompare /> {t('compareAssets')}</Button>
                             </DialogTrigger>
                             <DialogContent className="md:max-w-[600px]">
                                 <DialogHeader>
-                                    <DialogTitle>Compare Assets</DialogTitle>
+                                    <DialogTitle>{t('compareAssets')}</DialogTitle>
                                 </DialogHeader>
                                 <AssetSearchPanel selectedAssets={selectedAssets} setSelectedAssets={setSelectedAssets} currentAssetSymbol={code} />
                                 <DialogFooter>
-                                    <Button>Save changes</Button>
+                                    <Button>{t('saveChanges')}</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>

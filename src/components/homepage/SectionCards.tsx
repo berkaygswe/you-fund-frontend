@@ -6,13 +6,21 @@ import { useAssetDetailComparsion } from "@/hooks/useAssetDetailComparison";
 import { useAssetGraphComparison } from "@/hooks/useAssetGraphComparison";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useFormatCurrency } from "@/utils/formatCurrency";
-import { ArrowDownRight, ArrowUpRight, BarChart3, Bitcoin, DollarSign, Gem } from "lucide-react"
+import { ArrowDownRight, ArrowUpRight, BarChart3, Bitcoin, DollarSign, Gem, Building2, Briefcase } from "lucide-react"
 import { useMemo, useState } from "react";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { AssetIdentifier } from "@/types/asset";
+import { getAssetTypeLabel } from "@/utils/assetType";
 
-const assetGroups = {
+interface AssetGroupItem {
+    symbol: string;
+    name: string;
+    type: string;
+    country?: string;
+}
+
+const assetGroups: Record<'indices' | 'crypto' | 'forex' | 'commodities' | 'stocks' | 'tefasFunds', AssetGroupItem[]> = {
     indices: [
         { symbol: 'XU100', name: 'BIST 100', type: 'index' },
         { symbol: 'IXIC', name: 'NASDAQ', type: 'index' },
@@ -37,26 +45,51 @@ const assetGroups = {
         { symbol: 'NG', name: 'Natural Gas', type: 'commodity' }
     ],
     stocks: [
-        { symbol: 'AAPL', name: 'Apple', type: 'stock' },
-        { symbol: 'MSFT', name: 'Microsoft', type: 'stock' },
-        { symbol: 'GOOGL', name: 'Google', type: 'stock' },
-        { symbol: 'AMZN', name: 'Amazon', type: 'stock' }
+        { symbol: 'AAPL', name: 'Apple', type: 'stock', country: 'us' },
+        { symbol: 'MSFT', name: 'Microsoft', type: 'stock', country: 'us' },
+        { symbol: 'GOOGL', name: 'Google', type: 'stock', country: 'us' },
+        { symbol: 'AMZN', name: 'Amazon', type: 'stock', country: 'us' }
     ],
     tefasFunds: [
-        { symbol: 'TP2', name: 'TERA PORTFÖY PARA PİYASASI (TL) FONU', type: 'fund' },
-        { symbol: 'PHE', name: 'PUSULA PORTFÖY HİSSE SENEDİ FONU (HİSSE SENEDİ YOĞUN FON)', type: 'fund' },
-        { symbol: 'TLY', name: 'TERA PORTFÖY BİRİNCİ SERBEST FON', type: 'fund' },
-        { symbol: 'AES', name: 'AK PORTFÖY PETROL YABANCI BYF FON SEPETİ FONU', type: 'fund' },
+        { symbol: 'TP2', name: 'TERA PORTFÖY PARA PİYASASI (TL) FONU', type: 'fund', country: 'tr' },
+        { symbol: 'PHE', name: 'PUSULA PORTFÖY HİSSE SENEDİ FONU (HİSSE SENEDİ YOĞUN FON)', type: 'fund', country: 'tr' },
+        { symbol: 'TLY', name: 'TERA PORTFÖY BİRİNCİ SERBEST FON', type: 'fund', country: 'tr' },
+        { symbol: 'AFT', name: 'AK PORTFÖY YENİ TEKNOLOJİLER YABANCI HİSSE SENEDİ FONU', type: 'fund', country: 'tr' },
     ]
 };
 
 export function SectionCards() {
     const t = useTranslations('Dashboard.MarketOverview');
+    const tAsset = useTranslations('AssetTypes');
     const formatCurrency = useFormatCurrency()
     const currency = useCurrency();
     const router = useRouter();
 
     const [activeTab, setActiveTab] = useState<keyof typeof assetGroups>("indices");
+
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        const ele = e.currentTarget;
+        setIsDragging(true);
+        setStartX(e.pageX - ele.offsetLeft);
+        setScrollLeft(ele.scrollLeft);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const ele = e.currentTarget;
+        const x = e.pageX - ele.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        ele.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleMouseUpOrLeave = () => {
+        setIsDragging(false);
+    };
 
     const today = new Date();
     const sDate = new Date(today);
@@ -65,12 +98,15 @@ export function SectionCards() {
 
     const activeAssets = assetGroups[activeTab];
 
-    const activeAssetsFormatted = useMemo<AssetIdentifier[]>(() => {
-        return activeAssets.map(asset => ({ type: asset.type as AssetIdentifier['type'], symbol: asset.symbol }));
-    }, [activeAssets]);
+    const allAssetsFormatted = useMemo<AssetIdentifier[]>(() => {
+        return Object.values(assetGroups).flat().map(asset => ({
+            type: asset.type as AssetIdentifier['type'],
+            symbol: asset.symbol
+        }));
+    }, []);
 
-    const { assetComparisonData: prices, loading: graphLoading, error: graphError, isPlaceholderData: graphPlaceholder } = useAssetGraphComparison(activeAssetsFormatted, startDate, today.toISOString().slice(0, 10), currency);
-    const { assetComparisonData, loading: comparisonLoading, error: comparisonError, isPlaceholderData: comparisonPlaceholder } = useAssetDetailComparsion(activeAssetsFormatted, startDate, currency);
+    const { assetComparisonData: prices, loading: graphLoading, error: graphError, isPlaceholderData: graphPlaceholder } = useAssetGraphComparison(allAssetsFormatted, startDate, today.toISOString().slice(0, 10), currency);
+    const { assetComparisonData, loading: comparisonLoading, error: comparisonError, isPlaceholderData: comparisonPlaceholder } = useAssetDetailComparsion(allAssetsFormatted, startDate, currency);
 
     const renderTableContent = () => {
         if (comparisonLoading || graphLoading || comparisonPlaceholder || graphPlaceholder || !currency) {
@@ -155,7 +191,7 @@ export function SectionCards() {
                                                 <div className="font-semibold text-foreground flex items-center gap-2">
                                                     {asset.symbol}
                                                     <span className="text-[10px] font-normal uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-background border border-border/50 text-muted-foreground">
-                                                        {t(asset.type || 'asset')}
+                                                        {getAssetTypeLabel(tAsset, asset.type, asset.country)}
                                                     </span>
                                                 </div>
                                                 <div className="text-xs text-muted-foreground">{asset.name}</div>
@@ -201,13 +237,20 @@ export function SectionCards() {
                 <div className="hidden sm:block text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     {getTabLabel(activeTab)} {t('overview')}
                 </div>
-                <TabsList className="bg-muted/50 p-1 border border-border/50 w-full sm:w-auto h-auto grid grid-cols-4 sm:flex gap-1">
-                    <TabsTrigger value="indices" className="gap-2 text-xs py-2"><BarChart3 className="h-3 w-3" /> <span className="hidden sm:inline">{t('indices')}</span></TabsTrigger>
-                    <TabsTrigger value="crypto" className="gap-2 text-xs py-2"><Bitcoin className="h-3 w-3" /> <span className="hidden sm:inline">{t('crypto')}</span></TabsTrigger>
-                    <TabsTrigger value="forex" className="gap-2 text-xs py-2"><DollarSign className="h-3 w-3" /> <span className="hidden sm:inline">{t('forex')}</span></TabsTrigger>
-                    <TabsTrigger value="commodities" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">{t('commodities')}</span></TabsTrigger>
-                    <TabsTrigger value="stocks" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">{t('stocks')}</span></TabsTrigger>
-                    <TabsTrigger value="tefasFunds" className="gap-2 text-xs py-2"><Gem className="h-3 w-3" /> <span className="hidden sm:inline">{t('tefasFundsLabel')}</span></TabsTrigger>
+                <TabsList 
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUpOrLeave}
+                    onMouseLeave={handleMouseUpOrLeave}
+                    style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+                    className="bg-muted/50 p-1 border border-border/50 w-full sm:w-auto overflow-x-auto flex flex-nowrap justify-start gap-1 select-none [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent group-data-[orientation=horizontal]/tabs:!h-12"
+                >
+                    <TabsTrigger value="indices" className="gap-2 text-xs py-2 shrink-0"><BarChart3 className="h-3.5 w-3.5" /> <span>{t('indices')}</span></TabsTrigger>
+                    <TabsTrigger value="crypto" className="gap-2 text-xs py-2 shrink-0"><Bitcoin className="h-3.5 w-3.5" /> <span>{t('crypto')}</span></TabsTrigger>
+                    <TabsTrigger value="forex" className="gap-2 text-xs py-2 shrink-0"><DollarSign className="h-3.5 w-3.5" /> <span>{t('forex')}</span></TabsTrigger>
+                    <TabsTrigger value="commodities" className="gap-2 text-xs py-2 shrink-0"><Gem className="h-3.5 w-3.5" /> <span>{t('commodities')}</span></TabsTrigger>
+                    <TabsTrigger value="stocks" className="gap-2 text-xs py-2 shrink-0"><Building2 className="h-3.5 w-3.5" /> <span>{t('stocks')}</span></TabsTrigger>
+                    <TabsTrigger value="tefasFunds" className="gap-2 text-xs py-2 shrink-0"><Briefcase className="h-3.5 w-3.5" /> <span>{t('tefasFundsLabel')}</span></TabsTrigger>
                 </TabsList>
             </div>
 

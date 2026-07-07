@@ -41,6 +41,7 @@ export default function StockDetailPage() {
                 industry={stockMetadata.industry}
                 primaryExchange={stockMetadata.exchange}
                 assetId={stockMetadata.assetId}
+                iconUrl={stockMetadata.iconUrl}
             />
 
             <StockPriceCard
@@ -58,21 +59,21 @@ export default function StockDetailPage() {
             />
 
             <div className='mb-8'>
-                <AssetDetailGraph className="border-0 bg-white shadow-md" code={slug} assetId={stockMetadata.assetId} type='stock'/>
+                <AssetDetailGraph className="border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-md" code={slug} assetId={stockMetadata.assetId} type='stock'/>
             </div>
 
             <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 bg-gray-100 p-1 rounded-xl">
-                    <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+                <TabsList className="w-full md:w-auto flex md:inline-flex justify-start md:justify-center overflow-x-auto bg-gray-100 dark:bg-slate-800/60 p-1 rounded-xl h-auto gap-1">
+                    <TabsTrigger value="overview" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md dark:data-[state=active]:text-white dark:text-gray-400 text-sm py-2 flex-shrink-0">
                         Overview
                     </TabsTrigger>
-                    <TabsTrigger value="financials" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <TabsTrigger value="financials" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md dark:data-[state=active]:text-white dark:text-gray-400 text-sm py-2 flex-shrink-0">
                         Financials
                     </TabsTrigger>
-                    <TabsTrigger value="performance" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <TabsTrigger value="performance" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md dark:data-[state=active]:text-white dark:text-gray-400 text-sm py-2 flex-shrink-0">
                         Performance
                     </TabsTrigger>
-                    <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <TabsTrigger value="details" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md dark:data-[state=active]:text-white dark:text-gray-400 text-sm py-2 flex-shrink-0">
                         Company Details
                     </TabsTrigger>
                 </TabsList>

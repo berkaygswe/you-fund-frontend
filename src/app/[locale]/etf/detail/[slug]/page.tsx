@@ -20,6 +20,7 @@ import { useAssetPriceChanges } from '@/hooks/useAssetPriceChanges';
 import { useCurrency } from '@/hooks/useCurrency';
 import ImageWrap from '@/components/shared/ImageWrap';
 import { EtfMetadata, EtfTopHolding } from '@/types/etfMetada';
+import { useTranslations } from 'next-intl';
 
 const GlassCard = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
     <Card className={`border border-white/40 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${className}`}>
@@ -64,6 +65,7 @@ const MetricCard = ({ title, value, icon: Icon, color = 'blue' }: { title: strin
 
 export default function EtfDetailPage() {
     const currency = useCurrency();
+    const t = useTranslations('EtfDetail');
     const params = useParams();
     const slug = (params.slug || params.symbol) as string;
 
@@ -98,16 +100,16 @@ export default function EtfDetailPage() {
                     <div className="w-20 h-20 rounded-3xl bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 flex items-center justify-center mb-6">
                         <Activity className="w-10 h-10 text-red-500" />
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-3">Data Unavailable</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-3">{t('dataUnavailable')}</h1>
                     <p className="text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
-                        We couldn&apos;t retrieve the quantitative metrics for this instrument. It may be temporarily unavailable or the ticker might be unrecognized.
+                        {t('dataUnavailableDesc')}
                     </p>
                     <Button
                         variant="default"
                         className="rounded-xl px-8 h-12 bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 transition-all font-medium"
                         onClick={() => window.location.reload()}
                     >
-                        Reinitialize Data
+                        {t('reinitializeData')}
                     </Button>
                 </GlassCard>
             </div>
@@ -146,14 +148,14 @@ export default function EtfDetailPage() {
                                 </h1>
                             </div>
                             <p className="text-lg text-slate-600 dark:text-slate-400 font-medium tracking-wide">
-                                {etfMetadata.managementCompany} &middot; <span className="font-semibold text-slate-800 dark:text-slate-300">{etfMetadata.etfType}</span>
+                                {etfMetadata.managementCompany || 'N/A'} &middot; <span className="font-semibold text-slate-800 dark:text-slate-300">{etfMetadata.etfType || 'N/A'}</span>
                             </p>
                         </div>
                     </div>
 
                     <Button className="h-12 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 transition-all font-medium flex gap-2 w-full md:w-auto">
                         <Star className="w-4 h-4 fill-white/20" />
-                        Add to Watchlist
+                        {t('addToWatchlist')}
                     </Button>
                 </div>
 
@@ -168,10 +170,10 @@ export default function EtfDetailPage() {
                         {etfMetadata.etfType || "N/A"}
                     </Badge>
                     <Badge variant="secondary" className="bg-indigo-50/60 dark:bg-indigo-500/10 backdrop-blur-md border border-indigo-100 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-400 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-lg">
-                        {etfMetadata.currency}
+                        {etfMetadata.currency || 'N/A'}
                     </Badge>
                     <Badge variant="secondary" className="bg-blue-50/60 dark:bg-blue-500/10 backdrop-blur-md border border-blue-100 dark:border-blue-500/20 text-blue-700 dark:text-blue-400 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-lg">
-                        {etfMetadata.primaryExchange}
+                        {etfMetadata.primaryExchange || 'N/A'}
                     </Badge>
                 </div>
             </div>
@@ -185,37 +187,44 @@ export default function EtfDetailPage() {
                     <div className="flex text-center md:text-left gap-8 flex-col md:flex-row items-center justify-between">
                         <div className="flex flex-col items-center md:items-start">
                             <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-2">
-                                Current Price ({etfMetadata.currency})
+                                {t('currentPrice')} ({etfMetadata.currency || 'N/A'})
                             </div>
                             <div className="text-5xl md:text-6xl font-extrabold tracking-tighter text-slate-900 dark:text-white mb-4">
                                 {formatCurrency(etfPriceChanges.price)}
                             </div>
-                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold backdrop-blur-md border ${etfPriceChanges.dailyChangePercent >= 0
-                                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                                : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400"
-                                }`}>
-                                {etfPriceChanges.dailyChangePercent >= 0 ? (
-                                    <ArrowUpRight className="h-5 w-5 stroke-[2.5]" />
-                                ) : (
-                                    <ArrowDownRight className="h-5 w-5 stroke-[2.5]" />
-                                )}
-                                <span>
-                                    {etfPriceChanges.dailyChangePercent >= 0 ? "+" : ""}
-                                    {formatPercent(etfPriceChanges.dailyChangePercent)}
-                                </span>
-                                <span className="text-slate-600 dark:text-slate-400 ml-1 text-sm font-medium tracking-wide opacity-80 uppercase">Today</span>
-                            </div>
+                            {etfPriceChanges.dailyChangePercent !== null && etfPriceChanges.dailyChangePercent !== undefined ? (
+                                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold backdrop-blur-md border ${etfPriceChanges.dailyChangePercent >= 0
+                                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                    : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400"
+                                    }`}>
+                                    {etfPriceChanges.dailyChangePercent >= 0 ? (
+                                        <ArrowUpRight className="h-5 w-5 stroke-[2.5]" />
+                                    ) : (
+                                        <ArrowDownRight className="h-5 w-5 stroke-[2.5]" />
+                                    )}
+                                    <span>
+                                        {etfPriceChanges.dailyChangePercent >= 0 ? "+" : ""}
+                                        {formatPercent(etfPriceChanges.dailyChangePercent)}
+                                    </span>
+                                     <span className="text-slate-600 dark:text-slate-400 ml-1 text-sm font-medium tracking-wide opacity-80 uppercase">{t('today')}</span>
+                                </div>
+                            ) : (
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold backdrop-blur-md border bg-slate-500/10 border-slate-500/20 text-slate-500 dark:text-slate-400">
+                                    <span>N/A</span>
+                                    <span className="text-slate-600 dark:text-slate-400 ml-1 text-sm font-medium tracking-wide opacity-80 uppercase">{t('today')}</span>
+                                </div>
+                            )}
                         </div>
                         <div className="h-px w-full md:w-px md:h-32 bg-slate-200 dark:bg-slate-800"></div>
                         <div className="flex flex-col items-center md:items-end w-full md:w-auto">
                             <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-2 text-right">
-                                Total Assets (AUM)
+                                {t('totalAssets')}
                             </div>
                             <div className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
                                 {formatCurrency(etfMetadata.aum, true)}
                             </div>
                             <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                                <Wallet className="w-4 h-4" /> Capital allocation
+                                <Wallet className="w-4 h-4" /> {t('capitalAllocation')}
                             </div>
                         </div>
                     </div>
@@ -225,37 +234,37 @@ export default function EtfDetailPage() {
             {/* Quick Metrics Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-10">
                 <MetricCard
-                    title="Expense Ratio"
+                    title={t('expenseRatio')}
                     value={etfMetadata.expenseRatio ? formatPercent(etfMetadata.expenseRatio * 100) : 'N/A'}
                     icon={Percent}
                     color="indigo"
                 />
                 <MetricCard
-                    title="Dividend Yield"
+                    title={t('dividendYield')}
                     value={etfMetadata.dividendYield ? formatPercent(etfMetadata.dividendYield * 100) : 'N/A'}
                     icon={TrendingUp}
                     color="emerald"
                 />
                 <MetricCard
-                    title="P/E Ratio"
+                    title={t('peRatio')}
                     value={etfMetadata.peRatio ? etfMetadata.peRatio.toFixed(2) : 'N/A'}
                     icon={Activity}
                     color="amber"
                 />
                 <MetricCard
-                    title="Holdings"
+                    title={t('holdings')}
                     value={etfMetadata.holdingsCount ? etfMetadata.holdingsCount.toLocaleString() : 'N/A'}
                     icon={Building2}
                     color="violet"
                 />
                 <MetricCard
-                    title="P/B Ratio"
+                    title={t('pbRatio')}
                     value={etfMetadata.pbRatio ? etfMetadata.pbRatio.toFixed(2) : 'N/A'}
                     icon={Shield}
                     color="rose"
                 />
                 <MetricCard
-                    title="Inception"
+                    title={t('inception')}
                     value={etfMetadata.inceptionDate ? new Date(etfMetadata.inceptionDate).getFullYear().toString() : 'N/A'}
                     icon={Calendar}
                     color="slate"
@@ -269,18 +278,18 @@ export default function EtfDetailPage() {
 
             {/* Deep Dive Tabs */}
             <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-1.5 rounded-2xl border border-white/50 dark:border-slate-800/80 shadow-sm w-full md:w-auto inline-flex overflow-x-auto">
-                    <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 font-medium transition-all duration-300">
-                        Overview
+                <TabsList className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl p-1.5 rounded-2xl border border-white/50 dark:border-slate-800/80 shadow-sm w-full md:w-auto flex md:inline-flex justify-start md:justify-center overflow-x-auto h-auto gap-1.5">
+                    <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 text-sm font-medium transition-all duration-300 flex-shrink-0">
+                        {t('tabOverview')}
                     </TabsTrigger>
-                    <TabsTrigger value="holdings" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 font-medium transition-all duration-300">
-                        Holdings & Segments
+                    <TabsTrigger value="holdings" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 text-sm font-medium transition-all duration-300 flex-shrink-0">
+                        {t('tabHoldings')}
                     </TabsTrigger>
-                    <TabsTrigger value="performance" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 font-medium transition-all duration-300">
-                        Performance Analytics
+                    <TabsTrigger value="performance" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 text-sm font-medium transition-all duration-300 flex-shrink-0">
+                        {t('tabPerformance')}
                     </TabsTrigger>
-                    <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 font-medium transition-all duration-300">
-                        Fund Specifics
+                    <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:dark:bg-slate-800 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 rounded-xl px-6 py-2.5 text-sm font-medium transition-all duration-300 flex-shrink-0">
+                        {t('tabDetails')}
                     </TabsTrigger>
                 </TabsList>
 
@@ -293,20 +302,20 @@ export default function EtfDetailPage() {
                                     <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20">
                                         <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                                     </div>
-                                    Objective & Strategy
+                                    {t('objectiveStrategy')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px] mb-8">{etfMetadata.description}</p>
-
-                                <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Structure Profiling</h4>
+                                <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px] mb-8">{etfMetadata.description || t('noDescription')}</p>
+ 
+                                <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">{t('structureProfiling')}</h4>
                                 <div className="grid sm:grid-cols-2 gap-4">
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-2xl hover:bg-white/60 transition-colors">
-                                        <div className="text-sm text-slate-500 mb-1">Legal Structure</div>
-                                        <div className="font-semibold text-slate-900 dark:text-white text-lg">{etfMetadata.legalStructure}</div>
+                                        <div className="text-sm text-slate-500 mb-1">{t('legalStructure')}</div>
+                                        <div className="font-semibold text-slate-900 dark:text-white text-lg">{etfMetadata.legalStructure || 'N/A'}</div>
                                     </div>
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-2xl hover:bg-white/60 transition-colors">
-                                        <div className="text-sm text-slate-500 mb-1">Fund Type</div>
+                                        <div className="text-sm text-slate-500 mb-1">{t('fundType')}</div>
                                         <div className="font-semibold text-slate-900 dark:text-white text-lg">{etfMetadata.etfType || 'N/A'}</div>
                                     </div>
                                 </div>
@@ -325,11 +334,13 @@ export default function EtfDetailPage() {
                                         <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-100 dark:border-blue-500/20">
                                             <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                         </div>
-                                        Top 10 Holdings
+                                        {t('topHoldings')}
                                     </CardTitle>
-                                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">
-                                        {etfMetadata.holdingsCount.toLocaleString()} Total
-                                    </div>
+                                    {etfMetadata.holdingsCount !== null && etfMetadata.holdingsCount !== undefined && (
+                                        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">
+                                            {etfMetadata.holdingsCount.toLocaleString()} {t('total')}
+                                        </div>
+                                    )}
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-3 px-6 pb-6">
@@ -353,7 +364,7 @@ export default function EtfDetailPage() {
                                     </div>
                                 ))}
                                 {(!etfMetadata.topHoldings || etfMetadata.topHoldings.length === 0) && (
-                                    <div className="py-8 text-center text-slate-500">No holdings data available</div>
+                                    <div className="py-8 text-center text-slate-500">{t('noHoldings')}</div>
                                 )}
                             </CardContent>
                         </GlassCard>
@@ -364,7 +375,7 @@ export default function EtfDetailPage() {
                                     <div className="w-10 h-10 bg-purple-50 dark:bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-100 dark:border-purple-500/20">
                                         <PieChart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                                     </div>
-                                    Sector Exposure
+                                    {t('sectorExposure')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="px-6 pb-6 space-y-5">
@@ -383,7 +394,7 @@ export default function EtfDetailPage() {
                                     </div>
                                 ))}
                                 {sectors.length === 0 && (
-                                    <div className="py-8 text-center text-slate-500">No sector data available</div>
+                                    <div className="py-8 text-center text-slate-500">{t('noSectors')}</div>
                                 )}
                             </CardContent>
                         </GlassCard>
@@ -399,26 +410,37 @@ export default function EtfDetailPage() {
                                     <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
                                         <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
-                                    Historical Returns
+                                    {t('historicalReturns')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 px-6 pb-6">
-                                {[{ label: 'Daily Return', val: etfPriceChanges.dailyChangePercent },
-                                { label: 'Monthly Return', val: etfPriceChanges.monthlyChangePercent },
-                                { label: 'YTD Return', val: etfPriceChanges.ytdChangePercent },
-                                { label: '1 Year Return', val: etfPriceChanges.yearlyChangePercent }
-                                ].map((item) => (
-                                    <div key={item.label} className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${item.val >= 0
-                                        ? "bg-emerald-50/40 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-500/20 hover:bg-emerald-50"
-                                        : "bg-rose-50/40 border-rose-100 dark:bg-rose-900/10 dark:border-rose-500/20 hover:bg-rose-50"
-                                        }`}>
-                                        <span className="font-semibold text-slate-700 dark:text-slate-300">{item.label}</span>
-                                        <span className={`font-bold text-xl ${item.val >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-                                            {item.val >= 0 ? "+" : ""}
-                                            {formatPercent(item.val)}
-                                        </span>
-                                    </div>
-                                ))}
+                                {[{ label: t('dailyReturn'), val: etfPriceChanges.dailyChangePercent },
+                                { label: t('monthlyReturn'), val: etfPriceChanges.monthlyChangePercent },
+                                { label: t('ytdReturn'), val: etfPriceChanges.ytdChangePercent },
+                                { label: t('yearlyReturn'), val: etfPriceChanges.yearlyChangePercent }
+                                ].map((item) => {
+                                    const hasValue = item.val !== null && item.val !== undefined;
+                                    const isPositive = hasValue && item.val >= 0;
+                                    const cardClass = !hasValue
+                                        ? "bg-slate-50/40 border-slate-200 dark:bg-slate-900/10 dark:border-slate-800 hover:bg-slate-50"
+                                        : isPositive
+                                            ? "bg-emerald-50/40 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-500/20 hover:bg-emerald-50"
+                                            : "bg-rose-50/40 border-rose-100 dark:bg-rose-900/10 dark:border-rose-500/20 hover:bg-rose-50";
+                                    const textClass = !hasValue
+                                        ? "text-slate-500 dark:text-slate-400"
+                                        : isPositive
+                                            ? "text-emerald-600 dark:text-emerald-400"
+                                            : "text-rose-600 dark:text-rose-400";
+                                    return (
+                                        <div key={item.label} className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${cardClass}`}>
+                                            <span className="font-semibold text-slate-700 dark:text-slate-300">{item.label}</span>
+                                            <span className={`font-bold text-xl ${textClass}`}>
+                                                {hasValue && isPositive ? "+" : ""}
+                                                {hasValue ? formatPercent(item.val) : 'N/A'}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
                             </CardContent>
                         </GlassCard>
                     </div>
@@ -433,40 +455,42 @@ export default function EtfDetailPage() {
                                     <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700">
                                         <Info className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                                     </div>
-                                    Fund Blueprint
+                                    {t('fundBlueprint')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-8 px-6 pb-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl">
-                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Inception Date</div>
-                                        <div className="font-bold text-slate-900 dark:text-white text-lg">{new Date(etfMetadata.inceptionDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">{t('inceptionDate')}</div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-lg">
+                                            {etfMetadata.inceptionDate ? new Date(etfMetadata.inceptionDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
+                                        </div>
                                     </div>
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl">
-                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Exchange</div>
-                                        <div className="font-bold text-slate-900 dark:text-white text-lg">{etfMetadata.primaryExchange}</div>
+                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">{t('exchange')}</div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-lg">{etfMetadata.primaryExchange || 'N/A'}</div>
                                     </div>
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl">
-                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Benchmark</div>
+                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">{t('benchmark')}</div>
                                         <div className="font-bold text-slate-900 dark:text-white text-lg">{etfMetadata.benchmarkIndex || 'N/A'}</div>
                                     </div>
                                     <div className="p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl">
-                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Dist. Frequency</div>
+                                        <div className="text-[13px] uppercase tracking-wider font-semibold text-slate-500 mb-1">{t('distFrequency')}</div>
                                         <div className="font-bold text-slate-900 dark:text-white text-lg">{etfMetadata.distributionFrequency || 'N/A'}</div>
                                     </div>
                                 </div>
-
+ 
                                 <div>
-                                    <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Structure Classifications</h4>
+                                    <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">{t('structureClassifications')}</h4>
                                     <div className="flex flex-wrap gap-3">
                                         <div className={`px-4 py-2 rounded-xl border text-sm font-bold ${etfMetadata.isLeveraged ? 'bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400' : 'bg-slate-100/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'}`}>
-                                            {etfMetadata.isLeveraged ? 'Leveraged' : 'Not Leveraged'}
+                                            {etfMetadata.isLeveraged ? t('leveraged') : t('notLeveraged')}
                                         </div>
                                         <div className={`px-4 py-2 rounded-xl border text-sm font-bold ${etfMetadata.isInverse ? 'bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400' : 'bg-slate-100/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'}`}>
-                                            {etfMetadata.isInverse ? 'Inverse' : 'Not Inverse'}
+                                            {etfMetadata.isInverse ? t('inverse') : t('notInverse')}
                                         </div>
                                         <div className={`px-4 py-2 rounded-xl border text-sm font-bold ${etfMetadata.isActivelyManaged ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-700 dark:text-indigo-400' : 'bg-slate-100/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'}`}>
-                                            {etfMetadata.isActivelyManaged ? 'Actively Managed' : 'Passively Managed'}
+                                            {etfMetadata.isActivelyManaged ? t('activelyManaged') : t('passivelyManaged')}
                                         </div>
                                     </div>
                                 </div>
@@ -479,34 +503,34 @@ export default function EtfDetailPage() {
                                     <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-100 dark:border-blue-500/20">
                                         <ExternalLink className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                     </div>
-                                    Knowledge Center
+                                    {t('knowledgeCenter')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 px-6 pb-6">
                                 <button className="w-full flex items-center justify-between p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl hover:bg-blue-50/50 dark:hover:bg-blue-900/10 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all duration-300 group">
                                     <div className="text-left">
-                                        <div className="font-bold text-slate-900 dark:text-white text-lg mb-1 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">Fund Prospectus</div>
-                                        <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Download official disclosure documents</div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-lg mb-1 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{t('fundProspectus')}</div>
+                                        <div className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('downloadDisclosure')}</div>
                                     </div>
                                     <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <ArrowRight className="w-5 h-5 text-blue-500" />
                                     </div>
                                 </button>
-
+ 
                                 <button className="w-full flex items-center justify-between p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 hover:border-emerald-200 dark:hover:border-emerald-900/50 transition-all duration-300 group">
                                     <div className="text-left">
-                                        <div className="font-bold text-slate-900 dark:text-white text-lg mb-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">Annual Report</div>
-                                        <div className="text-sm font-medium text-slate-500 dark:text-slate-400">View latest comprehensive financials</div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-lg mb-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">{t('annualReport')}</div>
+                                        <div className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('viewFinancials')}</div>
                                     </div>
                                     <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <ArrowRight className="w-5 h-5 text-emerald-500" />
                                     </div>
                                 </button>
-
+ 
                                 <button className="w-full flex items-center justify-between p-5 bg-white/40 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl hover:bg-purple-50/50 dark:hover:bg-purple-900/10 hover:border-purple-200 dark:hover:border-purple-900/50 transition-all duration-300 group">
                                     <div className="text-left">
-                                        <div className="font-bold text-slate-900 dark:text-white text-lg mb-1 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">Holdings Breakdown</div>
-                                        <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Export complete portfolio dataset</div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-lg mb-1 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">{t('holdingsBreakdown')}</div>
+                                        <div className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('exportDataset')}</div>
                                     </div>
                                     <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <ArrowRight className="w-5 h-5 text-purple-500" />
