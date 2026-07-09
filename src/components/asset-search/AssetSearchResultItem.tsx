@@ -43,7 +43,7 @@ export function AssetSearchResultItem({
 }: AssetSearchResultItemProps) {
     const t = useTranslations("AssetTypes");
     const tNames = useTranslations("AssetNames");
-    const typeLabel = asset.type ? t(asset.type.toLowerCase() as any) : "";
+    const typeLabel = asset.type ? t(asset.type.toLowerCase() as Parameters<typeof t>[0]) : "";
 
     return (
         <div

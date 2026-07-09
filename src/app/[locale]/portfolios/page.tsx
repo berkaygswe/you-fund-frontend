@@ -298,7 +298,7 @@ export default function PortfoliosPage() {
                                   <div>
                                     <div className="font-bold text-sm">{position.assetSymbol}</div>
                                     <div className="text-[10px] text-muted-foreground uppercase">
-                                      {position.assetType ? tAsset(position.assetType.toLowerCase() as any) : ""}
+                                      {position.assetType ? tAsset(position.assetType.toLowerCase() as Parameters<typeof tAsset>[0]) : ""}
                                     </div>
                                   </div>
                                 </div>

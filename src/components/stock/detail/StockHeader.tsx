@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Building2, Target, Star } from 'lucide-react';
+import { Building2, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
 import { AddToPortfolioButton } from '@/components/portfolio/AddToPortfolioButton';
+import AddToWatchlistButton from '@/components/watchlist/AddToWatchlistButton';
 import { AssetSummary } from '@/types/portfolio';
+import type { UUID } from 'crypto';
 
 interface StockHeaderProps {
     symbol: string;
@@ -56,21 +57,23 @@ export function StockHeader({ symbol, name, sector, industry, primaryExchange, a
                 </div>
                 <div className="hidden sm:flex items-center gap-2">
                     {assetId && (
-                        <AddToPortfolioButton 
-                            asset={{
-                                id: assetId as unknown as AssetSummary['id'],
-                                symbol: symbol,
-                                name: name,
-                                type: 'stock'
-                            }}
-                            variant="default"
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                        />
+                        <>
+                            <AddToPortfolioButton 
+                                asset={{
+                                    id: assetId as unknown as AssetSummary['id'],
+                                    symbol: symbol,
+                                    name: name,
+                                    type: 'stock'
+                                }}
+                                variant="default"
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                            />
+                            <AddToWatchlistButton 
+                                symbol={symbol}
+                                assetId={assetId as UUID}
+                            />
+                        </>
                     )}
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
-                        <Star className="w-4 h-4" />
-                        Watchlist
-                    </Button>
                 </div>
             </div>
 

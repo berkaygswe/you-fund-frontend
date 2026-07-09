@@ -6,6 +6,7 @@ import { AddToPortfolioButton } from '@/components/portfolio/AddToPortfolioButto
 import AddToWatchlistButton from '@/components/watchlist/AddToWatchlistButton';
 import { AssetSummary } from '@/types/portfolio';
 import { useTranslations } from 'next-intl';
+import type { UUID } from 'crypto';
 
 interface EtfHeaderProps {
     symbol: string;
@@ -89,7 +90,7 @@ export function EtfHeader({
                             />
                             <AddToWatchlistButton 
                                 symbol={symbol}
-                                assetId={assetId as any}
+                                assetId={assetId as UUID}
                             />
                         </>
                     )}

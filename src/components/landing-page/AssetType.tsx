@@ -60,13 +60,13 @@ const assets = [
     },
     {
         type: 'fund',
-        name: 'Istanbul Index Fund',
-        symbol: 'IIH',
+        name: 'Pusula Portfoy Serbest Fon',
+        symbol: 'PHE',
     },
     {
         type: 'fund',
-        name: 'Borsa Istanbul Growth Portfolio',
-        symbol: 'BGP',
+        name: 'Tera Portfoy Para Piyasası Fonu',
+        symbol: 'TP2',
     }
 ];
 
@@ -165,7 +165,7 @@ export default function AssetType() {
                             <div className="space-y-2 pt-4 border-t border-border/40">
                                 <div className="flex justify-between text-xs font-bold">
                                     <span className="text-muted-foreground">{t('volume')}</span>
-                                    <span className="text-foreground">{asset.volume.toLocaleString()}</span>
+                                    <span className="text-foreground">{formatCurrency(asset.volume, true)}</span>
                                 </div>
                             </div>
                         )}
