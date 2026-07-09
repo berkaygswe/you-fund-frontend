@@ -1,7 +1,12 @@
 {
   "Common": {
     "language": "Türkçe",
-    "synced": "SENKRONİZE"
+    "synced": "SENKRONİZE EDİLDİ",
+    "weekly": "Haftalık",
+    "monthly": "Aylık",
+    "threeMonth": "3A",
+    "sixMonth": "6A",
+    "yearly": "1Y"
   },
   "Nav": {
     "home": "Anasayfa",
@@ -35,13 +40,13 @@
       "volatilityWatch": "Oynaklık Takibi",
       "marketPerformanceGrid": "Piyasa Performans Tablosu",
       "assetCrossComparison": "Varlık Karşılaştırması",
-      "liveIntelligenceFeed": "Canlı Zeka Akışı",
+      "newsFeed": "Haber Akışı",
       "commandCenter": "Komuta Merkezi",
       "exploreFunds": "Fonları Keşfet",
       "exploreEtfs": "ETF'leri Keşfet",
       "compareAssets": "Varlıkları Karşılaştır",
       "marketCalendar": "Piyasa Takvimi",
-       "fearGreedIndex": "Korku ve Açgözlülük Endeksi",
+      "fearGreedIndex": "Korku ve Açgözlülük Endeksi",
       "fearGreedDescription": "Piyasa genişliği, endeks ivmesi, varlık ivmesi ve oynaklığa dayanmaktadır",
       "marketBreadth": "Piyasa Genişliği",
       "hotCategory": "Popüler Kategori",
@@ -128,7 +133,14 @@
   },
   "Watchlist": {
     "title": "İzleme Listem",
-    "subtitle": "Favori varlıklarınızı takip edin"
+    "subtitle": "Favori varlıklarınızı takip edin",
+    "button": "İzleme Listesine Ekle",
+    "addToWatchlist": "İzleme Listesine Ekle",
+    "noWatchlists": "İzleme listesi bulunamadı. Aşağıdan bir tane oluşturun.",
+    "added": "Eklendi",
+    "add": "Ekle",
+    "placeholderNew": "Yeni izleme listesi adı",
+    "create": "Oluştur"
   },
   "Auth": {
     "Login": {
@@ -159,6 +171,7 @@
     }
   },
   "Portfolio": {
+    "addToPortfolio": "Portföye Ekle",
     "TransactionDialog": {
       "subtotal": "Ara Toplam",
       "feesAdded": "Ücretler (eklendi)",
@@ -220,7 +233,7 @@
   },
   "Landing": {
     "Hero": {
-      "badge": "🚀 Küresel piyasalarda 1.000'den fazla varlık desteği",
+      "badge": "🚀 Küresel piyasalarda 10.000'den fazla varlık desteği",
       "titleLine1": "Eksiksiz",
       "titleLine2": "Finansal Dünyanız",
       "subtitle": "Hisse senetlerini, ETF'leri, kripto paraları ve yatırım fonlarını gerçek zamanlı karşılaştırın. Gelişmiş analitik araçlarıyla portföy simülasyonu yapın, stratejilerinizi geriye dönük test edin ve daha akıllıca yatırım kararları alın.",

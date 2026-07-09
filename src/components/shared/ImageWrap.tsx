@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface ImageWrapProps {
@@ -17,6 +17,10 @@ const ImageWrap = ({
   alt = 'Image',
 }: ImageWrapProps) => {
   const [imgSrc, setImgSrc] = useState(src ?? '/bank.jpg');
+
+  useEffect(() => {
+    setImgSrc(src ?? '/bank.jpg');
+  }, [src]);
 
   return (
     <Image

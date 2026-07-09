@@ -1,7 +1,12 @@
 {
   "Common": {
     "language": "English",
-    "synced": "SYNCED"
+    "synced": "SYNCED",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "threeMonth": "3M",
+    "sixMonth": "6M",
+    "yearly": "1Y"
   },
   "Nav": {
     "home": "Home",
@@ -35,13 +40,13 @@
       "volatilityWatch": "Volatility Watch",
       "marketPerformanceGrid": "Market Performance Grid",
       "assetCrossComparison": "Asset Cross-Comparison",
-      "liveIntelligenceFeed": "Live Intelligence Feed",
+      "newsFeed": "News Feed",
       "commandCenter": "Command Center",
       "exploreFunds": "Explore Funds",
       "exploreEtfs": "Explore ETFs",
       "compareAssets": "Compare Assets",
       "marketCalendar": "Market Calendar",
-       "fearGreedIndex": "Fear & Greed Index",
+      "fearGreedIndex": "Fear & Greed Index",
       "fearGreedDescription": "Based on breadth, index momentum, asset momentum, volatility",
       "marketBreadth": "Market Breadth",
       "hotCategory": "Hot Category",
@@ -128,7 +133,14 @@
   },
   "Watchlist": {
     "title": "My Watchlist",
-    "subtitle": "Track your favorite assets"
+    "subtitle": "Track your favorite assets",
+    "button": "Watchlist",
+    "addToWatchlist": "Add to Watchlist",
+    "noWatchlists": "No watchlists found. Create one below.",
+    "added": "Added",
+    "add": "Add",
+    "placeholderNew": "New watchlist name",
+    "create": "Create"
   },
   "Auth": {
     "Login": {
@@ -159,6 +171,7 @@
     }
   },
   "Portfolio": {
+    "addToPortfolio": "Add to Portfolio",
     "TransactionDialog": {
       "subtotal": "Subtotal",
       "feesAdded": "Fees (added)",
@@ -220,7 +233,7 @@
   },
   "Landing": {
     "Hero": {
-      "badge": "🚀 Now supporting 1,000+ assets across global markets",
+      "badge": "🚀 Now supporting 10,000+ assets across global markets",
       "titleLine1": "Your Complete",
       "titleLine2": "Financial Universe",
       "subtitle": "Compare stocks, ETFs, cryptocurrencies, and funds in real-time. Simulate portfolios, backtest strategies, and make smarter investment decisions with advanced analytics.",

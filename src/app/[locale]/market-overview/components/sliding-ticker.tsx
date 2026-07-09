@@ -19,6 +19,7 @@ const popularAssets: { symbol: string; name: string; type: AssetType }[] = [
     { symbol: 'IXIC', name: 'NASDAQ', type: 'index' },
     { symbol: 'GSPC', name: 'S&P 500', type: 'index' },
     { symbol: 'BTC', name: 'BTC', type: 'cryptocurrency' },
+    { symbol: 'USDTRY', name: 'USD/TRY', type: 'forex' },
 ];
 
 /**

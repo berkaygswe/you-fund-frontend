@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, usePathname } from "@/i18n/routing";
 import { watchlistApi } from '@/services/watchlistApi';
-import { WatchlistResponse } from '@/types/watchlist';
-import { Bookmark, Plus, Loader2, Check } from 'lucide-react';
+import { Star, Plus, Loader2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Popover,
@@ -15,6 +14,7 @@ import {
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 
 interface AddToWatchlistButtonProps {
     symbol: string;
@@ -26,6 +26,7 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
     const { status } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
+    const t = useTranslations('Watchlist');
 
     const [open, setOpen] = useState(false);
     const [newWatchlistName, setNewWatchlistName] = useState('');
@@ -38,7 +39,6 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
     });
 
     // Query for items in each watchlist to determine if the asset is already added
-    // Note: This matches the logic from before but is now cached and managed by React Query
     const { data: addedWatchlistIds = new Set<number>(), isLoading: isLoadingMembership } = useQuery({
         queryKey: ['watchlist-membership', symbol, assetId],
         queryFn: async () => {
@@ -74,7 +74,7 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
 
     // Mutation to add asset to watchlist
     const addToWatchlistMutation = useMutation({
-        mutationFn: (watchlistId: number,) => watchlistApi.addAssetToWatchlist(watchlistId, assetId),
+        mutationFn: (watchlistId: number) => watchlistApi.addAssetToWatchlist(watchlistId, assetId),
         onSuccess: (_, watchlistId) => {
             queryClient.invalidateQueries({ queryKey: ['watchlist-membership', symbol, assetId] });
             queryClient.invalidateQueries({ queryKey: ['watchlists'] }); // Update counts
@@ -89,7 +89,6 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
     const handleOpenChange = (newOpen: boolean) => {
         if (newOpen && status !== 'authenticated') {
             // Redirect to login if unauthenticated
-            // Usually login paths accept a callbackUrl or redirect
             router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
             return;
         }
@@ -114,14 +113,14 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
     return (
         <Popover open={open} onOpenChange={handleOpenChange}>
             <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                    <Bookmark className="h-4 w-4" />
-                    <span>Watchlist</span>
+                <Button variant="outline" size="sm" className="gap-2 shadow-sm cursor-pointer">
+                    <Star className="h-4 w-4" />
+                    <span>{t('button')}</span>
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-4" align="end">
                 <div className="flex flex-col gap-4">
-                    <h4 className="font-semibold text-sm leading-none">Add to Watchlist</h4>
+                    <h4 className="font-semibold text-sm leading-none">{t('addToWatchlist')}</h4>
 
                     {isLoading ? (
                         <div className="flex justify-center p-4">
@@ -131,7 +130,7 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
                         <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
                             {watchlists.length === 0 ? (
                                 <p className="text-sm text-center text-muted-foreground p-2">
-                                    No watchlists found. Create one below.
+                                    {t('noWatchlists')}
                                 </p>
                             ) : (
                                 watchlists.map((wl) => {
@@ -149,9 +148,9 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
                                                 {isAdding === wl.id ? (
                                                     <Loader2 className="h-4 w-4 animate-spin" />
                                                 ) : isAdded ? (
-                                                    <><Check className="h-3 w-3 mr-1" /> Added</>
+                                                    <><Check className="h-3 w-3 mr-1" /> {t('added')}</>
                                                 ) : (
-                                                    <><Plus className="h-3 w-3 mr-1" /> Add</>
+                                                    <><Plus className="h-3 w-3 mr-1" /> {t('add')}</>
                                                 )}
                                             </Button>
                                         </div>
@@ -164,14 +163,14 @@ export default function AddToWatchlistButton({ symbol, assetId }: AddToWatchlist
                     <div className="pt-2 border-t">
                         <form onSubmit={handleCreateWatchlist} className="flex gap-2">
                             <Input
-                                placeholder="New watchlist name"
+                                placeholder={t('placeholderNew')}
                                 value={newWatchlistName}
                                 onChange={(e) => setNewWatchlistName(e.target.value)}
                                 className="h-8 text-sm"
                                 disabled={isCreating}
                             />
                             <Button type="submit" size="sm" className="h-8" disabled={isCreating || !newWatchlistName.trim()}>
-                                {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create"}
+                                {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('create')}
                             </Button>
                         </form>
                     </div>

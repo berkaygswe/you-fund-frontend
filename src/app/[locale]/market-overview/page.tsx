@@ -118,7 +118,7 @@ export default async function MarketOverview({
                             <div className="flex items-center justify-between px-1">
                                 <div className="flex items-center gap-2">
                                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                    <h2 className="text-xs font-semibold tracking-[0.2em] uppercase text-muted-foreground">{t('liveIntelligenceFeed')}</h2>
+                                    <h2 className="text-xs font-semibold tracking-[0.2em] uppercase text-muted-foreground">{t('newsFeed')}</h2>
                                 </div>
                                 <button className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
                                     {t('viewArchive')} <ArrowUpRight className="h-3 w-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
