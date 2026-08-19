@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { 
   Plus, 
@@ -13,9 +13,19 @@ import {
   Trash2,
   Edit2,
   ChevronRight,
-  DollarSign
+  DollarSign,
+  ArrowDownLeft,
+  ArrowUpRight,
+  AlertCircle
 } from "lucide-react";
-import { usePortfolios, usePortfolioHoldings, usePortfolioTransactions, useDeletePortfolio, useUpdatePortfolio } from "@/hooks/usePortfolios";
+import { 
+  usePortfolios, 
+  usePortfolioOverview,
+  usePortfolioHoldings, 
+  usePortfolioTransactions, 
+  usePortfolioCashMovements,
+  useDeletePortfolio 
+} from "@/hooks/usePortfolios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,14 +47,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TransactionDialog } from "@/components/portfolio/TransactionDialog";
 import { CreatePortfolioDialog } from "@/components/portfolio/CreatePortfolioDialog";
 import { EditPortfolioDialog } from "@/components/portfolio/EditPortfolioDialog";
+import { CashMovementDialog } from "@/components/portfolio/CashMovementDialog";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { formatPercent } from "@/utils/formatPercent";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
 import { useCurrency } from "@/hooks/useCurrency";
 
 export default function PortfoliosPage() {
@@ -55,28 +64,28 @@ export default function PortfoliosPage() {
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>(null);
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
   const [isCreatePortfolioOpen, setIsCreatePortfolioOpen] = useState(false);
+  const [isCashMovementOpen, setIsCashMovementOpen] = useState(false);
   const [editingPortfolio, setEditingPortfolio] = useState<{ id: number; name: string } | null>(null);
   const [isEditPortfolioOpen, setIsEditPortfolioOpen] = useState(false);
 
   const currency = useCurrency();
 
-  // Move state update to useEffect to avoid render-phase state updates
+  // Keep selected portfolio in sync
   useEffect(() => {
     if (!selectedPortfolioId && portfolios && portfolios.length > 0) {
       setSelectedPortfolioId(portfolios[0].id);
     }
   }, [selectedPortfolioId, portfolios]);
 
+  const { data: overview, isLoading: loadingOverview } = usePortfolioOverview(selectedPortfolioId, currency);
   const { data: holdings, isLoading: loadingHoldings } = usePortfolioHoldings(selectedPortfolioId, currency);
   const { data: transactions, isLoading: loadingTransactions } = usePortfolioTransactions(selectedPortfolioId);
+  const { data: cashMovements, isLoading: loadingCashMovements } = usePortfolioCashMovements(selectedPortfolioId);
   const deletePortfolio = useDeletePortfolio();
   
   const formatCurrency = useFormatCurrency();
-
   const activePortfolio = portfolios?.find(p => p.id === selectedPortfolioId);
 
-  // If we're redirected back here or status is unauthenticated, the middleware should handle it,
-  // but we can also show a friendly message here if needed.
   if (status === 'unauthenticated') {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -95,6 +104,14 @@ export default function PortfoliosPage() {
     }
   };
 
+  const totalDisplayValue = overview?.totalPortfolioValue ?? (
+    (holdings?.totalMarketValue ?? 0) + (activePortfolio?.cashBalance ?? 0)
+  );
+
+  const activeCashBalance = overview?.cashBalance ?? activePortfolio?.cashBalance ?? 0;
+  const positionsValue = overview?.positionsMarketValue ?? holdings?.totalMarketValue ?? 0;
+  const positionsCount = overview?.positions.length ?? holdings?.positions.length ?? 0;
+
   return (
     <div className="space-y-8 pb-10">
       {/* Header Section */}
@@ -105,11 +122,20 @@ export default function PortfoliosPage() {
           </h1>
           <p className="text-muted-foreground mt-1">{t("manageSubtitle")}</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          <Button 
+            onClick={() => setIsCashMovementOpen(true)}
+            disabled={!selectedPortfolioId}
+            variant="outline"
+            className="border-primary/20 hover:bg-primary/5 cursor-pointer"
+          >
+            <ArrowDownLeft className="h-4 w-4 mr-2 text-primary" />
+            {t("manageCapital")}
+          </Button>
           <Button 
             onClick={() => setIsCreatePortfolioOpen(true)}
             variant="outline"
-            className="border-primary/20 hover:bg-primary/5"
+            className="border-primary/20 hover:bg-primary/5 cursor-pointer"
           >
             <Plus className="h-4 w-4 mr-2" />
             {t("newPortfolio")}
@@ -117,7 +143,7 @@ export default function PortfoliosPage() {
           <Button 
             onClick={() => setIsAddTransactionOpen(true)}
             disabled={!selectedPortfolioId}
-            className="shadow-lg shadow-primary/20"
+            className="shadow-lg shadow-primary/20 cursor-pointer"
           >
             <Plus className="h-4 w-4 mr-2" />
             {t("addTransaction")}
@@ -126,7 +152,8 @@ export default function PortfoliosPage() {
       </div>
 
       {loadingPortfolios ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Skeleton className="h-32 rounded-3xl" />
           <Skeleton className="h-32 rounded-3xl" />
           <Skeleton className="h-32 rounded-3xl" />
           <Skeleton className="h-32 rounded-3xl" />
@@ -134,63 +161,126 @@ export default function PortfoliosPage() {
       ) : portfolios && portfolios.length > 0 ? (
         <div className="space-y-8">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Total Portfolio Value Card (Overview Single Source of Truth) */}
             <Card className="bg-gradient-to-br from-primary/10 to-transparent border-white/5 rounded-3xl overflow-hidden relative group transition-all hover:border-primary/20">
               <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Wallet className="h-16 w-16" />
               </div>
               <CardHeader className="pb-2">
-                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">{t("totalMarketValue")}</CardDescription>
+                <div className="flex justify-between items-center">
+                  <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">
+                    {t("totalPortfolioValue")}
+                  </CardDescription>
+                  {activePortfolio?.revision !== undefined && (
+                    <Badge variant="outline" className="text-[9px] font-mono px-1.5 py-0 border-white/10 opacity-70">
+                      Rev {activePortfolio.revision}
+                    </Badge>
+                  )}
+                </div>
                 <CardTitle className="text-3xl font-black">
-                  {holdings ? formatCurrency(holdings.totalMarketValue) : '--'}
+                  {loadingOverview && !overview ? '--' : formatCurrency(totalDisplayValue)}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="font-medium">{activePortfolio?.baseCurrency || 'USD'}</span>
+                  <span className="font-medium">{overview?.displayCurrency || activePortfolio?.baseCurrency || 'USD'}</span>
                   <span>• {t("baseCurrency")}</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-background/50 border-white/5 rounded-3xl transition-all hover:border-white/10">
+            {/* Cash Balance Card */}
+            <Card className="bg-background/50 border-white/5 rounded-3xl transition-all hover:border-white/10 relative group">
+              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                <DollarSign className="h-16 w-16" />
+              </div>
               <CardHeader className="pb-2">
-                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">{t("unrealizedPnL")}</CardDescription>
-                <CardTitle className={cn(
-                  "text-3xl font-black flex items-center gap-2",
-                  (holdings?.totalUnrealizedPnl || 0) >= 0 ? "text-green-500" : "text-red-500"
-                )}>
-                  {holdings ? (
-                    <>
-                      {holdings.totalUnrealizedPnl >= 0 ? <TrendingUp className="h-6 w-6" /> : <TrendingDown className="h-6 w-6" />}
-                      {formatCurrency(holdings.totalUnrealizedPnl)}
-                    </>
-                  ) : '--'}
+                <div className="flex justify-between items-center">
+                  <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">
+                    {t("availableSimulationCash")}
+                  </CardDescription>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsCashMovementOpen(true)}
+                    className="h-6 px-2 text-[10px] font-bold text-primary hover:bg-primary/10 rounded-lg cursor-pointer"
+                  >
+                    {t("manageCapital")}
+                  </Button>
+                </div>
+                <CardTitle className="text-3xl font-black text-foreground">
+                  {formatCurrency(activeCashBalance)}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className={cn(
-                  "text-xs font-bold px-2 py-0.5 rounded-full w-fit",
-                  (holdings?.totalUnrealizedPnlPercent || 0) >= 0 ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
-                )}>
-                  {holdings ? formatPercent(holdings.totalUnrealizedPnlPercent) : '--'}
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span>{activePortfolio?.baseCurrency || 'USD'}</span>
+                  <span>• {t("simulationCashSub")}</span>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Positions Value & Unrealized PnL Card */}
+            <Card className="bg-background/50 border-white/5 rounded-3xl transition-all hover:border-white/10">
+              <CardHeader className="pb-2">
+                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">
+                  {t("positionsMarketValue")}
+                </CardDescription>
+                <CardTitle className={cn(
+                  "text-3xl font-black flex items-center gap-2",
+                  (holdings?.totalUnrealizedPnl || 0) >= 0 ? "text-green-500" : "text-red-500"
+                )}>
+                  {loadingHoldings && !holdings ? '--' : formatCurrency(positionsValue)}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1",
+                    (holdings?.totalUnrealizedPnl || 0) >= 0 ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
+                  )}>
+                    {(holdings?.totalUnrealizedPnl || 0) >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                    {holdings ? formatPercent(holdings.totalUnrealizedPnlPercent) : '--'}
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {holdings ? formatCurrency(holdings.totalUnrealizedPnl) : '--'}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Asset Allocation Card */}
             <Card className="bg-background/50 border-white/5 rounded-3xl">
               <CardHeader className="pb-2">
-                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">{t("assetAllocation")}</CardDescription>
-                <CardTitle className="text-3xl font-black">{holdings?.positions.length || 0}</CardTitle>
+                <CardDescription className="uppercase text-[10px] font-bold tracking-widest opacity-60">
+                  {t("assetAllocation")}
+                </CardDescription>
+                <CardTitle className="text-3xl font-black">{positionsCount}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <PieChart className="h-3 w-3" />
-                  <span>{t("diversifiedAssets", { count: holdings?.positions.length || 0 })}</span>
+                  <span>{t("diversifiedAssets", { count: positionsCount })}</span>
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          {/* Partial Valuation Alert Banner */}
+          {overview?.valuationStatus === 'PARTIAL' && (
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-medium animate-in fade-in duration-200">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <div>
+                <p className="font-semibold">{t("partialValuationWarning")}</p>
+                {overview.unpricedAssetIds.length > 0 && (
+                  <p className="text-[11px] opacity-80 mt-0.5">
+                    {t("unpricedAssets", { ids: overview.unpricedAssetIds.join(", ") })}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Portfolio Selector & Tabs */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -210,7 +300,11 @@ export default function PortfoliosPage() {
                   >
                     <div>
                       <div className="font-bold text-sm">{portfolio.name}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase">{portfolio.baseCurrency}</div>
+                      <div className="text-[10px] text-muted-foreground flex items-center gap-2 mt-0.5">
+                        <span className="uppercase">{portfolio.baseCurrency}</span>
+                        <span>•</span>
+                        <span>{t("cashPrefix")}: {formatCurrency(portfolio.cashBalance || 0)}</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <ChevronRight className={cn(
@@ -219,13 +313,13 @@ export default function PortfoliosPage() {
                       )} />
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full cursor-pointer">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem 
-                            className="text-xs"
+                            className="text-xs cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               setEditingPortfolio({ id: portfolio.id, name: portfolio.name });
@@ -235,7 +329,7 @@ export default function PortfoliosPage() {
                             <Edit2 className="h-3 w-3 mr-2" /> {t("editName")}
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            className="text-xs text-red-500 focus:text-red-500"
+                            className="text-xs text-red-500 focus:text-red-500 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeletePortfolio(portfolio.id);
@@ -254,10 +348,12 @@ export default function PortfoliosPage() {
             <div className="lg:col-span-3">
               <Tabs defaultValue="holdings" className="w-full">
                 <TabsList className="bg-muted/30 p-1 rounded-xl mb-6">
-                  <TabsTrigger value="holdings" className="rounded-lg px-6">{t("positions")}</TabsTrigger>
-                  <TabsTrigger value="history" className="rounded-lg px-6">{t("history")}</TabsTrigger>
+                  <TabsTrigger value="holdings" className="rounded-lg px-6 cursor-pointer">{t("positions")}</TabsTrigger>
+                  <TabsTrigger value="history" className="rounded-lg px-6 cursor-pointer">{t("history")}</TabsTrigger>
+                  <TabsTrigger value="cashMovements" className="rounded-lg px-6 cursor-pointer">{t("capitalMovements")}</TabsTrigger>
                 </TabsList>
 
+                {/* Positions Tab */}
                 <TabsContent value="holdings" className="m-0">
                   <Card className="border-white/5 bg-background/50 rounded-3xl overflow-hidden">
                     <Table>
@@ -328,6 +424,7 @@ export default function PortfoliosPage() {
                   </Card>
                 </TabsContent>
 
+                {/* History (Trades) Tab */}
                 <TabsContent value="history" className="m-0">
                   <Card className="border-white/5 bg-background/50 rounded-3xl overflow-hidden">
                     <Table>
@@ -370,13 +467,88 @@ export default function PortfoliosPage() {
                                 <Badge variant="outline" className={cn(
                                   "text-[9px] uppercase font-bold",
                                   tx.transactionType === 'BUY' ? "border-green-500/30 text-green-500 bg-green-500/5" : "border-red-500/30 text-red-500 bg-red-500/5"
-                                )}>
-                                  {tx.transactionType}
+                                 )}>
+                                  {tx.transactionType === 'BUY' ? t("buyType") : t("sellType")}
                                 </Badge>
                               </TableCell>
                               <TableCell className="text-right text-xs font-medium">{tx.quantity}</TableCell>
                               <TableCell className="text-right text-xs text-muted-foreground">{formatCurrency(tx.pricePerUnit)}</TableCell>
                               <TableCell className="text-right text-xs font-bold">{formatCurrency(tx.totalCost)}</TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </Card>
+                </TabsContent>
+
+                {/* Cash Movements Tab */}
+                <TabsContent value="cashMovements" className="m-0">
+                  <Card className="border-white/5 bg-background/50 rounded-3xl overflow-hidden">
+                    <Table>
+                      <TableHeader className="bg-muted/30">
+                        <TableRow className="border-white/5 hover:bg-transparent">
+                          <TableHead className="text-[10px] font-bold uppercase py-4">{t("tableDate")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4">{t("tableMovementType")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-right">{t("tableMovementAmount")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4 text-center">{t("tableRevision")}</TableHead>
+                          <TableHead className="text-[10px] font-bold uppercase py-4">{t("tableNotes")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {loadingCashMovements ? (
+                          [...Array(3)].map((_, i) => (
+                            <TableRow key={i} className="border-white/5">
+                              <TableCell colSpan={5}><Skeleton className="h-12 w-full" /></TableCell>
+                            </TableRow>
+                          ))
+                        ) : cashMovements?.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="h-64 text-center">
+                              <div className="flex flex-col items-center justify-center opacity-40">
+                                <Wallet className="h-10 w-10 mb-4" />
+                                <p className="text-sm font-medium">{t("noCapitalMovements")}</p>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          cashMovements?.map((m) => (
+                            <TableRow key={m.id} className="border-white/5 hover:bg-white/5 transition-colors">
+                              <TableCell className="py-4 text-xs text-muted-foreground">
+                                {format(new Date(m.effectiveAt), 'MMM dd, yyyy HH:mm')}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className={cn(
+                                  "text-[9px] uppercase font-bold",
+                                  m.type === 'DEPOSIT' 
+                                    ? "border-green-500/30 text-green-500 bg-green-500/5" 
+                                    : "border-amber-500/30 text-amber-500 bg-amber-500/5"
+                                )}>
+                                  {m.type === 'DEPOSIT' ? (
+                                    <span className="flex items-center gap-1">
+                                      <ArrowDownLeft className="h-3 w-3" />
+                                      {t("depositType")}
+                                    </span>
+                                  ) : (
+                                    <span className="flex items-center gap-1">
+                                      <ArrowUpRight className="h-3 w-3" />
+                                      {t("withdrawalType")}
+                                    </span>
+                                  )}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className={cn(
+                                "text-right text-xs font-bold",
+                                m.type === 'DEPOSIT' ? "text-green-500" : "text-amber-500"
+                              )}>
+                                {m.type === 'DEPOSIT' ? '+' : '-'}{formatCurrency(m.amount)}
+                              </TableCell>
+                              <TableCell className="text-center text-xs font-mono text-muted-foreground">
+                                {m.portfolioRevision}
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
+                                {m.notes || '—'}
+                              </TableCell>
                             </TableRow>
                           ))
                         )}
@@ -397,7 +569,7 @@ export default function PortfoliosPage() {
           <p className="text-muted-foreground mb-6 text-center max-w-sm">
             {t("createFirstPortfolioDesc")}
           </p>
-          <Button onClick={() => setIsCreatePortfolioOpen(true)}>
+          <Button onClick={() => setIsCreatePortfolioOpen(true)} className="cursor-pointer">
             <Plus className="h-4 w-4 mr-2" />
             {t("createFirstPortfolioBtn")}
           </Button>
@@ -415,6 +587,16 @@ export default function PortfoliosPage() {
         open={isCreatePortfolioOpen} 
         onOpenChange={setIsCreatePortfolioOpen}
       />
+
+      {selectedPortfolioId && (
+        <CashMovementDialog
+          open={isCashMovementOpen}
+          onOpenChange={setIsCashMovementOpen}
+          portfolioId={selectedPortfolioId}
+          currentCashBalance={activeCashBalance}
+          currency={activePortfolio?.baseCurrency || 'USD'}
+        />
+      )}
 
       {editingPortfolio && (
         <EditPortfolioDialog 

@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { portfolioApi } from '@/services/portfolioApi';
-import { CreatePortfolioRequest, CreateTransactionRequest } from '@/types/portfolio';
+import { 
+  CreatePortfolioRequest, 
+  CreateTransactionRequest, 
+  CreateCashMovementRequest 
+} from '@/types/portfolio';
 import { useAuth } from './useAuth';
 import { Currency } from '@/types/currency';
 
@@ -13,11 +17,38 @@ export function usePortfolios() {
   });
 }
 
+export function usePortfolioOverview(portfolioId: number | null, currency: Currency | null = 'TRY') {
+  const { status } = useAuth();
+  return useQuery({
+    queryKey: ['portfolioOverview', portfolioId, currency],
+    queryFn: () => portfolioId ? portfolioApi.getOverview(portfolioId, currency) : null,
+    enabled: status === 'authenticated' && !!portfolioId,
+  });
+}
+
 export function usePortfolioHoldings(portfolioId: number | null, currency: Currency | null = 'TRY') {
   const { status } = useAuth();
   return useQuery({
     queryKey: ['portfolioHoldings', portfolioId, currency],
     queryFn: () => portfolioId ? portfolioApi.getHoldings(portfolioId, currency) : null,
+    enabled: status === 'authenticated' && !!portfolioId,
+  });
+}
+
+export function usePortfolioCashBalance(portfolioId: number | null) {
+  const { status } = useAuth();
+  return useQuery({
+    queryKey: ['portfolioCashBalance', portfolioId],
+    queryFn: () => portfolioId ? portfolioApi.getCashBalance(portfolioId) : null,
+    enabled: status === 'authenticated' && !!portfolioId,
+  });
+}
+
+export function usePortfolioCashMovements(portfolioId: number | null) {
+  const { status } = useAuth();
+  return useQuery({
+    queryKey: ['portfolioCashMovements', portfolioId],
+    queryFn: () => portfolioId ? portfolioApi.getCashMovements(portfolioId) : null,
     enabled: status === 'authenticated' && !!portfolioId,
   });
 }
@@ -41,13 +72,34 @@ export function useCreatePortfolio() {
   });
 }
 
+export function useCreateCashMovement(portfolioId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data, idempotencyKey }: { data: CreateCashMovementRequest; idempotencyKey?: string }) => 
+      portfolioApi.createCashMovement(portfolioId, data, idempotencyKey),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolioOverview', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolioCashBalance', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolioCashMovements', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolioHoldings', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolioTransactions', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+    },
+  });
+}
+
 export function useCreateTransaction(portfolioId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateTransactionRequest) => portfolioApi.createTransaction(portfolioId, data),
+    mutationFn: ({ data, idempotencyKey }: { data: CreateTransactionRequest; idempotencyKey?: string }) => 
+      portfolioApi.createTransaction(portfolioId, data, idempotencyKey),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolioOverview', portfolioId] });
       queryClient.invalidateQueries({ queryKey: ['portfolioHoldings', portfolioId] });
       queryClient.invalidateQueries({ queryKey: ['portfolioTransactions', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolioCashBalance', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolioCashMovements', portfolioId] });
+      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
     },
   });
 }
@@ -65,11 +117,10 @@ export function useDeletePortfolio() {
 export function useUpdatePortfolio() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<CreatePortfolioRequest> }) =>
+    mutationFn: ({ id, data }: { id: number; data: { name: string } }) =>
       portfolioApi.updatePortfolio(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
     },
   });
 }
-

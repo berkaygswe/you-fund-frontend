@@ -99,7 +99,7 @@ export default function AssetTopMovers() {
                             <div
                                 key={asset.symbol}
                                 onClick={() => {
-                                    router.push(`/asset/${asset.type}/${asset.symbol}`);
+                                    router.push(`/${asset.type}/detail/${asset.symbol}`);
                                 }}
                                 className={`p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors group relative overflow-hidden cursor-pointer`}
                             >
@@ -137,7 +137,7 @@ export default function AssetTopMovers() {
                             <div
                                 key={asset.symbol}
                                 onClick={() => {
-                                    router.push(`/asset/${asset.type}/${asset.symbol}`);
+                                    router.push(`/${asset.type}/detail/${asset.symbol}`);
                                 }}
                                 className={`p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 transition-colors group relative overflow-hidden cursor-pointer`}
                             >
