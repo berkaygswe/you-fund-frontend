@@ -10,7 +10,9 @@ import {
   CashBalanceResponse,
   CreatePortfolioRequest, 
   CreateCashMovementRequest,
-  CreateTransactionRequest 
+  CreateTransactionRequest,
+  PortfolioPerformanceResponse,
+  PortfolioPerformanceTimeframe
 } from '@/types/portfolio';
 
 export function generateIdempotencyKey(): string {
@@ -53,6 +55,19 @@ export const portfolioApi = {
     authRequest<PortfolioOverview>(`/portfolios/${portfolioId}/overview?currency=${currency || 'TRY'}`, {
       method: 'GET',
     }),
+
+  // Portfolio Performance (EOD history, timeframe, currency)
+  getPerformance: (
+    portfolioId: number,
+    timeframe: PortfolioPerformanceTimeframe = '1M',
+    currency: Currency | null = 'TRY'
+  ) =>
+    authRequest<PortfolioPerformanceResponse>(
+      `/portfolios/${portfolioId}/performance?timeframe=${timeframe}&currency=${currency || 'TRY'}`,
+      {
+        method: 'GET',
+      }
+    ),
 
   // Cash Ledger
   getCashBalance: (portfolioId: number) =>

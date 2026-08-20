@@ -251,7 +251,7 @@
       "historicalRange": "{symbol} Range on {date}: {range}",
       "staleRevisionNotice": "Portfolio was updated elsewhere; values refreshed. Please submit again.",
       "insufficientHoldingsError": "Cannot sell more units than you currently own.",
-      "settlementUnavailableError": "Market settlement or price is unavailable for this date/time.",
+      "settlementUnavailableError": "Current market price is unavailable; please try again",
       "generalError": "Transaction failed. Please check the details and try again."
     },
     "EditPortfolioDialog": {
@@ -312,6 +312,46 @@
       "noPortfoliosFound": "No portfolios found",
       "createFirstPortfolioDesc": "Create your first portfolio to start tracking your investments and calculating PnL in real-time.",
       "createFirstPortfolioBtn": "Create Your First Portfolio"
+    },
+    "Performance": {
+      "title": "Portfolio Performance",
+      "subtitle": "Track historical portfolio valuation and transactions",
+      "eodBadge": "End-of-day performance",
+      "valuedThrough": "Valued through {date}",
+      "simulationStartDate": "Sim start: {date}",
+      "dailyGranularity": "Daily",
+      "weeklyGranularity": "Weekly",
+      "periodReturn": "Period Return",
+      "startValue": "Start Value",
+      "endValue": "End Value",
+      "totalValue": "Total Value",
+      "cashValue": "Cash",
+      "positionsValue": "Positions",
+      "pnl": "PnL",
+      "baseline": "Capital Baseline",
+      "noData": "No completed EOD performance data yet.",
+      "noDataSubtitle": "Performance data will appear after end-of-day market settlement is recorded.",
+      "unavailableError": "Historical performance data is temporarily unavailable. Please try again later.",
+      "timeoutError": "Performance calculation timed out. Please try again.",
+      "genericError": "Failed to load performance data.",
+      "retry": "Retry",
+      "buy": "BUY",
+      "sell": "SELL",
+      "quantity": "Quantity",
+      "tradePrice": "Trade Price",
+      "grossAmount": "Gross Amount",
+      "fee": "Fee",
+      "executedAt": "Executed at",
+      "events": "Events",
+      "timeframes": {
+        "1W": "1W",
+        "1M": "1M",
+        "3M": "3M",
+        "6M": "6M",
+        "1Y": "1Y",
+        "YTD": "YTD",
+        "ALL": "ALL"
+      }
     }
   },
   "Landing": {

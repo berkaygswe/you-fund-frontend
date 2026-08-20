@@ -7,6 +7,7 @@ export interface AssetSearchResult {
   type: string;
   icon_url: string;
   exchange_icon_url: string;
+  currency?: string;
 }
 
 export interface AssetSearchApiResponse {

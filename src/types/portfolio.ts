@@ -9,6 +9,7 @@ export interface AssetSummary {
   symbol: string;
   name: string;
   type: string;
+  currency?: string;
 }
 
 export interface Portfolio {
@@ -33,7 +34,7 @@ export interface Transaction {
   pricePerUnit: number;
   fee: number;
   totalCost: number;
-  currency: Currency;
+  currency: Currency | string;
   transactionDate: string; // ISO format
   notes: string | null;
   createdAt: string;
@@ -131,7 +132,6 @@ export interface CreateTransactionRequest {
   quantity: number;
   pricePerUnit: number;
   fee: number;
-  currency: Currency;
   transactionDate: string;
   notes?: string;
   ifRevisionEquals?: number;
@@ -159,3 +159,61 @@ export interface PortfolioApiErrorData {
   currency?: Currency;
   portfolioRevision?: number;
 }
+
+// Portfolio Performance Types
+export type PortfolioPerformanceTimeframe = '1W' | '1M' | '3M' | '6M' | '1Y' | 'YTD' | 'ALL';
+
+export interface PerformanceDataPoint {
+  date: string;
+  cashValue: number;
+  positionsValue: number;
+  totalValue: number;
+  pnlAmount: number;
+  pnlPercent: number | null;
+}
+
+export interface PeriodSummary {
+  startValue: number | null;
+  endValue: number | null;
+  changeAmount: number | null;
+  changePercent: number | null;
+}
+
+export interface PerformanceEvent {
+  transactionId: number;
+  chartDate: string;
+  occurredAt: string;
+  type: 'BUY' | 'SELL';
+  assetId: string;
+  symbol: string;
+  name: string;
+  assetType: string;
+  iconUrl: string | null;
+  quantity: number;
+  pricePerUnit: number;
+  tradeCurrency: string;
+  grossAmount: number;
+  fee: number;
+  grossAmountDisplay: number;
+  feeDisplay: number;
+  displayCurrency: string;
+}
+
+export interface PortfolioPerformanceResponse {
+  portfolioId: number;
+  portfolioRevision: number;
+  baseCurrency: string;
+  displayCurrency: 'TRY' | 'USD';
+  timeframe: string;
+  valuationMode: 'EOD';
+  simulationStartDate: string;
+  effectiveStartDate: string;
+  valuedThrough: string;
+  granularity: 'DAILY' | 'WEEKLY';
+  downsampled: boolean;
+  capitalBaseline: number;
+  dataPoints: PerformanceDataPoint[];
+  periodSummary: PeriodSummary;
+  events: PerformanceEvent[];
+}
+

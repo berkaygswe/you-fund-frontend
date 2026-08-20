@@ -48,6 +48,7 @@ import { TransactionDialog } from "@/components/portfolio/TransactionDialog";
 import { CreatePortfolioDialog } from "@/components/portfolio/CreatePortfolioDialog";
 import { EditPortfolioDialog } from "@/components/portfolio/EditPortfolioDialog";
 import { CashMovementDialog } from "@/components/portfolio/CashMovementDialog";
+import { PortfolioPerformanceChart } from "@/components/portfolio/PortfolioPerformanceChart";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { formatPercent } from "@/utils/formatPercent";
 import { format } from "date-fns";
@@ -345,7 +346,11 @@ export default function PortfoliosPage() {
               </div>
             </div>
 
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 space-y-8">
+              {selectedPortfolioId && (
+                <PortfolioPerformanceChart portfolioId={selectedPortfolioId} currency={currency} />
+              )}
+
               <Tabs defaultValue="holdings" className="w-full">
                 <TabsList className="bg-muted/30 p-1 rounded-xl mb-6">
                   <TabsTrigger value="holdings" className="rounded-lg px-6 cursor-pointer">{t("positions")}</TabsTrigger>
@@ -472,8 +477,12 @@ export default function PortfoliosPage() {
                                 </Badge>
                               </TableCell>
                               <TableCell className="text-right text-xs font-medium">{tx.quantity}</TableCell>
-                              <TableCell className="text-right text-xs text-muted-foreground">{formatCurrency(tx.pricePerUnit)}</TableCell>
-                              <TableCell className="text-right text-xs font-bold">{formatCurrency(tx.totalCost)}</TableCell>
+                              <TableCell className="text-right text-xs text-muted-foreground">
+                                {tx.pricePerUnit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {tx.currency}
+                              </TableCell>
+                              <TableCell className="text-right text-xs font-bold">
+                                {tx.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {tx.currency}
+                              </TableCell>
                             </TableRow>
                           ))
                         )}
