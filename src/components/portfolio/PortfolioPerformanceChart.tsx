@@ -443,10 +443,10 @@ export function PortfolioPerformanceChart({
                       stroke: '#ffffff',
                       strokeWidth: 2,
                     }}
-                    dot={(props: any) => {
-                      const { cx, cy, payload } = props;
+                    dot={(dotProps: { cx?: number; cy?: number; payload?: TimelinePoint; index?: number }) => {
+                      const { cx, cy, payload } = dotProps;
                       if (!payload || !payload.events || payload.events.length === 0) {
-                        return <React.Fragment key={`empty-dot-${props.index}`} />;
+                        return <React.Fragment key={`empty-dot-${dotProps.index}`} />;
                       }
 
                       const hasBuy = payload.hasBuy;
@@ -457,7 +457,7 @@ export function PortfolioPerformanceChart({
                       const pinFill = isBuyOnly ? '#10b981' : isSellOnly ? '#ef4444' : '#8b5cf6';
 
                       return (
-                        <g key={`event-dot-${props.index}`} transform={`translate(${cx},${cy})`}>
+                        <g key={`event-dot-${dotProps.index}`} transform={`translate(${cx},${cy})`}>
                           <circle
                             r="8"
                             fill={pinFill}
@@ -572,10 +572,10 @@ export function PortfolioPerformanceChart({
 
 interface CustomTooltipProps {
   active?: boolean;
-  payload?: any[];
+  payload?: Array<{ payload: TimelinePoint; value?: number; name?: string }>;
   label?: string;
   displayCurrency: string;
-  t: (key: string, values?: Record<string, any>) => string;
+  t: ReturnType<typeof useTranslations>;
 }
 
 function CustomTooltip({ active, payload, label, displayCurrency, t }: CustomTooltipProps) {
