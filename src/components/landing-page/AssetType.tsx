@@ -139,7 +139,7 @@ export default function AssetType() {
                                 </div>
                                 <span className="font-extrabold text-lg text-foreground">{asset.symbol}</span>
                             </div>
-                            {asset.percentChangeFromStart !== undefined && (
+                            {asset.percentChangeFromStart != null && (
                                 <div className={`flex items-center space-x-1 text-sm font-bold ${asset.percentChangeFromStart >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`}>
                                     {asset.percentChangeFromStart >= 0 ? (
                                         <TrendingUp className="w-4 h-4" />
@@ -151,7 +151,7 @@ export default function AssetType() {
                                     </span>
                                 </div>
                             )}
-                            {asset.percentChangeFromStart === undefined && (
+                            {asset.percentChangeFromStart == null && (
                                 <span className="text-muted-foreground text-sm font-bold">N/A</span>
                             )}
                         </div>
