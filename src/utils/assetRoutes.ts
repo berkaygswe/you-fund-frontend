@@ -10,7 +10,9 @@
 const ASSET_ROUTE_MAP: Record<string, string> = {
     fund: 'fund',
     etf: 'etf',
-    stock: 'stocks',
+    stock: 'stock',
+    crypto: 'crypto',
+    cryptocurrency: 'crypto',
 };
 
 /**

@@ -17,6 +17,7 @@ import { Currency } from '@/types/currency';
 import { AssetIdentifier } from '@/types/asset';
 import { StockMetadata } from '@/types/stockMetadata';
 import { MarketOverviewData } from '@/types/marketOverview';
+import { CryptoMetadata, CryptoMarketStats } from '@/types/cryptoMetadata';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -253,6 +254,23 @@ export const fundsApi = {
 
     getMarketOverview: async (): Promise<MarketOverviewData> => {
         return fetchData<MarketOverviewData>('/market/overview');
+    },
+
+    getCryptoMetadata: async (symbol: string, exchange?: string): Promise<CryptoMetadata> => {
+        const queryParams = new URLSearchParams();
+        if (exchange) queryParams.append('exchange', exchange.trim());
+        const queryStr = queryParams.toString();
+        const endpoint = `/crypto/metadata/${encodeURIComponent(symbol.trim())}${queryStr ? `?${queryStr}` : ''}`;
+        return fetchData<CryptoMetadata>(endpoint);
+    },
+
+    getCryptoMarketStats: async (symbol: string, currency?: string | null, exchange?: string): Promise<CryptoMarketStats> => {
+        const queryParams = new URLSearchParams();
+        if (currency) queryParams.append('currency', currency.trim());
+        if (exchange) queryParams.append('exchange', exchange.trim());
+        const queryStr = queryParams.toString();
+        const endpoint = `/crypto/marketstats/${encodeURIComponent(symbol.trim())}${queryStr ? `?${queryStr}` : ''}`;
+        return fetchData<CryptoMarketStats>(endpoint);
     },
 
     // Add more API methods as needed
