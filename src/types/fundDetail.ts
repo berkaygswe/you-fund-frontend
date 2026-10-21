@@ -8,6 +8,8 @@ export interface FundDetail {
     fundType: string;
     umbrellaType: string;
     currentPrice: number;
+    /** Native currency the fund is priced and traded in. */
+    currency: string | null;
     founderName: string;
     founderLogoUrl: string;
     priceChanges: PriceChanges;

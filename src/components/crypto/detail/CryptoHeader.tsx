@@ -20,7 +20,10 @@ interface CryptoHeaderProps {
     iconUrl?: string | null;
     marketCapRank?: number | null;
     categories?: string[] | null;
+    /** Display currency shown in the header badge. */
     currency?: string | null;
+    /** Native quote currency from crypto metadata, used for trades. */
+    quoteCurrency?: string | null;
 }
 
 export function CryptoHeader({
@@ -32,6 +35,7 @@ export function CryptoHeader({
     marketCapRank,
     categories,
     currency = 'USD',
+    quoteCurrency,
 }: CryptoHeaderProps) {
     const t = useTranslations('CryptoDetail');
     const [imgError, setImgError] = useState(false);
@@ -117,6 +121,7 @@ export function CryptoHeader({
                                     symbol: symbol,
                                     name: name,
                                     type: 'cryptocurrency',
+                                    currency: quoteCurrency ?? undefined,
                                 }}
                                 variant="default"
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20"

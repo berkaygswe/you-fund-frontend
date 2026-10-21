@@ -90,7 +90,8 @@ export default function Page() {
                                     id: fund.assetId,
                                     symbol: slug,
                                     name: fund.name,
-                                    type: 'fund'
+                                    type: 'fund',
+                                    currency: fund.currency ?? undefined,
                                 }}
                                 variant="outline"
                             />

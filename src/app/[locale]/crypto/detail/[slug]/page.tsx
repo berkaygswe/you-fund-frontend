@@ -114,6 +114,7 @@ export default function CryptoDetailPage() {
                 marketCapRank={marketStats?.marketCapRank}
                 categories={metadata?.categories}
                 currency={currency || 'USD'}
+                quoteCurrency={metadata?.currency}
             />
 
             {/* Freshness & Institutional Provenance Bar */}

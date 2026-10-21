@@ -12,6 +12,8 @@ export interface CryptoMetadata {
     symbol: string;
     name: string;
     exchange: string;
+    /** Native quote currency the asset trades in (not the display currency). */
+    currency: string | null;
     iconUrl: string | null;
     provider: string;
     providerAssetId: string;

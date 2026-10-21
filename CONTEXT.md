@@ -21,3 +21,13 @@ Terms the codebase uses with a precise meaning. Keep names in code aligned with 
 - Locale formatting follows `Intl` for the active next-intl locale (`tr` → `₺1.234,50`, `en` → `$1,234.50`). No hand-placed symbols.
 - Prices ≥ 1 show 2 decimals; sub-unit prices keep 4 significant digits, capped at 8 decimals.
 - Amounts are JS numbers end to end; rounding happens only at display time. The backend is authoritative for settled values; client totals are previews.
+
+## Trading
+
+- **Trade intake** — turning the trade form into a booked transaction (`src/features/portfolio/trade-intake`). Owns validation, the preview totals, the trade-day price range check, error classification and the auto-deposit protocol. `TransactionDialog` is only its view.
+- **Quote currency is never guessed** — an asset without a known ISO currency cannot be traded (`resolveQuoteCurrency` returns null). Callers must pass the asset's native currency, never the display currency.
+- **Trade-day price range** — the bar of the trade date, or the closest preceding bar on non-trading days. A price outside its low–high (inclusive) blocks submit.
+- **Trade intent** — one idempotency key plus one frozen request body. Re-submitting the unchanged form re-sends both, so a double click or a retry after a timeout books the trade once. Assumes the backend replays the original result for a repeated key + body.
+  - Kept after an **unknown outcome** (network error, timeout, 5xx): the trade may have been booked.
+  - Dropped after success, a field change, or a **definite rejection** (4xx: stale revision, insufficient holdings, settlement unavailable, other rejections).
+- **Auto-deposit** — on `409 INSUFFICIENT_CASH` the user may retry with `funding: AUTO_DEPOSIT_SHORTFALL`; that retry is its own intent with its own key.

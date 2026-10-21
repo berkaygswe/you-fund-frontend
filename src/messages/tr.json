@@ -211,8 +211,8 @@
       "availableSimulationCash": "Kullanılabilir Simülasyon Nakdi",
       "required": "Gereken Toplam",
       "shortfall": "Eksik Tutar",
-      "question": "{shortfall} {currency} ekleyip alımı tamamlamak istiyor musunuz?",
-      "confirmAutoDeposit": "{shortfall} {currency} Ekle ve Alımı Tamamla",
+      "question": "{formattedShortfall} ekleyip alımı tamamlamak istiyor musunuz?",
+      "confirmAutoDeposit": "{formattedShortfall} Ekle ve Alımı Tamamla",
       "cancel": "İptal"
     },
     "TransactionDialog": {
@@ -255,7 +255,16 @@
       "staleRevisionNotice": "Portföy başka bir sekmede veya cihazda güncellendi; değerler yenilendi. Lütfen işlemi tekrar onaylayın.",
       "insufficientHoldingsError": "Sahip olduğunuz miktardan fazlasını satamazsınız.",
       "settlementUnavailableError": "Güncel piyasa fiyatı mevcut değil; lütfen tekrar deneyin.",
-      "generalError": "İşlem gerçekleştirilemedi. Lütfen bilgileri kontrol edip tekrar deneyin."
+      "generalError": "İşlem gerçekleştirilemedi. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "unknownOutcomeError": "İşlem doğrulanamadı. Tekrar göndermek güvenlidir: işlem iki kez kaydedilmez.",
+      "fieldErrors": {
+        "required": "Zorunlu alan",
+        "mustBePositive": "0'dan büyük olmalı",
+        "mustNotBeNegative": "Negatif olamaz",
+        "futureDate": "İşlem tarihi gelecekte olamaz",
+        "currencyUnknown": "Bu varlığın işlem para birimi bilinmiyor, bu yüzden şu an işlem yapılamaz.",
+        "outsidePriceRange": "Fiyat günün en düşük-en yüksek aralığında olmalı"
+      }
     },
     "EditPortfolioDialog": {
       "title": "Portföyü Düzenle",

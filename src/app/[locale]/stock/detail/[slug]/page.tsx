@@ -42,6 +42,7 @@ export default function StockDetailPage() {
                 primaryExchange={stockMetadata.exchange}
                 assetId={stockMetadata.assetId}
                 iconUrl={stockMetadata.iconUrl}
+                quoteCurrency={stockMetadata.currency}
             />
 
             <StockPriceCard

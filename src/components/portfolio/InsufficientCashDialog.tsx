@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { InsufficientCashErrorData } from "@/types/portfolio";
-import { useFormatCurrency } from "@/utils/formatCurrency";
+import { Money } from "@/lib/format/Money";
+import { useFormatters } from "@/lib/format/use-formatters";
 import { AlertCircle, ArrowUpRight, Loader2, Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -20,6 +21,8 @@ interface InsufficientCashDialogProps {
   errorData: InsufficientCashErrorData | null;
   onConfirmAutoDeposit: () => void;
   isRetrying: boolean;
+  /** Shown when the auto-deposit attempt failed and can be retried from here. */
+  errorMessage?: string | null;
 }
 
 export function InsufficientCashDialog({
@@ -28,14 +31,16 @@ export function InsufficientCashDialog({
   errorData,
   onConfirmAutoDeposit,
   isRetrying,
+  errorMessage,
 }: InsufficientCashDialogProps) {
   const t = useTranslations("Portfolio.InsufficientCashDialog");
-  const formatCurrency = useFormatCurrency();
+  const formatters = useFormatters();
 
   if (!errorData) return null;
 
+  // Amounts are in the portfolio's base currency, not the header display currency.
   const currency = errorData.currency || "USD";
-  const formattedShortfall = `${errorData.shortfall.toFixed(2)} ${currency}`;
+  const formattedShortfall = formatters.money(errorData.shortfall, { currency });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,7 +69,7 @@ export function InsufficientCashDialog({
                 {t("availableSimulationCash")}
               </span>
               <span className="font-semibold text-foreground">
-                {formatCurrency(errorData.available)} ({currency})
+                <Money amount={errorData.available} currency={currency} />
               </span>
             </div>
 
@@ -73,7 +78,7 @@ export function InsufficientCashDialog({
                 {t("required")}
               </span>
               <span className="font-semibold text-foreground">
-                {formatCurrency(errorData.required)} ({currency})
+                <Money amount={errorData.required} currency={currency} />
               </span>
             </div>
 
@@ -83,14 +88,17 @@ export function InsufficientCashDialog({
                 {t("shortfall")}
               </span>
               <span className="text-sm font-black text-amber-500">
-                {formatCurrency(errorData.shortfall)} ({currency})
+                <Money amount={errorData.shortfall} currency={currency} />
               </span>
             </div>
           </div>
 
           <p className="text-xs text-muted-foreground px-1">
-            {t("question", { shortfall: errorData.shortfall.toFixed(2), currency, formattedShortfall })}
+            {t("question", { shortfall: formattedShortfall, currency, formattedShortfall })}
           </p>
+          {errorMessage && (
+            <p role="alert" className="text-xs text-destructive px-1">{errorMessage}</p>
+          )}
         </div>
 
         <DialogFooter className="p-6 pt-2 gap-2 sm:gap-2">
@@ -115,7 +123,7 @@ export function InsufficientCashDialog({
             ) : (
               <ArrowUpRight className="h-4 w-4 mr-1.5" />
             )}
-            {t("confirmAutoDeposit", { shortfall: errorData.shortfall.toFixed(2), currency, formattedShortfall })}
+            {t("confirmAutoDeposit", { shortfall: formattedShortfall, currency, formattedShortfall })}
           </Button>
         </DialogFooter>
       </DialogContent>

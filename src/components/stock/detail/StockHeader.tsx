@@ -16,9 +16,11 @@ interface StockHeaderProps {
     primaryExchange: string;
     assetId?: string; // Add assetId prop
     iconUrl?: string; // Add iconUrl prop
+    /** Native listing currency (stock metadata), used as the trade's quote currency. */
+    quoteCurrency?: string;
 }
 
-export function StockHeader({ symbol, name, sector, industry, primaryExchange, assetId, iconUrl }: StockHeaderProps) {
+export function StockHeader({ symbol, name, sector, industry, primaryExchange, assetId, iconUrl, quoteCurrency }: StockHeaderProps) {
     const [imgError, setImgError] = useState(false);
 
     const hasIcon = iconUrl && !imgError;
@@ -63,7 +65,8 @@ export function StockHeader({ symbol, name, sector, industry, primaryExchange, a
                                     id: assetId as unknown as AssetSummary['id'],
                                     symbol: symbol,
                                     name: name,
-                                    type: 'stock'
+                                    type: 'stock',
+                                    currency: quoteCurrency,
                                 }}
                                 variant="default"
                                 className="bg-blue-600 hover:bg-blue-700 text-white"

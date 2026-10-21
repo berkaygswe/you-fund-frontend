@@ -211,8 +211,8 @@
       "availableSimulationCash": "Available Simulation Cash",
       "required": "Required Total",
       "shortfall": "Shortfall to Add",
-      "question": "Add {shortfall} {currency} and complete purchase?",
-      "confirmAutoDeposit": "Add {shortfall} {currency} and complete purchase",
+      "question": "Add {formattedShortfall} and complete purchase?",
+      "confirmAutoDeposit": "Add {formattedShortfall} and complete purchase",
       "cancel": "Cancel"
     },
     "TransactionDialog": {
@@ -255,7 +255,16 @@
       "staleRevisionNotice": "Portfolio was updated elsewhere; values refreshed. Please submit again.",
       "insufficientHoldingsError": "Cannot sell more units than you currently own.",
       "settlementUnavailableError": "Current market price is unavailable; please try again",
-      "generalError": "Transaction failed. Please check the details and try again."
+      "generalError": "Transaction failed. Please check the details and try again.",
+      "unknownOutcomeError": "We couldn't confirm the trade. Submitting again is safe: it won't be booked twice.",
+      "fieldErrors": {
+        "required": "Required",
+        "mustBePositive": "Must be greater than 0",
+        "mustNotBeNegative": "Cannot be negative",
+        "futureDate": "Trade date can't be in the future",
+        "currencyUnknown": "This asset's trading currency is unknown, so it can't be traded yet.",
+        "outsidePriceRange": "Price must be within the day's low-high range"
+      }
     },
     "EditPortfolioDialog": {
       "title": "Edit Portfolio",

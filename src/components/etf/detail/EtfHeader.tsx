@@ -83,7 +83,9 @@ export function EtfHeader({
                                     id: assetId as unknown as AssetSummary['id'],
                                     symbol: symbol,
                                     name: name,
-                                    type: 'etf'
+                                    type: 'etf',
+                                    // Native listing currency from ETF metadata (fetched without a display currency).
+                                    currency,
                                 }}
                                 variant="default"
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white"
