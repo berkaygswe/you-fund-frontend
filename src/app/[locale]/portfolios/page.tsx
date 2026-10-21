@@ -16,7 +16,8 @@ import {
   DollarSign,
   ArrowDownLeft,
   ArrowUpRight,
-  AlertCircle
+  AlertCircle,
+  Info
 } from "lucide-react";
 import { 
   usePortfolios, 
@@ -51,25 +52,41 @@ import { CashMovementDialog } from "@/components/portfolio/CashMovementDialog";
 import { PortfolioPerformanceChart } from "@/components/portfolio/PortfolioPerformanceChart";
 import { useFormatCurrency } from "@/utils/formatCurrency";
 import { formatPercent } from "@/utils/formatPercent";
+import { Money } from "@/lib/format/Money";
+import { DisplayMoney } from "@/lib/format/DisplayMoney";
+import type { DisplayAmountFields } from "@/lib/format/display-amount";
+import type { Portfolio } from "@/types/portfolio";
+import { useFormatters } from "@/lib/format/use-formatters";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/hooks/useCurrency";
 
+/** Portfolio cash in the shape DisplayMoney expects (base amount + backend display projection). */
+function toDisplayCash(portfolio: Portfolio): DisplayAmountFields {
+  return {
+    amount: portfolio.cashBalance,
+    currency: portfolio.baseCurrency,
+    displayAmount: portfolio.displayCashBalance,
+    displayCurrency: portfolio.displayCurrency,
+    displayFxRateDate: portfolio.displayFxRateDate,
+    displayStatus: portfolio.displayStatus,
+  };
+}
+
 export default function PortfoliosPage() {
   const t = useTranslations("Portfolio.Page");
   const tAsset = useTranslations("AssetTypes");
   const { status } = useAuth();
-  const { data: portfolios, isLoading: loadingPortfolios } = usePortfolios();
+  const currency = useCurrency();
+  const { data: portfolios, isLoading: loadingPortfolios } = usePortfolios(currency);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>(null);
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
   const [isCreatePortfolioOpen, setIsCreatePortfolioOpen] = useState(false);
   const [isCashMovementOpen, setIsCashMovementOpen] = useState(false);
   const [editingPortfolio, setEditingPortfolio] = useState<{ id: number; name: string } | null>(null);
   const [isEditPortfolioOpen, setIsEditPortfolioOpen] = useState(false);
-
-  const currency = useCurrency();
 
   // Keep selected portfolio in sync
   useEffect(() => {
@@ -81,10 +98,11 @@ export default function PortfoliosPage() {
   const { data: overview, isLoading: loadingOverview } = usePortfolioOverview(selectedPortfolioId, currency);
   const { data: holdings, isLoading: loadingHoldings } = usePortfolioHoldings(selectedPortfolioId, currency);
   const { data: transactions, isLoading: loadingTransactions } = usePortfolioTransactions(selectedPortfolioId);
-  const { data: cashMovements, isLoading: loadingCashMovements } = usePortfolioCashMovements(selectedPortfolioId);
+  const { data: cashMovements, isLoading: loadingCashMovements } = usePortfolioCashMovements(selectedPortfolioId, currency);
   const deletePortfolio = useDeletePortfolio();
   
   const formatCurrency = useFormatCurrency();
+  const formatters = useFormatters();
   const activePortfolio = portfolios?.find(p => p.id === selectedPortfolioId);
 
   if (status === 'unauthenticated') {
@@ -105,11 +123,18 @@ export default function PortfoliosPage() {
     }
   };
 
-  const totalDisplayValue = overview?.totalPortfolioValue ?? (
-    (holdings?.totalMarketValue ?? 0) + (activePortfolio?.cashBalance ?? 0)
-  );
+  // Only the overview converts cash to the display currency. Never add it to
+  // holdings (display currency) from portfolio.cashBalance (base currency).
+  const totalDisplayValue = overview?.totalPortfolioValue;
 
-  const activeCashBalance = overview?.cashBalance ?? activePortfolio?.cashBalance ?? 0;
+  // Amounts on this page are shown in the display currency; flag it whenever that
+  // differs from the base currency so converted values are never mistaken for base ones.
+  const baseCurrency = activePortfolio?.baseCurrency;
+  const shownCurrency = overview?.displayCurrency ?? currency;
+  const isConvertedView = !!baseCurrency && !!shownCurrency && baseCurrency !== shownCurrency;
+
+  // Withdrawals are entered in the base currency, so the limit must be too.
+  const baseCurrencyCashBalance = activePortfolio?.cashBalance ?? 0;
   const positionsValue = overview?.positionsMarketValue ?? holdings?.totalMarketValue ?? 0;
   const positionsCount = overview?.positions.length ?? holdings?.positions.length ?? 0;
 
@@ -153,7 +178,7 @@ export default function PortfoliosPage() {
       </div>
 
       {loadingPortfolios ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           <Skeleton className="h-32 rounded-3xl" />
           <Skeleton className="h-32 rounded-3xl" />
           <Skeleton className="h-32 rounded-3xl" />
@@ -162,7 +187,8 @@ export default function PortfoliosPage() {
       ) : portfolios && portfolios.length > 0 ? (
         <div className="space-y-8">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 4 columns only from xl: with the sidebar open, lg leaves ~190px per card and clips amounts. */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
             {/* Total Portfolio Value Card (Overview Single Source of Truth) */}
             <Card className="bg-gradient-to-br from-primary/10 to-transparent border-white/5 rounded-3xl overflow-hidden relative group transition-all hover:border-primary/20">
               <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -185,8 +211,17 @@ export default function PortfoliosPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="font-medium">{overview?.displayCurrency || activePortfolio?.baseCurrency || 'USD'}</span>
-                  <span>• {t("baseCurrency")}</span>
+                  {isConvertedView ? (
+                    <>
+                      <span className="font-medium">{t("shownIn", { currency: shownCurrency })}</span>
+                      <span>• {t("baseCurrencyIs", { currency: baseCurrency })}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-medium">{baseCurrency ?? '--'}</span>
+                      <span>• {t("baseCurrency")}</span>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -211,12 +246,24 @@ export default function PortfoliosPage() {
                   </Button>
                 </div>
                 <CardTitle className="text-3xl font-black text-foreground">
-                  {formatCurrency(activeCashBalance)}
+                  {/* Overview is authoritative; until it loads, use the portfolio's own display projection. */}
+                  {overview ? (
+                    <Money amount={overview.cashBalance} currency={overview.displayCurrency} />
+                  ) : activePortfolio ? (
+                    <DisplayMoney value={toDisplayCash(activePortfolio)} />
+                  ) : (
+                    '--'
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span>{activePortfolio?.baseCurrency || 'USD'}</span>
+                  {/* In a converted view, show the base-currency ledger amount the cash really is. */}
+                  {isConvertedView && activePortfolio ? (
+                    <Money amount={activePortfolio.cashBalance} currency={activePortfolio.baseCurrency} className="font-medium" />
+                  ) : (
+                    <span>{baseCurrency ?? '--'}</span>
+                  )}
                   <span>• {t("simulationCashSub")}</span>
                 </div>
               </CardContent>
@@ -268,6 +315,14 @@ export default function PortfoliosPage() {
             </Card>
           </div>
 
+          {/* Exchange-rate disclosure: converted returns include FX moves, not just asset performance */}
+          {isConvertedView && (
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-medium">
+              <Info className="h-5 w-5 shrink-0" />
+              <p>{t("fxDisclosure", { base: baseCurrency, display: shownCurrency })}</p>
+            </div>
+          )}
+
           {/* Partial Valuation Alert Banner */}
           {overview?.valuationStatus === 'PARTIAL' && (
             <div className="flex items-center gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-medium animate-in fade-in duration-200">
@@ -304,7 +359,7 @@ export default function PortfoliosPage() {
                       <div className="text-[10px] text-muted-foreground flex items-center gap-2 mt-0.5">
                         <span className="uppercase">{portfolio.baseCurrency}</span>
                         <span>•</span>
-                        <span>{t("cashPrefix")}: {formatCurrency(portfolio.cashBalance || 0)}</span>
+                        <span>{t("cashPrefix")}: <DisplayMoney value={toDisplayCash(portfolio)} /></span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -476,12 +531,12 @@ export default function PortfoliosPage() {
                                   {tx.transactionType === 'BUY' ? t("buyType") : t("sellType")}
                                 </Badge>
                               </TableCell>
-                              <TableCell className="text-right text-xs font-medium">{tx.quantity}</TableCell>
+                              <TableCell className="text-right text-xs font-medium">{formatters.quantity(tx.quantity)}</TableCell>
                               <TableCell className="text-right text-xs text-muted-foreground">
-                                {tx.pricePerUnit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {tx.currency}
+                                <Money amount={tx.pricePerUnit} currency={tx.currency} unitPrice />
                               </TableCell>
                               <TableCell className="text-right text-xs font-bold">
-                                {tx.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {tx.currency}
+                                <Money amount={tx.totalCost} currency={tx.currency} />
                               </TableCell>
                             </TableRow>
                           ))
@@ -550,7 +605,7 @@ export default function PortfoliosPage() {
                                 "text-right text-xs font-bold",
                                 m.type === 'DEPOSIT' ? "text-green-500" : "text-amber-500"
                               )}>
-                                {m.type === 'DEPOSIT' ? '+' : '-'}{formatCurrency(m.amount)}
+                                {m.type === 'DEPOSIT' ? '+' : '-'}<DisplayMoney value={m} />
                               </TableCell>
                               <TableCell className="text-center text-xs font-mono text-muted-foreground">
                                 {m.portfolioRevision}
@@ -602,7 +657,7 @@ export default function PortfoliosPage() {
           open={isCashMovementOpen}
           onOpenChange={setIsCashMovementOpen}
           portfolioId={selectedPortfolioId}
-          currentCashBalance={activeCashBalance}
+          currentCashBalance={baseCurrencyCashBalance}
           currency={activePortfolio?.baseCurrency || 'USD'}
         />
       )}

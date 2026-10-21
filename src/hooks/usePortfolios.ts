@@ -9,12 +9,13 @@ import {
 import { useAuth } from './useAuth';
 import { Currency } from '@/types/currency';
 
-export function usePortfolios() {
+// Waits for the display currency to hydrate so the list is fetched once, already converted.
+export function usePortfolios(displayCurrency: Currency | null) {
   const { status } = useAuth();
   return useQuery({
-    queryKey: ['portfolios'],
-    queryFn: () => portfolioApi.getPortfolios(),
-    enabled: status === 'authenticated'
+    queryKey: ['portfolios', displayCurrency],
+    queryFn: () => portfolioApi.getPortfolios(displayCurrency),
+    enabled: status === 'authenticated' && displayCurrency !== null,
   });
 }
 
@@ -65,12 +66,12 @@ export function usePortfolioCashBalance(portfolioId: number | null) {
   });
 }
 
-export function usePortfolioCashMovements(portfolioId: number | null) {
+export function usePortfolioCashMovements(portfolioId: number | null, displayCurrency: Currency | null) {
   const { status } = useAuth();
   return useQuery({
-    queryKey: ['portfolioCashMovements', portfolioId],
-    queryFn: () => portfolioId ? portfolioApi.getCashMovements(portfolioId) : null,
-    enabled: status === 'authenticated' && !!portfolioId,
+    queryKey: ['portfolioCashMovements', portfolioId, displayCurrency],
+    queryFn: () => portfolioId ? portfolioApi.getCashMovements(portfolioId, displayCurrency) : null,
+    enabled: status === 'authenticated' && !!portfolioId && displayCurrency !== null,
   });
 }
 

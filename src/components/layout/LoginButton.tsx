@@ -57,9 +57,10 @@ export default function LoginButton() {
             {status === 'authenticated' && user && (
                 <div className="flex items-center gap-2">
                     <Link href="/profile">
-                        <Button variant="ghost" className="cursor-pointer">
-                            <UserCircle className="w-5 h-5 mr-1" />
-                            {t("profile")}
+                        {/* Icon-only below sm so the mobile header fits. */}
+                        <Button variant="ghost" className="cursor-pointer px-2 sm:px-3" aria-label={t("profile")}>
+                            <UserCircle className="w-5 h-5 sm:mr-1" />
+                            <span className="hidden sm:inline">{t("profile")}</span>
                         </Button>
                     </Link>
 

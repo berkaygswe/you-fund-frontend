@@ -19,7 +19,7 @@ export function CurrencySwitcher() {
     // Show loading state during hydration to prevent mismatch
     if (!hasHydrated) {
         return (
-            <div className="w-[130px] h-9 px-3 border rounded-md flex items-center justify-between bg-background">
+            <div className="w-[96px] sm:w-[130px] h-9 px-3 border rounded-md flex items-center justify-between bg-background">
                 <div className="flex items-center gap-2 opacity-50">
                     <div className="w-5 h-4 bg-gray-200 rounded animate-pulse" />
                     <div className="w-8 h-4 bg-gray-200 rounded animate-pulse" />
@@ -32,7 +32,7 @@ export function CurrencySwitcher() {
 
     return (
         <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
-            <SelectTrigger className="w-[130px] h-9 px-3 justify-between bg-background cursor-pointer hover:bg-accent transition-all">
+            <SelectTrigger className="w-[96px] sm:w-[130px] h-9 px-3 justify-between bg-background cursor-pointer hover:bg-accent transition-all">
                 {selected && (
                     <div className="flex items-center gap-2">
                         <Image

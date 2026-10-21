@@ -26,10 +26,15 @@ export function generateIdempotencyKey(): string {
   });
 }
 
+/** `?currency=` asks the backend to add display-currency fields; omitted when not known yet. */
+function displayCurrencyQuery(currency: Currency | null): string {
+  return currency ? `?currency=${currency}` : '';
+}
+
 export const portfolioApi = {
   // Portfolio Management
-  getPortfolios: () =>
-    authRequest<Portfolio[]>('/portfolios', {
+  getPortfolios: (displayCurrency: Currency | null) =>
+    authRequest<Portfolio[]>(`/portfolios${displayCurrencyQuery(displayCurrency)}`, {
       method: 'GET',
     }),
 
@@ -75,8 +80,8 @@ export const portfolioApi = {
       method: 'GET',
     }),
 
-  getCashMovements: (portfolioId: number) =>
-    authRequest<CashMovement[]>(`/portfolios/${portfolioId}/cash-movements`, {
+  getCashMovements: (portfolioId: number, displayCurrency: Currency | null) =>
+    authRequest<CashMovement[]>(`/portfolios/${portfolioId}/cash-movements${displayCurrencyQuery(displayCurrency)}`, {
       method: 'GET',
     }),
 

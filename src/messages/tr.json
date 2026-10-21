@@ -16,7 +16,10 @@
     "crypto": "Kripto",
     "watchlist": "İzleme Listesi",
     "portfolios": "Portföylerim",
-    "appName": "Fnancal"
+    "appName": "Fnancal",
+    "settings": "Ayarlar",
+    "language": "Dil",
+    "theme": "Tema"
   },
   "Header": {
     "loginSignup": "Giriş Yap / Kayıt Ol",
@@ -277,6 +280,9 @@
       "simulationCashSub": "Simülasyon Sermayesi",
       "cashPrefix": "Nakit",
       "baseCurrency": "Temel Para Birimi",
+      "shownIn": "{currency} cinsinden gösteriliyor",
+      "baseCurrencyIs": "Temel para birimi {currency}",
+      "fxDisclosure": "Bu portföyün temel para birimi {base}, değerler {display} cinsinden gösteriliyor. {display} cinsinden değerler ve getiriler yalnızca varlık performansını değil, {base}/{display} kur değişimlerini de içerir.",
       "unrealizedPnL": "Gerçekleşmemiş Kar/Zarar",
       "assetAllocation": "Varlık Dağılımı",
       "diversifiedAssets": "{count} varlık arasında çeşitlendirildi",
@@ -490,6 +496,10 @@
     "section4Text": "Giriş bilgilerinizi gizli tutmaktan kendiniz sorumlusunuz. Sitenin kullanımında yürürlükteki yerel ve uluslararası yasalara uymayı kabul edersiniz.",
     "section5Title": "5. Sorumluluk Sınırı",
     "section5Text": "Fnancal veya geliştiricileri, sitenin kullanımından ya da kullanılamamasından kaynaklanan hiçbir finansal kayıp, zarar veya hatadan dolayı sorumlu tutulamaz."
+  },
+  "Money": {
+    "fxUnavailable": "{displayCurrency} kuru mevcut değil, {baseCurrency} olarak gösteriliyor",
+    "fxConverted": "{date} kuru ile çevrildi"
   },
   "AssetTypes": {
     "all": "Tümü",

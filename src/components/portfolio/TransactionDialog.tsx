@@ -43,6 +43,8 @@ import { InsufficientCashDialog } from "./InsufficientCashDialog";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 
 import { generateIdempotencyKey } from "@/services/portfolioApi";
+import { useCurrency } from "@/hooks/useCurrency";
+import { Money } from "@/lib/format/Money";
 
 interface TransactionDialogProps {
   open: boolean;
@@ -59,7 +61,7 @@ export function TransactionDialog({
 }: TransactionDialogProps) {
   const t = useTranslations("Portfolio.TransactionDialog");
   const queryClient = useQueryClient();
-  const { data: portfolios } = usePortfolios();
+  const { data: portfolios } = usePortfolios(useCurrency());
   
   const [portfolioId, setPortfolioId] = useState<string>(initialPortfolioId?.toString() || "");
   const [transactionType, setTransactionType] = useState<TransactionType>("BUY");
@@ -374,7 +376,8 @@ export function TransactionDialog({
                   <SelectContent>
                     {portfolios?.map((p) => (
                       <SelectItem key={p.id} value={p.id.toString()}>
-                        {p.name} ({p.baseCurrency}) - {t("cashPrefix")}: {p.cashBalance?.toFixed(2) || '0.00'}
+                        {/* Trades settle against base-currency cash, so show the base amount here. */}
+                        {p.name} ({p.baseCurrency}) - {t("cashPrefix")}: <Money amount={p.cashBalance} currency={p.baseCurrency} />
                       </SelectItem>
                     ))}
                   </SelectContent>

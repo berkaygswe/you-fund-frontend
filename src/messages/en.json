@@ -16,7 +16,10 @@
     "crypto": "Crypto",
     "watchlist": "Watchlist",
     "portfolios": "Portfolios",
-    "appName": "Fnancal"
+    "appName": "Fnancal",
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme"
   },
   "Header": {
     "loginSignup": "Login / Signup",
@@ -277,6 +280,9 @@
       "simulationCashSub": "Simulation Capital",
       "cashPrefix": "Cash",
       "baseCurrency": "Base Currency",
+      "shownIn": "Shown in {currency}",
+      "baseCurrencyIs": "Base currency {currency}",
+      "fxDisclosure": "This portfolio is held in {base} and shown in {display}. {display} values and returns include {base}/{display} exchange-rate changes, not only asset performance.",
       "unrealizedPnL": "Unrealized PnL",
       "assetAllocation": "Asset Allocation",
       "diversifiedAssets": "Diversified across {count} assets",
@@ -490,6 +496,10 @@
     "section4Text": "You are responsible for keeping your login credentials confidential. You agree to use the site in compliance with applicable local and international laws.",
     "section5Title": "5. Limitation of Liability",
     "section5Text": "In no event shall Fnancal or its developers be liable for any financial losses, damages, or errors resulting from the use or inability to use this platform."
+  },
+  "Money": {
+    "fxUnavailable": "No {displayCurrency} rate available, shown in {baseCurrency}",
+    "fxConverted": "Converted at the {date} rate"
   },
   "AssetTypes": {
     "all": "All",

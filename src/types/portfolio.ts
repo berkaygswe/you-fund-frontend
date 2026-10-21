@@ -4,6 +4,21 @@ export type TransactionType = 'BUY' | 'SELL';
 export type CashMovementType = 'DEPOSIT' | 'WITHDRAWAL';
 export type ValuationStatus = 'COMPLETE' | 'PARTIAL';
 
+/**
+ * How a backend display amount was produced (backend DisplayFxStatus).
+ * BASE: display currency equals base currency, no FX needed.
+ * CONVERTED: converted with the rate observed on displayFxRateDate.
+ * UNAVAILABLE: no usable rate; displayAmount is null.
+ */
+export type DisplayFxStatus = 'BASE' | 'CONVERTED' | 'UNAVAILABLE';
+
+/** Display-currency projection the backend adds when `?currency=` is sent. */
+export interface DisplayConversion {
+  displayCurrency?: Currency | null;
+  displayFxRateDate?: string | null;
+  displayStatus?: DisplayFxStatus | null;
+}
+
 export interface AssetSummary {
   id: string;
   symbol: string;
@@ -12,11 +27,13 @@ export interface AssetSummary {
   currency?: string;
 }
 
-export interface Portfolio {
+export interface Portfolio extends DisplayConversion {
   id: number;
   name: string;
   baseCurrency: Currency;
+  /** Base currency. */
   cashBalance: number;
+  displayCashBalance?: number | null;
   revision: number;
   positionCount?: number;
   createdAt?: string;
@@ -88,11 +105,14 @@ export interface PortfolioOverview {
   positions: Position[];
 }
 
-export interface CashMovement {
+export interface CashMovement extends DisplayConversion {
   id: number;
   portfolioId: number;
   type: CashMovementType;
   amount: number;
+  /** Portfolio base currency (backend CashMovementResponse.currency). */
+  currency: Currency;
+  displayAmount?: number | null;
   effectiveAt: string;
   notes: string | null;
   createdAt: string;

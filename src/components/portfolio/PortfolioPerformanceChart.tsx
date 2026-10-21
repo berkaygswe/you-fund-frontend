@@ -39,7 +39,7 @@ import {
 } from '@/types/portfolio';
 import { Currency } from '@/types/currency';
 import { cn } from '@/lib/utils';
-import { formatPercent } from '@/utils/formatPercent';
+import { useFormatters } from '@/lib/format/use-formatters';
 
 interface PortfolioPerformanceChartProps {
   portfolioId: number;
@@ -56,23 +56,6 @@ const TIMEFRAMES: Array<{ key: PortfolioPerformanceTimeframe; labelKey: string }
   { key: 'YTD', labelKey: 'YTD' },
   { key: 'ALL', labelKey: 'ALL' },
 ];
-
-function formatValueWithCurrency(
-  value: number | null | undefined, 
-  currency: string = 'TRY', 
-  fractionDigits: number = 2
-): string {
-  if (value == null || isNaN(value)) return '—';
-  const symbol = currency === 'USD' ? '$' : currency === 'TRY' ? '₺' : currency;
-  const numStr = value.toLocaleString(undefined, { 
-    minimumFractionDigits: fractionDigits, 
-    maximumFractionDigits: fractionDigits 
-  });
-  if (currency === 'USD' || symbol === '$') {
-    return `${symbol}${numStr}`;
-  }
-  return `${numStr} ${symbol}`;
-}
 
 interface TimelinePoint {
   date: string;
@@ -92,6 +75,7 @@ export function PortfolioPerformanceChart({
   className 
 }: PortfolioPerformanceChartProps) {
   const t = useTranslations('Portfolio.Performance');
+  const formatters = useFormatters();
   const tTimeframes = useTranslations('Portfolio.Performance.timeframes');
   
   const globalCurrency = useCurrency();
@@ -265,12 +249,11 @@ export function PortfolioPerformanceChart({
                   <TrendingDown className="w-4 h-4 shrink-0" />
                 )}
                 <span>
-                  {isPeriodPositive ? '+' : ''}
-                  {formatValueWithCurrency(periodSummary.changeAmount, data.displayCurrency)}
+                  {formatters.money(periodSummary.changeAmount, { currency: data.displayCurrency, signed: true })}
                 </span>
                 {periodSummary.changePercent != null ? (
                   <span className="text-xs font-bold opacity-85">
-                    ({formatPercent(periodSummary.changePercent)})
+                    ({formatters.percent(periodSummary.changePercent)})
                   </span>
                 ) : null}
               </div>
@@ -282,7 +265,7 @@ export function PortfolioPerformanceChart({
                 {t('startValue')}
               </span>
               <div className="text-sm font-bold text-gray-900 dark:text-slate-100">
-                {formatValueWithCurrency(periodSummary.startValue, data.displayCurrency)}
+                {formatters.money(periodSummary.startValue, { currency: data.displayCurrency })}
               </div>
             </div>
 
@@ -292,7 +275,7 @@ export function PortfolioPerformanceChart({
                 {t('endValue')}
               </span>
               <div className="text-sm font-bold text-gray-900 dark:text-slate-100">
-                {formatValueWithCurrency(periodSummary.endValue, data.displayCurrency)}
+                {formatters.money(periodSummary.endValue, { currency: data.displayCurrency })}
               </div>
             </div>
 
@@ -302,7 +285,7 @@ export function PortfolioPerformanceChart({
                 {t('baseline')}
               </span>
               <div className="text-sm font-bold text-gray-900 dark:text-slate-100">
-                {formatValueWithCurrency(data.capitalBaseline, data.displayCurrency)}
+                {formatters.money(data.capitalBaseline, { currency: data.displayCurrency })}
               </div>
             </div>
           </div>
@@ -369,7 +352,9 @@ export function PortfolioPerformanceChart({
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart 
                   data={chartData} 
-                  margin={{ top: 16, right: 12, left: -10, bottom: 0 }}
+                  // Left margin must fit the first point's event pin (r=8 + 2px stroke);
+                  // a negative value clips the first days and their trade markers.
+                  margin={{ top: 16, right: 12, left: 12, bottom: 0 }}
                 >
                   <defs>
                     <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -412,7 +397,7 @@ export function PortfolioPerformanceChart({
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(val: number) => {
-                      return formatValueWithCurrency(val, data?.displayCurrency, 0);
+                      return formatters.money(val, { currency: data?.displayCurrency, wholeUnits: true });
                     }}
                     tick={{ fontSize: 11, fill: '#9ca3af' }}
                   />
@@ -543,18 +528,18 @@ export function PortfolioPerformanceChart({
                             </Badge>
                           </div>
                           <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                            {format(parseISO(ev.occurredAt), 'MMM dd, HH:mm')} • {ev.quantity} units @ {formatValueWithCurrency(ev.pricePerUnit, ev.tradeCurrency)}
+                            {format(parseISO(ev.occurredAt), 'MMM dd, HH:mm')} • {ev.quantity} units @ {formatters.money(ev.pricePerUnit, { currency: ev.tradeCurrency, unitPrice: true })}
                           </div>
                         </div>
                       </div>
 
                       <div className="text-right shrink-0">
                         <div className="font-bold text-gray-900 dark:text-slate-100">
-                          {formatValueWithCurrency(ev.grossAmountDisplay, ev.displayCurrency)}
+                          {formatters.money(ev.grossAmountDisplay, { currency: ev.displayCurrency })}
                         </div>
                         {ev.feeDisplay > 0 ? (
                           <div className="text-[10px] text-gray-500 dark:text-gray-400">
-                            {t('fee')}: {formatValueWithCurrency(ev.feeDisplay, ev.displayCurrency)}
+                            {t('fee')}: {formatters.money(ev.feeDisplay, { currency: ev.displayCurrency })}
                           </div>
                         ) : null}
                       </div>
@@ -579,6 +564,8 @@ interface CustomTooltipProps {
 }
 
 function CustomTooltip({ active, payload, label, displayCurrency, t }: CustomTooltipProps) {
+  // Called before any early return to keep hook order stable.
+  const formatters = useFormatters();
   if (!active || !payload || payload.length === 0) return null;
 
   const dataPoint: TimelinePoint = payload[0].payload;
@@ -609,21 +596,21 @@ function CustomTooltip({ active, payload, label, displayCurrency, t }: CustomToo
         <div className="flex items-center justify-between">
           <span className="text-gray-500 dark:text-gray-400">{t('totalValue')}:</span>
           <span className="font-bold text-sm text-gray-900 dark:text-slate-100">
-            {formatValueWithCurrency(dataPoint.totalValue, displayCurrency)}
+            {formatters.money(dataPoint.totalValue, { currency: displayCurrency })}
           </span>
         </div>
 
         <div className="flex items-center justify-between text-[11px]">
           <span className="text-gray-500 dark:text-gray-400">{t('positionsValue')}:</span>
           <span className="font-semibold text-gray-700 dark:text-slate-300">
-            {formatValueWithCurrency(dataPoint.positionsValue, displayCurrency)}
+            {formatters.money(dataPoint.positionsValue, { currency: displayCurrency })}
           </span>
         </div>
 
         <div className="flex items-center justify-between text-[11px]">
           <span className="text-gray-500 dark:text-gray-400">{t('cashValue')}:</span>
           <span className="font-semibold text-gray-700 dark:text-slate-300">
-            {formatValueWithCurrency(dataPoint.cashValue, displayCurrency)}
+            {formatters.money(dataPoint.cashValue, { currency: displayCurrency })}
           </span>
         </div>
 
@@ -634,8 +621,8 @@ function CustomTooltip({ active, payload, label, displayCurrency, t }: CustomToo
               "font-bold",
               isPnlPositive ? "text-emerald-500 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"
             )}>
-              {isPnlPositive ? '+' : ''}{formatValueWithCurrency(dataPoint.pnlAmount, displayCurrency)}
-              {dataPoint.pnlPercent != null ? ` (${formatPercent(dataPoint.pnlPercent)})` : ''}
+              {formatters.money(dataPoint.pnlAmount, { currency: displayCurrency, signed: true })}
+              {dataPoint.pnlPercent != null ? ` (${formatters.percent(dataPoint.pnlPercent)})` : ''}
             </span>
           </div>
         ) : null}
@@ -668,19 +655,19 @@ function CustomTooltip({ active, payload, label, displayCurrency, t }: CustomToo
                   </Badge>
                 </div>
                 <span className="font-bold text-gray-900 dark:text-slate-100">
-                  {formatValueWithCurrency(ev.grossAmountDisplay, ev.displayCurrency)}
+                  {formatters.money(ev.grossAmountDisplay, { currency: ev.displayCurrency })}
                 </span>
               </div>
 
               <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400">
                 <span>{t('quantity')}: {ev.quantity}</span>
-                <span>{t('tradePrice')}: {formatValueWithCurrency(ev.pricePerUnit, ev.tradeCurrency)}</span>
+                <span>{t('tradePrice')}: {formatters.money(ev.pricePerUnit, { currency: ev.tradeCurrency, unitPrice: true })}</span>
               </div>
 
               <div className="flex items-center justify-between text-[9px] text-gray-400 pt-0.5 border-t border-gray-200/40 dark:border-slate-700/40">
                 <span>{t('executedAt')}: {format(parseISO(ev.occurredAt), 'HH:mm:ss')}</span>
                 {ev.feeDisplay > 0 ? (
-                  <span>{t('fee')}: {formatValueWithCurrency(ev.feeDisplay, ev.displayCurrency)}</span>
+                  <span>{t('fee')}: {formatters.money(ev.feeDisplay, { currency: ev.displayCurrency })}</span>
                 ) : null}
               </div>
             </div>

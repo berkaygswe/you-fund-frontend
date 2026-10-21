@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/sidebar"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
+import { LanguageSwitcher } from "./LanguageSwitcher"
+import { ThemeSwitcher } from "./ThemeSwitcher"
 
 export function AppSidebar() {
   const t = useTranslations("Nav")
@@ -45,6 +47,23 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Mobile only: the header hides language/theme below md (see Header).
+            Placed right after navigation, not pinned to the bottom, so phone
+            browser toolbars can't cover it. */}
+        <SidebarGroup className="md:hidden">
+          <SidebarGroupLabel>{t("settings")}</SidebarGroupLabel>
+          <SidebarGroupContent className="space-y-1 px-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span>{t("language")}</span>
+              <LanguageSwitcher />
+            </div>
+            <div className="flex items-center justify-between">
+              <span>{t("theme")}</span>
+              <ThemeSwitcher />
+            </div>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
